@@ -5,14 +5,14 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 [RequireComponent(typeof(Rigidbody))]
-public class LifeRoutineController : MonoBehaviour
+public class DailyRoutineController : MonoBehaviour
 {
     [SerializeField] LayerMask furnitureLayerMask;
-    private void OnTriggerEnter(Collider other)
+    private void OnCollisionEnter(Collision other)
     {
         if (furnitureLayerMask == (furnitureLayerMask | (1 << other.gameObject.layer)))
         {
-            other.GetComponent<IDailyRoutine>().EventEnter();
+            other.gameObject.GetComponent<DailyRoutine>().RoutineEnter();
         }
     }
 }
