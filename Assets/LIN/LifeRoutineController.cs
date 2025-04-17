@@ -1,18 +1,18 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
+[RequireComponent(typeof(Rigidbody))]
 public class LifeRoutineController : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] LayerMask furnitureLayerMask;
+    private void OnTriggerEnter(Collider other)
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        if (furnitureLayerMask == (furnitureLayerMask | (1 << other.gameObject.layer)))
+        {
+            other.GetComponent<IDailyRoutine>().EventEnter();
+        }
     }
 }
