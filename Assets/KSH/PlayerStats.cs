@@ -26,7 +26,7 @@ public class PlayerStats : MonoBehaviour
     }
 
     // 현재 체력으로 해당 행동이 가능한 지 확인
-    public bool canPerformByHealth(ActionType actionType)
+    public bool CanPerformByHealth(ActionType actionType)
     {
         ActionEffect effect = _valueByAction.GetActionEffect(actionType);
 
