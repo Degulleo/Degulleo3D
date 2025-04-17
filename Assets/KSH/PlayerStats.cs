@@ -8,9 +8,9 @@ public class PlayerStats : MonoBehaviour
     private GameConstants _gameConstants;
     private ValueByAction _valueByAction;
     
-    public float Time { get; private set; }
-    public float Health { get; private set; }
-    public float Reputation { get; private set; }
+    public float TimeStat { get; private set; }
+    public float HealthStat { get; private set; }
+    public float ReputationStat { get; private set; }
     
     public event Action OnDayEnded;
     
@@ -20,9 +20,24 @@ public class PlayerStats : MonoBehaviour
         _valueByAction = new ValueByAction();
         _valueByAction.Initialize(); // 값 초기화
         
-        Health = _gameConstants.baseHealth;
-        Time = _gameConstants.baseTime;
-        Reputation = _gameConstants.baseReputation;
+        HealthStat = _gameConstants.baseHealth;
+        TimeStat = _gameConstants.baseTime;
+        ReputationStat = _gameConstants.baseReputation;
+    }
+
+    // 현재 체력으로 해당 행동이 가능한 지 확인
+    public bool canPerformByHealth(ActionType actionType)
+    {
+        ActionEffect effect = _valueByAction.GetActionEffect(actionType);
+
+        if (HealthStat >= effect.healthChange)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
     
     // 행동 처리 메서드
@@ -46,20 +61,20 @@ public class PlayerStats : MonoBehaviour
         // 시간 리셋
         if (isForced)
         {
-            Time = _gameConstants.baseTime; // 강제 수면일 시 아침 8시 기상 고정
+            TimeStat = _gameConstants.baseTime; // 강제 수면일 시 아침 8시 기상 고정
         }
         else
         {
-            Time -= _gameConstants.maxTime; 
+            TimeStat -= _gameConstants.maxTime; 
         }
     }
     
     // 행동에 따른 내부 스탯 변경 메서드
     public void ModifyTime(float time)
     {
-        Time += time;
+        TimeStat += time;
 
-        if (Time >= _gameConstants.maxTime)
+        if (TimeStat >= _gameConstants.maxTime)
         {
             if (time == _gameConstants.forcedValue)
             {
@@ -74,21 +89,32 @@ public class PlayerStats : MonoBehaviour
     
     public void ModifyHealth(float health)
     {
-        Health += health;
-
-        if (Health > _gameConstants.maxHealth)
+        HealthStat += health;
+        
+        // 혹시 모를 음수 값 처리
+        if (HealthStat < 0)
         {
-            Health = _gameConstants.maxHealth;
+            HealthStat = 0.0f;
+        }
+
+        if (HealthStat > _gameConstants.maxHealth)
+        {
+            HealthStat = _gameConstants.maxHealth;
         }
     }
 
     public void ModifyReputation(float reputation)
     {
-        Reputation += reputation;
+        ReputationStat += reputation;
 
-        if (Reputation > _gameConstants.maxReputation)
+        if (ReputationStat < 0)
         {
-            Reputation = _gameConstants.maxReputation;
+            ReputationStat = 0.0f;
+        }
+
+        if (ReputationStat > _gameConstants.maxReputation)
+        {
+            ReputationStat = _gameConstants.maxReputation;
         }
     }
 }

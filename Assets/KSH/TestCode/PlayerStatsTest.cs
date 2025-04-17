@@ -63,9 +63,9 @@ public class PlayerStatsTest : MonoBehaviour
         // 참조 확인 후 스탯 업데이트
         if (playerStats != null)
         {
-            currentTime = playerStats.Time;
-            currentHealth = playerStats.Health;
-            currentReputation = playerStats.Reputation;
+            currentTime = playerStats.TimeStat;
+            currentHealth = playerStats.HealthStat;
+            currentReputation = playerStats.ReputationStat;
             
             // GameManager에서 날짜 정보 가져오기
             if (gameManager != null)

@@ -72,6 +72,14 @@ public class GameManager : Singleton<GameManager>
         // _canvas = GameObject.FindObjectOfType<Canvas>();
     }
     
+    private void OnDestroy()
+    {
+        if (playerStats != null)
+        {
+            playerStats.OnDayEnded -= AdvanceDay; // 이벤트 구독 해제
+        }
+    }
+    
     private void OnApplicationQuit()
     {
         // TODO: 게임 종료 시 로직 추가
