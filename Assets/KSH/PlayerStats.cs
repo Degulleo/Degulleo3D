@@ -97,7 +97,7 @@ public class PlayerStats : MonoBehaviour
         else if (actionType == ActionType.OverSlept) // 늦잠, 오전 8시에 행동을 결정하기에 하루 지남 X
         {
             // 다음 날 오후 3~6시 사이 기상, 추가 체력 회복
-            float randomWakeUpTime = Random.Range(15, 18);
+            float randomWakeUpTime = Random.Range(15, 19);
             TimeStat = randomWakeUpTime;
             
             // 추가 체력 회복
@@ -112,7 +112,7 @@ public class PlayerStats : MonoBehaviour
             isDayEnded = !isEarlyMorning;
             
             // 다음 날 오후 3~6시 사이 기상
-            float randomWakeUpTime = Random.Range(15, 18);
+            float randomWakeUpTime = Random.Range(15, 19);
             TimeStat = randomWakeUpTime;
         }
         else // 수면 이외의 행동

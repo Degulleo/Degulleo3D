@@ -24,11 +24,12 @@ public class GameManager : Singleton<GameManager>
         if (playerStats == null)
         {
             playerStats = FindObjectOfType<PlayerStats>();
-            if (playerStats == null)
-            {
-                Debug.LogError("PlayerStats 컴포넌트를 찾을 수 없습니다. 함께 추가해주세요.");
-                return;
-            }
+        }
+
+        if (playerStats == null)
+        {
+            Debug.LogError("PlayerStats 컴포넌트를 찾을 수 없습니다.");
+            return;
         }
         playerStats.OnDayEnded += AdvanceDay;
     }
