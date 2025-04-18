@@ -19,7 +19,7 @@ public abstract class EnemyController : CharacterBase
 
     public float WalkSpeed => walkSpeed;
     public float RunSpeed => runSpeed;
-    
+
     [SerializeField] private float walkSpeed = 5;
     [SerializeField] private float runSpeed = 8;
 
