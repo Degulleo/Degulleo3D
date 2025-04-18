@@ -25,7 +25,7 @@ public class PlayerController : CharacterBase
     private PlayerStateMove _playerStateMove;
     
     // 외부에서도 사용하는 변수
-    public VariableJoystick joystick { get; private set; }
+    public FixedJoystick joystick { get; private set; }
     public PlayerState CurrentState { get; private set; }
     private Dictionary<PlayerState, IPlayerState> _playerStates;
     public Animator PlayerAnimator { get; private set; }
@@ -37,7 +37,7 @@ public class PlayerController : CharacterBase
         _characterController = GetComponent<CharacterController>();
         if (joystick == null)
         {
-            joystick = FindObjectOfType<VariableJoystick>();
+            joystick = FindObjectOfType<FixedJoystick>();
         }
     }
 

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class PlayerStateMove : MonoBehaviour, IPlayerState
+public class PlayerStateMove : IPlayerState
 {
     private static readonly int Move = Animator.StringToHash("Move");
     private PlayerController _playerController;

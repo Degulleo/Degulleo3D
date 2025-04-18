@@ -29,18 +29,14 @@ public class PlayerControllerEditor : Editor
         // 지면 접촉 상태
         GUI.backgroundColor = Color.white;
         EditorGUILayout.Space();
-        EditorGUILayout.LabelField("캐릭터 위치 디버그 정보", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("캐릭터 디버그 정보", EditorStyles.boldLabel);
         // GUI.enabled = false;
         // EditorGUILayout.Toggle("지면 접촉", playerController.IsGrounded);
         // GUI.enabled = true;
         
         // 강제로 상태 변경 버튼
         EditorGUILayout.BeginHorizontal();
-        
-        if (GUILayout.Button("Idle"))
-            playerController.SetState(PlayerState.Idle);
-        if (GUILayout.Button("Move"))
-            playerController.SetState(PlayerState.Move);
+
         if (GUILayout.Button("BattleMode"))
             playerController.SwitchBattleMode();
         // if (GUILayout.Button("Attack"))

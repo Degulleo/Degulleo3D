@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class PlayerStateIdle : MonoBehaviour, IPlayerState
+public class PlayerStateIdle : IPlayerState
 {
     private PlayerController _playerController;
     
