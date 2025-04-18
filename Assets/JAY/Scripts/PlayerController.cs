@@ -2,60 +2,104 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum PlayerState { None, Idle, Move, Attack, Hit, Dead }
+
 public class PlayerController : CharacterBase
 {
     // 외부 접근 가능 변수
-    [Header("플레이어 관련")]
-    public VariableJoystick joystick;
-    public Animator PlayerAnimator { get; private set; }
-    
+    [Header("Movement")]
     [SerializeField] private float rotationSpeed = 10f;
+    
+    [Header("Attach Points")] 
+    [SerializeField] private Transform rightHandTransform;
+    [SerializeField] private Transform headTransform;
+    
     
     // 내부에서만 사용하는 변수
     private CharacterController _characterController;
-    private Vector3 gravityVelocity;
+    private bool _isBattle;
+    private GameObject weapon;
+    
+    // 상태 관련
+    private PlayerStateIdle _playerStateIdle;
+    private PlayerStateMove _playerStateMove;
+    
+    // 외부에서도 사용하는 변수
+    public VariableJoystick joystick { get; private set; }
+    public PlayerState CurrentState { get; private set; }
+    private Dictionary<PlayerState, IPlayerState> _playerStates;
+    public Animator PlayerAnimator { get; private set; }
+    public CharacterController CharacterController => _characterController;
 
     private void Awake()
     {
         PlayerAnimator = GetComponent<Animator>();
         _characterController = GetComponent<CharacterController>();
+        if (joystick == null)
+        {
+            joystick = FindObjectOfType<VariableJoystick>();
+        }
+    }
+
+    private void Start()
+    {
+        // 상태 초기화
+        _playerStateIdle = new PlayerStateIdle();
+        _playerStateMove = new PlayerStateMove();
+        
+        _playerStates = new Dictionary<PlayerState, IPlayerState>
+        {
+            { PlayerState.Idle, _playerStateIdle },
+            { PlayerState.Move, _playerStateMove },
+        };
+
+        PlayerInit();
     }
     
     private void Update()
     {
-        HandleMovement(); // 이동 처리
+        if (CurrentState != PlayerState.None)
+        {
+            _playerStates[CurrentState].Update();
+        }
     }
 
-    #region 동작 관련
-    
-    private void HandleMovement()
+    #region 초기화 관련
+
+    private void PlayerInit()
     {
-            float x = joystick.Horizontal;
-            float z = joystick.Vertical;
+        SetState(PlayerState.Idle);
 
-            Vector3 moveDir = new Vector3(x, 0, z);
-            Vector3 move = moveDir.normalized * moveSpeed;
-
-            // 회전
-            if (moveDir.magnitude > 0.1f)
-            {
-                Quaternion toRotation = Quaternion.LookRotation(moveDir, Vector3.up);
-                transform.rotation = Quaternion.Slerp(transform.rotation, toRotation, Time.deltaTime * 10f);
-            }
-
-            // 중력 처리
-            if (_characterController.isGrounded && gravityVelocity.y < 0)
-            {
-                gravityVelocity.y = -0.1f;
-            }
-
-            gravityVelocity.y += gravity * Time.deltaTime;
-
-            Vector3 finalMove = (move + gravityVelocity) * Time.deltaTime;
-            _characterController.Move(finalMove);
-            
-            PlayerAnimator.SetFloat("Move", _characterController.velocity.magnitude);
+        InstantiateWeapon();
+        weapon.SetActive(_isBattle);
     }
+
+    private void InstantiateWeapon()
+    {
+        if (weapon == null)
+        {
+            GameObject weaponObject = Resources.Load<GameObject>("Player/Weapon/Chopstick");
+            weapon = Instantiate(weaponObject, rightHandTransform);
+            // .GetComponent<WeaponController>();
+        }
+    }
+    
 
     #endregion
+    
+    public void SetState(PlayerState state)
+    {
+        if (CurrentState != PlayerState.None)
+        {
+            _playerStates[CurrentState].Exit();
+        }
+        CurrentState = state;
+        _playerStates[CurrentState].Enter(this);
+    }
+
+    public void SwitchBattleMode()
+    {
+        _isBattle = !_isBattle;
+        weapon.SetActive(_isBattle);
+    }
 }
