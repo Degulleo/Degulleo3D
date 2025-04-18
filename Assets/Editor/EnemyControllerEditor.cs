@@ -49,6 +49,7 @@ public class EnemyControllerEditor : Editor
         EditorGUILayout.EndVertical();
 
         EditorGUILayout.Space();
+        GUI.backgroundColor= Color.clear;
         EditorGUILayout.LabelField("상태 변경", EditorStyles.boldLabel);
 
         EditorGUILayout.BeginHorizontal();

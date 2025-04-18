@@ -20,8 +20,11 @@ public abstract class EnemyController : CharacterBase
     public float WalkSpeed => walkSpeed;
     public float RunSpeed => runSpeed;
 
+    public Transform TraceTargetTransform { get; private set; }
+
     [SerializeField] private float walkSpeed = 5;
     [SerializeField] private float runSpeed = 8;
+
 
     // -----
     // 상태 변수
@@ -86,15 +89,16 @@ public abstract class EnemyController : CharacterBase
     #region 적 탐지
 
     // 일정 반경에 플레이어가 진입하면 플레이어 소리를 감지했다고 판단
+    // TODO : 상태 변경시 바로 앞에 플레이어가 있으면 찾지 못하는 이슈 있음
     public Transform DetectPlayerInCircle()
     {
         var hitColliders = Physics.OverlapSphere(transform.position,
             detectCircleRadius, targetLayerMask);
         if (hitColliders.Length > 0)
         {
-            return hitColliders[0].transform;
+            TraceTargetTransform = hitColliders[0].transform;
+            return TraceTargetTransform;
         }
-
         return null;
     }
 

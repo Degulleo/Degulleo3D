@@ -15,7 +15,7 @@ public class EnemyStateTrace : IEnemyState
     {
         _enemyController = enemyController;
 
-        _detectPlayerTransform = _enemyController.DetectPlayerInCircle();
+        _detectPlayerTransform = _enemyController.TraceTargetTransform;
         if (!_detectPlayerTransform)
         {
             _enemyController.SetState(EnemyState.Idle);
