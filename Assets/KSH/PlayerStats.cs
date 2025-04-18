@@ -51,6 +51,15 @@ public class PlayerStats : MonoBehaviour
         ModifyHealth(effect.healthChange);
         ModifyReputation(effect.reputationChange);
     }
+
+    // 출근 가능 여부 확인 메서드
+    public bool CanWork()
+    {
+        bool isTimeToWork = TimeStat is >= 8.0f and < 9.0f; // 8시에서 9시 사이만 true
+        bool isCanPerformWork = CanPerformByHealth(ActionType.Work); // 체력상 가능한지 확인
+        
+        return isTimeToWork && isCanPerformWork;
+    }
     
     // 하루 종료 처리
     private void EndDay(bool isForced) //bool isForced? 해서 true면 강제 수면이라 8시에 깨는

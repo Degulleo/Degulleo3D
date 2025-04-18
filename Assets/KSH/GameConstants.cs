@@ -9,6 +9,7 @@ public enum ActionType
     LessSleep, // 5시간 취침
     SleepWell, // 8시간 취침
     ForcedSleep, // 강제 수면(10시간)
+    Sleep,
     Eat,
     Work, 
     Dungeon,
@@ -24,7 +25,7 @@ public class GameConstants
     // 기본 스탯 값
     public float baseHealth = 8f;
     public float baseTime = 8f;
-    public float baseReputation = 5f;
+    public float baseReputation = 2f;
     
     // 스탯 한계 값
     public float maxHealth = 10f;

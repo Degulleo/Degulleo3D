@@ -33,10 +33,8 @@ public class ValueByAction
         actionEffects = new Dictionary<ActionType, ActionEffect>
         {
             // 기본 액션들, 효과(시간, 체력, 평판 순)
-            { ActionType.NotSleep, new ActionEffect(_gameConstants.forcedValue, 0, 0) }, // 8시 강제 기상
-            { ActionType.LessSleep, new ActionEffect(+5.0f, +6.0f, 0) },
-            { ActionType.SleepWell, new ActionEffect(+8.0f, +8.0f, 0) },
-            { ActionType.ForcedSleep, new ActionEffect(+10.0f, +4.0f, 0) },
+            { ActionType.Sleep, new ActionEffect(_gameConstants.forcedValue, 0, 0) }, // 8시 강제 기상
+            { ActionType.ForcedSleep, new ActionEffect(+10.0f, +4.0f, 0) }, // 체력 0
             { ActionType.Eat, new ActionEffect(+1.0f, +1.0f, 0) },
             { ActionType.Work, new ActionEffect(+10.0f, -3.0f, +0.2f) }, // 8to6: 10시간
             { ActionType.Dungeon, new ActionEffect(+3.0f, -3.0f, 0) },
