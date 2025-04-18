@@ -4,10 +4,9 @@ using UnityEngine;
 
 public class DailyRoutineFridge : DailyRoutine
 {
-    public void RoutineEnter()
+    public override InteractionType RoutineEnter()
     {
-        base.RoutineEnter();
-        Debug.Log("Its a Fridge");
+        return InteractionType.Fridge;
     }
 
     protected override void RoutineConfirm()

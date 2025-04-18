@@ -4,10 +4,9 @@ using UnityEngine;
 
 public class DailyRoutineSink : DailyRoutine
 {
-    public void RoutineEnter()
+    public override InteractionType RoutineEnter()
     {
-        base.RoutineEnter();
-        Debug.Log("Its a Sink");
+        return InteractionType.Sink;
     }
 
     protected override void RoutineConfirm()

@@ -2,12 +2,10 @@
 using System;
 using UnityEngine;
 
-public abstract class DailyRoutine:MonoBehaviour
+public abstract class DailyRoutine: MonoBehaviour
 {
-    public void RoutineEnter()
-    {
-        //TODO: 플레이어 이동 방지, 팝업
-    }
+    public abstract InteractionType RoutineEnter();
+
 
     protected abstract void RoutineConfirm();
 }
