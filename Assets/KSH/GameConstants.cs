@@ -35,10 +35,7 @@ public class GameConstants
     // 기상 시간
     public float wakeUpTime = 8.0f;
     
-    // 오전 8시 기상 값
-    public float wakeUpAtEight = 888f;
-    
-    // 강제 값 (탈진, 결근-늦잠)
+    // 수면 이벤트 강제 값
     public float forcedValue = 999f;
     
     // 날짜 한계 값

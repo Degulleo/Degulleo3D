@@ -73,7 +73,7 @@ public class PlayerStats : MonoBehaviour
         bool isDayEnded = false;
 
         // 수면 행동 처리
-        if (actionType == ActionType.Sleep) // 다음 날 오전 8시 기상
+        if (actionType == ActionType.Sleep || actionType == ActionType.TeamDinner) // 다음 날 오전 8시 기상
         {
             // 다음 날 오전 8시 - 현재 시간 값
             float nowTime = TimeStat - time;
@@ -178,7 +178,8 @@ public class PlayerStats : MonoBehaviour
 
     public void ModifyReputation(float reputation)
     {
-        ReputationStat += reputation;
+        // float 연산 시 계산 오차가 발생할 수도 있기에 소수점 두 번째에서 반올림하도록 처리
+        ReputationStat = Mathf.Round((ReputationStat + reputation) * 100f) / 100f;
 
         if (ReputationStat <= 0)
         {
