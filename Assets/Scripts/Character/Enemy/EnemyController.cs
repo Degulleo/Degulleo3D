@@ -1,22 +1,27 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public enum EnemyState { None, Idle, Trace, Attack, GetHit, Move, Dead }
 
+[RequireComponent(typeof(NavMeshAgent))]
 [RequireComponent(typeof(Animator))]
-public class EnemyController : CharacterBase
+public abstract class EnemyController : CharacterBase
 {
     [Header("AI")]
     [SerializeField] private float detectCircleRadius = 10f;    // 플레이어 탐지 범위
     [SerializeField] private LayerMask targetLayerMask;         // 플레이어 레이어 마스크
 
-
+    public NavMeshAgent Agent { get; private set; }
     public Animator EnemyAnimator { get; private set; }
-    public EnemyState CurrentState { get; private set; }
-    private EnemyState _currentState = EnemyState.Idle;
 
+    public EnemyState CurrentState {get; private set;}
 
-
+    public float WalkSpeed => walkSpeed;
+    public float RunSpeed => runSpeed;
+    
+    [SerializeField] private float walkSpeed = 5;
+    [SerializeField] private float runSpeed = 8;
 
     // -----
     // 상태 변수
@@ -29,10 +34,15 @@ public class EnemyController : CharacterBase
 
     private Dictionary<EnemyState, IEnemyState> _enemyStates;
 
+    private void Awake()
+    {
+        EnemyAnimator = GetComponent<Animator>();
+        Agent = GetComponent<NavMeshAgent>();
+    }
+
     protected override void Start()
     {
         base.Start();
-        EnemyAnimator = GetComponent<Animator>();
 
         // 상태 객체 생성
         _enemyStateIdle = new EnemyStateIdle();
@@ -84,10 +94,8 @@ public class EnemyController : CharacterBase
         {
             return hitColliders[0].transform;
         }
-        else
-        {
-            return null;
-        }
+
+        return null;
     }
 
     #endregion
