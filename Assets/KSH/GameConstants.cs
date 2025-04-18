@@ -5,15 +5,12 @@ using UnityEngine;
 // 행동 타입
 public enum ActionType
 {
-    NotSleep, // 5시간 미만 취침
-    LessSleep, // 5시간 취침
-    SleepWell, // 8시간 취침
-    ForcedSleep, // 강제 수면(10시간)
-    Sleep,
+    Sleep, // 8시 기상
+    OverSlept, // 결근-늦잠
+    ForcedSleep, // 탈진(체력 0)
     Eat,
     Work, 
     Dungeon,
-    // 보너스 스테이지 제외
     Housework, // 집안일
     OvertimeWork, // 야근
     TeamDinner, // 회식
@@ -32,7 +29,16 @@ public class GameConstants
     public float maxTime = 24f;
     public float maxReputation = 10f;
     
-    // 강제 값
+    // 체력 회복 한계 값
+    public float limitRecover = 8.0f;
+    
+    // 기상 시간
+    public float wakeUpTime = 8.0f;
+    
+    // 오전 8시 기상 값
+    public float wakeUpAtEight = 888f;
+    
+    // 강제 값 (탈진, 결근-늦잠)
     public float forcedValue = 999f;
     
     // 날짜 한계 값

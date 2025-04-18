@@ -15,7 +15,7 @@ public class GameManager : Singleton<GameManager>
     public int CurrentDay => currentDay;
     private int maxDays = GameConstants.maxDays;
     
-    // 날짜 변경 이벤트
+    // 날짜 변경 이벤트, 추후에 UI 상의 날짜를 변경할 때 사용
     public event Action<int> OnDayChanged;
     
     private void Start()
