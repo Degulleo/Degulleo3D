@@ -36,14 +36,7 @@ public class PlayerStats : MonoBehaviour
     {
         ActionEffect effect = _valueByAction.GetActionEffect(actionType);
 
-        if (HealthStat >= (effect.healthChange*-1))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return (HealthStat >= (effect.healthChange * -1));
     }
     
     // 행동 처리 메서드
