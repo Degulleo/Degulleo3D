@@ -8,14 +8,22 @@ public enum InteractionType {Bed,Sink,Fridge,Work}
 [RequireComponent(typeof(Rigidbody))]
 public class DailyRoutineController : MonoBehaviour
 {
+    [SerializeField] PlayerStats playerStats;
+    [SerializeField] LayerMask interactionLayerMask;
+    [Header("UI 연동")]
     [SerializeField] HousingCanvasManager housingCanvasManager;
-    [SerializeField] LayerMask furnitureLayerMask;
     
     private Canvas _canvas;
     
+    
+    private void Start()
+    {
+        SetCanvas();
+    }
+
     private void OnCollisionEnter(Collision other)
     {
-        if (furnitureLayerMask == (furnitureLayerMask | (1 << other.gameObject.layer)))
+        if (interactionLayerMask == (interactionLayerMask | (1 << other.gameObject.layer)))
         {
             InteractionType interactionType = other.gameObject.GetComponent<DailyRoutine>().RoutineEnter();
 
@@ -29,10 +37,12 @@ public class DailyRoutineController : MonoBehaviour
                     });
                     break;
                 case InteractionType.Sink:
-                    housingCanvasManager.ShowInteractionButton("밀린 집안일을 처리할까?","체력 1을 사용 좋은일이 일어날지도 모른다", () =>
+                    housingCanvasManager.ShowInteractionButton("밀린 집안일을 처리할까?","체력 1을 사용하고 좋은일이 일어날지도 모른다", () =>
                     {
                         //TODO: 집안일수행, 랜덤 강화 작성
                         Debug.Log("집안일을 시작합니다");
+                        Debug.Log(
+                            playerStats.CanPerformByHealth(ActionType.Housework));
                     });
                     break;
                 case InteractionType.Fridge:
@@ -43,7 +53,7 @@ public class DailyRoutineController : MonoBehaviour
                     });
                     break;
                 case InteractionType.Work:
-                    housingCanvasManager.ShowInteractionButton("출근한다.","체력 3을 소모하고 저녁 6시에나 돌아오겠지..", () =>
+                    housingCanvasManager.ShowInteractionButton("출근한다.","체력 3을 사용하고 저녁 6시에나 돌아오겠지..", () =>
                     {
                         //TODO: 던전 입장
                         Debug.Log("출근 후 컷씬 연출");
@@ -55,19 +65,13 @@ public class DailyRoutineController : MonoBehaviour
 
     private void OnCollisionExit(Collision other)
     {
-        if (furnitureLayerMask == (furnitureLayerMask | (1 << other.gameObject.layer)))
+        if (interactionLayerMask == (interactionLayerMask | (1 << other.gameObject.layer)))
         {
             housingCanvasManager.HideInteractionButton();
         }
     }
 
-    void Awake()
-    {
-        SetCanvas();
-    }
-    
-    
-    void SetCanvas()
+    private void SetCanvas()
     {
         if (_canvas == null)
         {
