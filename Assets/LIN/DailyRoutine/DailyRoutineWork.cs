@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class DailyRoutineWork : DailyRoutine
 {
-    public override InteractionType RoutineEnter()
+    public override ActionType RoutineEnter()
     {
-        return InteractionType.Work;
+        return ActionType.Work;
     }
 
     protected override void RoutineConfirm()

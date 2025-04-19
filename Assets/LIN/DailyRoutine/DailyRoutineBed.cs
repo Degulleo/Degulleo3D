@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class DailyRoutineBed : DailyRoutine
 {
-    public override InteractionType RoutineEnter()
+    public override ActionType RoutineEnter()
     {
-        return InteractionType.Bed;
+        return ActionType.Sleep;
     }
 
     protected override void RoutineConfirm()

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public abstract class DailyRoutine: MonoBehaviour
 {
-    public abstract InteractionType RoutineEnter();
+    public abstract ActionType RoutineEnter();
 
 
     protected abstract void RoutineConfirm();

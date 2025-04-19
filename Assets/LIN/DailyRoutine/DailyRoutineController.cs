@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
-public enum InteractionType {Bed,Sink,Fridge,Work}
 
 [RequireComponent(typeof(Rigidbody))]
 public class DailyRoutineController : MonoBehaviour
@@ -13,53 +12,12 @@ public class DailyRoutineController : MonoBehaviour
     [Header("UI 연동")]
     [SerializeField] HousingCanvasManager housingCanvasManager;
     
-    private Canvas _canvas;
-    
-    
-    private void Start()
-    {
-        SetCanvas();
-    }
-
     private void OnCollisionEnter(Collision other)
     {
         if (interactionLayerMask == (interactionLayerMask | (1 << other.gameObject.layer)))
         {
-            InteractionType interactionType = other.gameObject.GetComponent<DailyRoutine>().RoutineEnter();
-
-            switch (interactionType)
-            {
-                case InteractionType.Bed:
-                    housingCanvasManager.ShowInteractionButton("침대에서 잘까?","숙면으로 시간 당 체력 1을 회복한다.", () =>
-                    {
-                        //TODO: 숙면 할 때 할 일 작성
-                        Debug.Log("숙면 행동을 시작합니다");
-                    });
-                    break;
-                case InteractionType.Sink:
-                    housingCanvasManager.ShowInteractionButton("밀린 집안일을 처리할까?","체력 1을 사용하고 좋은일이 일어날지도 모른다", () =>
-                    {
-                        //TODO: 집안일수행, 랜덤 강화 작성
-                        Debug.Log("집안일을 시작합니다");
-                        Debug.Log(
-                            playerStats.CanPerformByHealth(ActionType.Housework));
-                    });
-                    break;
-                case InteractionType.Fridge:
-                    housingCanvasManager.ShowInteractionButton("던전에 입장할까?","체력 3을 사용하고 3시간이 흐른다.", () =>
-                    {
-                        //TODO: 던전 입장
-                        Debug.Log("던전으로 이동 합니다.. 씬전환");
-                    });
-                    break;
-                case InteractionType.Work:
-                    housingCanvasManager.ShowInteractionButton("출근한다.","체력 3을 사용하고 저녁 6시에나 돌아오겠지..", () =>
-                    {
-                        //TODO: 던전 입장
-                        Debug.Log("출근 후 컷씬 연출");
-                    });
-                    break;
-            }
+            ActionType interactionType = other.gameObject.GetComponent<DailyRoutine>().RoutineEnter();
+            PopActionOnScreen(interactionType);
         }
     }
 
@@ -70,12 +28,68 @@ public class DailyRoutineController : MonoBehaviour
             housingCanvasManager.HideInteractionButton();
         }
     }
-
-    private void SetCanvas()
+    private void PopActionOnScreen(ActionType interactionType)
     {
-        if (_canvas == null)
+        switch (interactionType)
         {
-            _canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
+            case ActionType.Sleep:
+                housingCanvasManager.ShowInteractionButton("침대에서 잘까?","숙면으로 시간 당 체력 1을 회복한다.", () =>
+                {
+                    if (playerStats.CanPerformByHealth(ActionType.Sleep))
+                    {
+                        playerStats.PerformAction(ActionType.Sleep);
+                    }
+                    else
+                    {
+                        housingCanvasManager.SetActionText("지금 체력으로 잘 수 없다..");
+                        housingCanvasManager.SetDescriptionText();
+                    }
+                });
+                break;
+            case ActionType.Housework:
+                housingCanvasManager.ShowInteractionButton("밀린 집안일을 처리할까?","체력 1을 사용하고 좋은일이 일어날지도 모른다", () =>
+                {
+                    if (playerStats.CanPerformByHealth(ActionType.Housework))
+                    {
+                        playerStats.PerformAction(ActionType.Housework);
+                        //TODO: 집안일 후 랜덤 강화 효과 적용
+                    }
+                    else
+                    {
+                        housingCanvasManager.SetActionText("집안일 할 체력이 남아있지 않다..");
+                        housingCanvasManager.SetDescriptionText();
+                    }
+                });
+                break;
+            case ActionType.Dungeon:
+                housingCanvasManager.ShowInteractionButton("던전에 입장할까?","체력 3을 사용하고 3시간이 흐른다.", () =>
+                {
+                    if (playerStats.CanPerformByHealth(ActionType.Dungeon))
+                    {
+                        playerStats.PerformAction(ActionType.Dungeon);
+                    }
+                    else
+                    {
+                        housingCanvasManager.SetActionText("던전에 갈 체력이 되지 않아..");
+                        housingCanvasManager.SetDescriptionText();
+                    }
+                });
+                break;
+            case ActionType.Work:
+                housingCanvasManager.ShowInteractionButton("출근한다.","체력 3을 사용하고 저녁 6시에나 돌아오겠지..", () =>
+                {
+                    if (playerStats.CanPerformByHealth(ActionType.Work))
+                    {
+                        playerStats.PerformAction(ActionType.Work);
+                        Debug.Log("출근");
+                    }
+                    else
+                    {
+                        housingCanvasManager.SetActionText("도저히 출근할 체력이 안되는걸..?");
+                        housingCanvasManager.SetDescriptionText();
+                    }
+                });
+                break;
         }
     }
 }
