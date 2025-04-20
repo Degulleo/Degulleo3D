@@ -50,7 +50,14 @@ public class EnemyStateTrace : IEnemyState
     {
         if (_detectPlayerInCircleWaitTime > MaxDetectPlayerInCircleWaitTime)
         {
-            _enemyController.Agent.SetDestination(_detectPlayerTransform.position);
+            // 방향 계산
+            Vector3 dirToPlayer = (_detectPlayerTransform.position - _enemyController.transform.position).normalized;
+
+            // 플레이어 방향으로 offset 적용 (예: 1.5m 앞)
+            Vector3 stopOffset = _detectPlayerTransform.position - dirToPlayer * 1.5f;
+
+            // 목적지 설정
+            _enemyController.Agent.SetDestination(stopOffset);
             _detectPlayerInCircleWaitTime = 0f;
         }
 

@@ -6,6 +6,7 @@ public enum EnemyState { None, Idle, Trace, Attack, GetHit, Move, Dead }
 
 [RequireComponent(typeof(NavMeshAgent))]
 [RequireComponent(typeof(Animator))]
+[RequireComponent(typeof(EnemyAttackController))]
 public abstract class EnemyController : CharacterBase
 {
     [Header("AI")]
@@ -16,6 +17,8 @@ public abstract class EnemyController : CharacterBase
     public Animator EnemyAnimator { get; private set; }
 
     public EnemyState CurrentState {get; private set;}
+
+    public EnemyAttackController EnemyAttackController { get; private set; }
 
     public float WalkSpeed => walkSpeed;
     public float RunSpeed => runSpeed;
@@ -41,6 +44,7 @@ public abstract class EnemyController : CharacterBase
     {
         EnemyAnimator = GetComponent<Animator>();
         Agent = GetComponent<NavMeshAgent>();
+        EnemyAttackController = GetComponent<EnemyAttackController>();
     }
 
     protected override void Start()
