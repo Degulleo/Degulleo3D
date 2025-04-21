@@ -40,17 +40,9 @@ public class InteractionController : MonoBehaviour
             case ActionType.Sleep:
                 housingCanvasController.ShowInteractionButton("침대에서 잘까?","숙면으로 시간 당 체력 1을 회복한다.", () =>
                 {
-                    if (playerStats.CanPerformByHealth(ActionType.Sleep))
-                    {
-                        playerStats.PerformAction(ActionType.Sleep);
-                        housingCanvasController.HideInteractionButton();
-                        //TODO: 화면 전환 효과와 UI 업데이트 작업
-                    }
-                    else
-                    {
-                        housingCanvasController.SetActionText("지금 체력으로 잘 수 없다..");
-                        housingCanvasController.SetDescriptionText();
-                    }
+                    playerStats.PerformAction(ActionType.Sleep);
+                    housingCanvasController.HideInteractionButton();
+                    //TODO: 화면 전환 효과와 UI 업데이트 작업
                 });
                 break;
             case ActionType.Housework:
