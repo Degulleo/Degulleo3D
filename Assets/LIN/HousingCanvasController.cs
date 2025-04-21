@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class HousingCanvasManager : MonoBehaviour
+public class HousingCanvasController : MonoBehaviour
 {
     [SerializeField] GameObject interactionButton;
     [SerializeField] TMP_Text actionText;
