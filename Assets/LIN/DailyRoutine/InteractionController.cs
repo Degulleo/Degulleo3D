@@ -14,7 +14,7 @@ public class InteractionController : MonoBehaviour
     [SerializeField] HousingCanvasController housingCanvasController;
     
     // 상호작용 가능한 사물 범위에 들어올 때
-    private void OnCollisionEnter(Collision other)
+    private void OnTriggerEnter(Collider other)
     {
         if (interactionLayerMask == (interactionLayerMask | (1 << other.gameObject.layer)))
         {
@@ -25,9 +25,8 @@ public class InteractionController : MonoBehaviour
             }
         }
     }
-
     // 사물에서 벗어날 때 UI 정리
-    private void OnCollisionExit(Collision other)
+    private void OnTriggerExit(Collider other)
     {
         if (interactionLayerMask == (interactionLayerMask | (1 << other.gameObject.layer)))
         {
