@@ -93,7 +93,6 @@ public abstract class EnemyController : CharacterBase
     #region 적 탐지
 
     // 일정 반경에 플레이어가 진입하면 플레이어 소리를 감지했다고 판단
-    // TODO : 상태 변경시 바로 앞에 플레이어가 있으면 찾지 못하는 이슈 있음
     public Transform DetectPlayerInCircle()
     {
         var hitColliders = Physics.OverlapSphere(transform.position,

@@ -25,7 +25,6 @@ public class EnemyAttackController : MonoBehaviour
     }
 
     // 랜덤 전조 호출
-    // 랜덤 전조 호출
     public void TriggerRandomWarning(Vector3 spawnPosition, Quaternion spawnRotation)
     {
         // 0 ~ Count-1 사이 랜덤 인덱스
