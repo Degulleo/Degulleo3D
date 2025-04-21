@@ -19,7 +19,10 @@ public class InteractionController : MonoBehaviour
         if (interactionLayerMask == (interactionLayerMask | (1 << other.gameObject.layer)))
         {
             ActionType interactionType = other.gameObject.GetComponent<InteractionProp>().RoutineEnter();
-            PopActionOnScreen(interactionType);
+            if( interactionType != null )
+            {
+                PopActionOnScreen(interactionType);
+            }
         }
     }
 
@@ -90,6 +93,8 @@ public class InteractionController : MonoBehaviour
                         housingCanvasController.SetDescriptionText();
                     }
                 });
+                break;
+            default:
                 break;
         }
     }
