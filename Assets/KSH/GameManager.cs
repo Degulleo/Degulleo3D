@@ -32,6 +32,9 @@ public partial class GameManager : Singleton<GameManager>
             return;
         }
         playerStats.OnDayEnded += AdvanceDay;
+        
+        // 오디오 초기화
+        InitializeAudio();
     }
     
     // 날짜 진행

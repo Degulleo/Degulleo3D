@@ -49,7 +49,7 @@ public class SoundManager : Singleton<SoundManager>
     
     #region 오디오 클립 관리
     
-    // 오디오 클립을 로드하고 식별 이름을 지정
+    // 오디오 클립을 audioClips에 저장 (식별을 위한 이름 포함)
     public void LoadAudioClip(string name, AudioClip clip)
     {
         if (clip == null) return;

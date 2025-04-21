@@ -7,16 +7,13 @@ public partial class GameManager : Singleton<GameManager>
 {
     // 오디오 클립 참조
     [Header("오디오 설정")]
-    [SerializeField] private AudioClip mainMenuBGM;
     [SerializeField] private AudioClip housingBGM;
     [SerializeField] private AudioClip dungeonBGM;
-    [SerializeField] private AudioClip bossBattleBGM;
     [SerializeField] private AudioClip gameOverBGM;
     [SerializeField] private AudioClip victoryBGM;
     
     [SerializeField] private AudioClip buttonClickSFX;
     [SerializeField] private AudioClip menuOpenSFX;
-    [SerializeField] private AudioClip dayChangeSFX;
     
     // 씬에 따른 배경음 맵핑
     private Dictionary<string, AudioClip> sceneBGMMap = new Dictionary<string, AudioClip>();
@@ -29,25 +26,21 @@ public partial class GameManager : Singleton<GameManager>
     {
         // 씬-BGM 맵핑 초기화
         sceneBGMMap.Clear();
-        sceneBGMMap.Add("MainMenu", mainMenuBGM);
-        sceneBGMMap.Add("Housing", housingBGM);
+        sceneBGMMap.Add("Housing", housingBGM); // 씬 이름, 해당 씬 BGM
         sceneBGMMap.Add("Game", dungeonBGM);
         
         // 오디오 클립 등록
         if (SoundManager.Instance != null)
         {
             // BGM 등록
-            if (mainMenuBGM != null) SoundManager.Instance.LoadAudioClip("MainMenuBGM", mainMenuBGM);
             if (housingBGM != null) SoundManager.Instance.LoadAudioClip("HousingBGM", housingBGM);
             if (dungeonBGM != null) SoundManager.Instance.LoadAudioClip("DungeonBGM", dungeonBGM);
-            if (bossBattleBGM != null) SoundManager.Instance.LoadAudioClip("BossBGM", bossBattleBGM);
             if (gameOverBGM != null) SoundManager.Instance.LoadAudioClip("GameOverBGM", gameOverBGM);
             if (victoryBGM != null) SoundManager.Instance.LoadAudioClip("VictoryBGM", victoryBGM);
             
             // SFX 등록
             if (buttonClickSFX != null) SoundManager.Instance.LoadAudioClip("ButtonClick", buttonClickSFX);
             if (menuOpenSFX != null) SoundManager.Instance.LoadAudioClip("MenuOpen", menuOpenSFX);
-            if (dayChangeSFX != null) SoundManager.Instance.LoadAudioClip("DayChange", dayChangeSFX);
             
             // 현재 씬에 맞는 배경음 재생
             string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
@@ -78,18 +71,6 @@ public partial class GameManager : Singleton<GameManager>
         }
     }
     
-    // 보스 전투 시작 시 호출
-    public void StartBossBattle()
-    {
-        if (SoundManager.Instance == null) return;
-        
-        if (bossBattleBGM != null)
-        {
-            SoundManager.Instance.PlayBGMByAudioClip(bossBattleBGM, true, 1.0f);
-            currentBGMTrack = "Boss";
-        }
-    }
-    
     // 게임 오버 시 호출
     public void PlayGameOverMusic()
     {
@@ -112,14 +93,6 @@ public partial class GameManager : Singleton<GameManager>
             SoundManager.Instance.PlayBGMByAudioClip(victoryBGM, true, 1.0f);
             currentBGMTrack = "Victory";
         }
-    }
-    
-    // 날짜 변경 효과음 재생
-    public void PlayDayChangeSound()
-    {
-        if (SoundManager.Instance == null) return;
-        
-        SoundManager.Instance.PlaySFXByName("DayChange");
     }
     
     // 버튼 클릭 효과음 재생
