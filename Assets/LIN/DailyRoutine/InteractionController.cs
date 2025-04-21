@@ -5,22 +5,24 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 [RequireComponent(typeof(Rigidbody))]
-public class DailyRoutineController : MonoBehaviour
+public class InteractionController : MonoBehaviour
 {
     [SerializeField] PlayerStats playerStats;
     [SerializeField] LayerMask interactionLayerMask;
     [Header("UI 연동")]
     [SerializeField] HousingCanvasManager housingCanvasManager;
     
+    // 상호작용 가능한 사물 범위에 들어올 때
     private void OnCollisionEnter(Collision other)
     {
         if (interactionLayerMask == (interactionLayerMask | (1 << other.gameObject.layer)))
         {
-            ActionType interactionType = other.gameObject.GetComponent<DailyRoutine>().RoutineEnter();
+            ActionType interactionType = other.gameObject.GetComponent<InteractionProp>().RoutineEnter();
             PopActionOnScreen(interactionType);
         }
     }
 
+    // 사물에서 벗어날 때 UI 정리
     private void OnCollisionExit(Collision other)
     {
         if (interactionLayerMask == (interactionLayerMask | (1 << other.gameObject.layer)))
@@ -28,6 +30,8 @@ public class DailyRoutineController : MonoBehaviour
             housingCanvasManager.HideInteractionButton();
         }
     }
+    
+    // ActionType 별로 화면에 상호작용 내용 표시, 상호작용 버튼에 이벤트 작성
     private void PopActionOnScreen(ActionType interactionType)
     {
         switch (interactionType)
@@ -38,6 +42,8 @@ public class DailyRoutineController : MonoBehaviour
                     if (playerStats.CanPerformByHealth(ActionType.Sleep))
                     {
                         playerStats.PerformAction(ActionType.Sleep);
+                        housingCanvasManager.HideInteractionButton();
+                        //TODO: 화면 전환 효과와 UI 업데이트 작업
                     }
                     else
                     {
@@ -52,11 +58,12 @@ public class DailyRoutineController : MonoBehaviour
                     if (playerStats.CanPerformByHealth(ActionType.Housework))
                     {
                         playerStats.PerformAction(ActionType.Housework);
+                        housingCanvasManager.HideInteractionButton();
                         //TODO: 집안일 후 랜덤 강화 효과 적용
                     }
                     else
                     {
-                        housingCanvasManager.SetActionText("집안일 할 체력이 남아있지 않다..");
+                        housingCanvasManager.SetActionText("힘들어서 못해..");
                         housingCanvasManager.SetDescriptionText();
                     }
                 });
@@ -67,6 +74,7 @@ public class DailyRoutineController : MonoBehaviour
                     if (playerStats.CanPerformByHealth(ActionType.Dungeon))
                     {
                         playerStats.PerformAction(ActionType.Dungeon);
+                        housingCanvasManager.HideInteractionButton();
                     }
                     else
                     {
@@ -81,7 +89,7 @@ public class DailyRoutineController : MonoBehaviour
                     if (playerStats.CanPerformByHealth(ActionType.Work))
                     {
                         playerStats.PerformAction(ActionType.Work);
-                        Debug.Log("출근");
+                        housingCanvasManager.HideInteractionButton();
                     }
                     else
                     {

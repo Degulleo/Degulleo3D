@@ -15,8 +15,7 @@ public class HousingCanvasManager : MonoBehaviour
     
     void Awake()
     {
-        SetActionText();
-        SetDescriptionText();
+        InitTexts();
         interactionButton.SetActive(false);
     }
     
@@ -31,6 +30,13 @@ public class HousingCanvasManager : MonoBehaviour
         descriptionText.text = text;
     }
 
+    private void InitTexts()
+    {
+        SetActionText();
+        SetDescriptionText();
+    }
+
+    // 상호작용 가능한 사물에 가까이 갔을 때 화면에 텍스트, 버튼 표시
     public void ShowInteractionButton(string actText, string descText,Action onInteractionButtonPressed)
     {
         SetActionText(actText);
