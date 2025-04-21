@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using CI.QuickSave;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class SaveManager : MonoBehaviour
+public class SaveManager : Singleton<SaveManager>
 {
     private const string SaveFolder = "QuickSave";
     private const string SaveFileName = "Save_Main.json";
@@ -12,6 +13,7 @@ public class SaveManager : MonoBehaviour
     
     private Save mainSave;
     private Save backupSave;
+    
 
     void Start()
     {
@@ -33,7 +35,7 @@ public class SaveManager : MonoBehaviour
 
     public void Save()
     {
-        if(JsonUtility.ToJson(mainSave) == JsonUtility.ToJson(GMTest.instance.ToSaveData()))    //같은 상태를 저장하면 저장되지 않음. 백업 덮어쓰기 방지
+        if(JsonUtility.ToJson(mainSave) == JsonUtility.ToJson(StatManager.instance.ToSaveData()))    //같은 상태는 저장되지 않음. 백업 덮어쓰기 방지.
             return;
         
         backupSave = LoadMain();         //메인 세이브를 백업 세이브에 로드
@@ -55,7 +57,7 @@ public class SaveManager : MonoBehaviour
 
     private void UpdateSaveInfo()
     {
-       mainSave = GMTest.instance.ToSaveData();     //스탯을 관리하는 클래스에 선언된 스탯 업데이트 함수를 호출
+       mainSave = StatManager.instance.ToSaveData();     //스탯을 관리하는 클래스에 선언된 스탯 업데이트 함수를 호출
     }
     
     private void SaveMain()
@@ -83,5 +85,10 @@ public class SaveManager : MonoBehaviour
         return QuickSaveReader.Create("Save_Backup")
             .Read<Save>("Backup");
     }
-    
+
+    protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        Save();
+        Debug.Log("자동저장");
+    }
 }

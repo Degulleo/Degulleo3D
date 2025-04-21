@@ -2,11 +2,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
-public class GMTest : MonoBehaviour
+/// <summary>
+/// 테스트용 임시 클래스
+/// </summary>
+public class StatManager : MonoBehaviour
 {
-    public static GMTest instance;
+    public static StatManager instance;
     
     public int attackLevel;
     public int attackSpeedLevel;
@@ -24,7 +28,10 @@ public class GMTest : MonoBehaviour
     {
         instance = this;
     }
-
+    
+    /// <summary>
+    /// 스탯값 변화
+    /// </summary>
     public void ChangeValue()
     {
         float floatValue = Random.Range(0f, 2f);
@@ -49,6 +56,10 @@ public class GMTest : MonoBehaviour
 
     }
     
+    /// <summary>
+    /// 스탯값 반환
+    /// </summary>
+    /// <returns></returns>
     public Save ToSaveData()
     {
         return new Save
@@ -70,5 +81,10 @@ public class GMTest : MonoBehaviour
                 isEvent = false
             }
         };
+    }
+
+    public void SceneChange()
+    {
+        SceneManager.LoadScene("Main");
     }
 }
