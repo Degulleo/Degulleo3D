@@ -12,7 +12,7 @@ public abstract class CharacterBase : MonoBehaviour
     public float defensePower = 5f;     // 방어력
     public float moveSpeed = 5f;        // 이동 속도
 
-    protected readonly float gravity = -9.81f;   // 중력
+    public readonly float gravity = -9.81f;   // 중력
 
     [Header("상태 이상")]
     public List<StatusEffect> statusEffects = new List<StatusEffect>();
