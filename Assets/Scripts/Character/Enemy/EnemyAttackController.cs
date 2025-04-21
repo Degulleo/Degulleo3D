@@ -15,7 +15,6 @@ public class EnemyAttackController : MonoBehaviour
 
     private void Awake()
     {
-        // Awake 시점에 리스트로 묶어두면 이후 유지보수 편리
         warningAreas = new List<GameObject>()
         {
             verticalWarningArea,
