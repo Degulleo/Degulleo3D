@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class GameManager : Singleton<GameManager>
+public partial class GameManager : Singleton<GameManager>
 {
     [SerializeField] private PlayerStats playerStats;
     
