@@ -23,8 +23,9 @@ public class StatManager : MonoBehaviour
     public float health;
     public float reputation;
     public bool isEvent; //Todo 이벤트 여부 및 관련 조건들 추가
+    
 
-    private void Start()
+    private void Awake()
     {
         instance = this;
     }
@@ -81,6 +82,21 @@ public class StatManager : MonoBehaviour
                 isEvent = false
             }
         };
+    }
+
+    public void loadSaveData2StataManager(Save saveData)
+    {
+        attackLevel = saveData.dungeonSave.attackLevel;
+        attackSpeedLevel = saveData.dungeonSave.attackSpeedLevel;
+        heartLevel = saveData.dungeonSave.heartLevel;
+        moveSpeedLevel = saveData.dungeonSave.moveSpeedLevel;
+        evasionTimeLevel = saveData.dungeonSave.evasionTimeLevel;
+        stageLevel = saveData.dungeonSave.stageLevel;
+        
+        time = saveData.homeSave.time;
+        health = saveData.homeSave.health;
+        reputation = saveData.homeSave.reputation;
+        isEvent = saveData.homeSave.isEvent;
     }
 
     public void SceneChange()

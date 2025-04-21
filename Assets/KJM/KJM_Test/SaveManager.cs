@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using CI.QuickSave;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -17,8 +18,6 @@ public class SaveManager : Singleton<SaveManager>
 
     void Start()
     {
-        mainSave = new Save();
-        backupSave = new Save();
         
         if (!QuickSaveRaw.Exists(SaveFilePath))     // Save_Main 파일이 없을때
         {
@@ -50,6 +49,8 @@ public class SaveManager : Singleton<SaveManager>
     {
         mainSave = LoadMain();
         backupSave = LoadBackup();
+        
+        StatManager.instance.loadSaveData2StataManager(mainSave);
         
         Debug.Log("메인 로드" + mainSave.homeSave.reputation);
         Debug.Log("백업 로드" + backupSave.homeSave.reputation);
@@ -88,7 +89,14 @@ public class SaveManager : Singleton<SaveManager>
 
     protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        StartCoroutine(SaveAfterOneFrame());        //Awake와 충돌 방지를 위해 1프레임 대기 후 자동 저장
+    }
+
+    private IEnumerator SaveAfterOneFrame()
+    {
+        yield return null; // 1 프레임 대기
         Save();
         Debug.Log("자동저장");
     }
+
 }
