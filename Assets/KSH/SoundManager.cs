@@ -22,15 +22,23 @@ public class SoundManager : Singleton<SoundManager>
     
     // 페이드 효과 진행 여부
     private bool isFading = false;
-    
-    private void Start()
+
+    private void Awake()
     {
-        // 배경음 오디오 소스 생성
-        bgmSource = gameObject.AddComponent<AudioSource>();
-        bgmSource.loop = true;
-        bgmSource.volume = bgmVolume;
+        InitializeAudioSources();
+    }
+    
+    private void InitializeAudioSources()
+    {
+        // 배경음 오디오 소스가 없으면 생성
+        if (bgmSource == null)
+        {
+            bgmSource = gameObject.AddComponent<AudioSource>();
+            bgmSource.loop = true;
+            bgmSource.volume = bgmVolume;
+        }
         
-        // 효과음 오디오 소스 생성
+        // 효과음 오디오 소스가 부족하면 추가 생성
         for (int i = 0; i < maxSfxSources; i++)
         {
             AudioSource sfxSource = gameObject.AddComponent<AudioSource>();
@@ -44,7 +52,7 @@ public class SoundManager : Singleton<SoundManager>
     protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         // 씬 전환 시 음악 전체 정지 (효과음, 배경음 모두)
-        StopAllSounds();
+        // StopAllSounds();
     }
     
     #region 오디오 클립 관리
@@ -52,7 +60,7 @@ public class SoundManager : Singleton<SoundManager>
     // 오디오 클립을 audioClips에 저장 (식별을 위한 이름 포함)
     public void LoadAudioClip(string name, AudioClip clip)
     {
-        if (clip == null) return;
+        if (string.IsNullOrEmpty(name) || clip == null) return;
         
         if (!audioClips.ContainsKey(name))
         {
@@ -69,17 +77,19 @@ public class SoundManager : Singleton<SoundManager>
     #region 배경음 (BGM) 메서드
     
     // 이름으로 배경음을 재생
-    public void PlayBGMByName(string clipName, bool fade = false, float fadeTime = 1f)
+    public void PlayBGM(string clipName, bool fade = false, float fadeTime = 1f)
     {
-        if (!audioClips.ContainsKey(clipName)) return;
+        if (string.IsNullOrEmpty(clipName) || !audioClips.ContainsKey(clipName)) return;
         
-        PlayBGMByAudioClip(audioClips[clipName], fade, fadeTime);
+        PlayBGM(audioClips[clipName], fade, fadeTime);
     }
     
     // 오디오 클립으로 배경음을 재생
-    public void PlayBGMByAudioClip(AudioClip clip, bool fade = false, float fadeTime = 1f)
+    public void PlayBGM(AudioClip clip, bool fade = false, float fadeTime = 1f)
     {
         if (clip == null) return;
+        
+        if (bgmSource == null) InitializeAudioSources(); // 초기화 안됐을 경우 다시 초기화
         
         // 같은 클립이 이미 재생 중이면 중복 재생하지 않음
         if (bgmSource.clip == clip && bgmSource.isPlaying)
@@ -102,7 +112,7 @@ public class SoundManager : Singleton<SoundManager>
     // 배경음을 정지
     public void StopBGM(bool fade = false, float fadeTime = 1f)
     {
-        if (!bgmSource.isPlaying) return;
+        if (bgmSource == null || !bgmSource.isPlaying) return;
         
         if (fade && !isFading)
         {
@@ -118,6 +128,8 @@ public class SoundManager : Singleton<SoundManager>
     public void SetBGMVolume(float volume)
     {
         bgmVolume = Mathf.Clamp01(volume);
+        if (bgmSource == null) InitializeAudioSources();
+        
         bgmSource.volume = bgmVolume;
     }
     
@@ -126,18 +138,20 @@ public class SoundManager : Singleton<SoundManager>
     #region 효과음 (SFX) 메서드
 
     // 이름으로 효과음을 재생
-    public AudioSource PlaySFXByName(string clipName)
+    public AudioSource PlaySFX(string clipName)
     {
-        if (!audioClips.ContainsKey(clipName)) return null;
+        if (string.IsNullOrEmpty(clipName) || !audioClips.ContainsKey(clipName)) return null;
         
-        return PlaySFXByAudioClip(audioClips[clipName]);
+        return PlaySFX(audioClips[clipName]);
     }
     
     // 오디오 클립으로 효과음을 재생
-    public AudioSource PlaySFXByAudioClip(AudioClip clip)
+    public AudioSource PlaySFX(AudioClip clip)
     {
         if (clip == null) return null;
         
+        if (sfxSources == null || sfxSources.Count == 0) InitializeAudioSources(); // 초기화
+    
         // 사용 가능한 효과음 소스 찾기
         AudioSource sfxSource = null;
         foreach (var source in sfxSources)
@@ -150,7 +164,7 @@ public class SoundManager : Singleton<SoundManager>
         }
         
         // 모든 소스가 사용 중이면 첫 번째 소스 재사용
-        if (sfxSource == null)
+        if (sfxSource == null && sfxSources.Count > 0)
         {
             sfxSource = sfxSources[0];
         }
