@@ -17,7 +17,6 @@ public partial class GameManager : Singleton<GameManager>
     [Header("몬스터 효과음")]
     [SerializeField] private AudioClip monsterAttackSFX;
     [SerializeField] private AudioClip monsterDeathSFX;
-    [SerializeField] private AudioClip monsterSpawnSFX;
     
     // 씬에 따른 배경음 맵핑
     private Dictionary<string, AudioClip> sceneBGMMap = new Dictionary<string, AudioClip>();
@@ -48,7 +47,6 @@ public partial class GameManager : Singleton<GameManager>
             // 몬스터 SFX 등록
             if (monsterAttackSFX != null) SoundManager.Instance.LoadAudioClip("MonsterAttack", monsterAttackSFX);
             if (monsterDeathSFX != null) SoundManager.Instance.LoadAudioClip("MonsterDeath", monsterDeathSFX);
-            if (monsterSpawnSFX != null) SoundManager.Instance.LoadAudioClip("MonsterSpawn", monsterSpawnSFX);
             
             // 저장된 볼륨 설정 로드
             // LoadVolumeSettings();
@@ -167,13 +165,6 @@ public partial class GameManager : Singleton<GameManager>
     #endregion
     
     #region 몬스터 오디오
-    
-    public void PlayMonsterSpawnSound()
-    {
-        if (SoundManager.Instance == null) return;
-    
-        SoundManager.Instance.PlaySFX("MonsterSpawn");
-    }
     
     public void PlayMonsterAttackSound()
     {
