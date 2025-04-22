@@ -16,6 +16,8 @@ public abstract class CharacterBase : MonoBehaviour
 
     [Header("상태 이상")]
     public List<StatusEffect> statusEffects = new List<StatusEffect>();
+    
+    public event System.Action<CharacterBase> OnDeath; // 사망 이벤트
 
     protected virtual void Start()
     {
@@ -38,6 +40,7 @@ public abstract class CharacterBase : MonoBehaviour
     {
         Debug.Log($"{characterName}이 사망했습니다.");
         // TODO: 사망 처리
+        OnDeath?.Invoke(this);
     }
 
     // 상태이상 추가 메서드
