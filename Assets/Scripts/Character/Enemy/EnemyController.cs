@@ -2,11 +2,10 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-public enum EnemyState { None, Idle, Trace, Attack, GetHit, Move, Dead }
+public enum EnemyState { None, Idle, Trace, Attack, Dead }
 
 [RequireComponent(typeof(NavMeshAgent))]
 [RequireComponent(typeof(Animator))]
-[RequireComponent(typeof(EnemyAttackController))]
 public abstract class EnemyController : CharacterBase
 {
     [Header("AI")]
@@ -15,36 +14,39 @@ public abstract class EnemyController : CharacterBase
 
     public NavMeshAgent Agent { get; private set; }
     public Animator EnemyAnimator { get; private set; }
-
     public EnemyState CurrentState {get; private set;}
+    public LayerMask TargetLayerMask => targetLayerMask;
+    public bool AttackTrigger { get; protected set; }
 
-    public EnemyAttackController EnemyAttackController { get; private set; }
+    public bool IsInBattle { get => _isInBattle; protected set=> _isInBattle = value; }
+    private bool _isInBattle = false;
 
+
+    public bool IsBoss { get => _isBoss; protected set => _isBoss = value; }
+    private bool _isBoss = false;
     public float WalkSpeed => walkSpeed;
     public float RunSpeed => runSpeed;
 
     public Transform TraceTargetTransform { get; private set; }
 
+    [Header("이동 능력")]
     [SerializeField] private float walkSpeed = 5;
     [SerializeField] private float runSpeed = 8;
-
 
     // -----
     // 상태 변수
     private EnemyStateIdle _enemyStateIdle;
     private EnemyStateTrace _enemyStateTrace;
     private EnemyStateAttack _enemyStateAttack;
-    private EnemyStateGetHit _enemyStateGetHit;
     private EnemyStateDead _enemyStateDead;
-    private EnemyStateMove _enemyStateMove;
+
 
     private Dictionary<EnemyState, IEnemyState> _enemyStates;
 
-    private void Awake()
+    protected virtual void Awake()
     {
         EnemyAnimator = GetComponent<Animator>();
         Agent = GetComponent<NavMeshAgent>();
-        EnemyAttackController = GetComponent<EnemyAttackController>();
     }
 
     protected override void Start()
@@ -55,24 +57,20 @@ public abstract class EnemyController : CharacterBase
         _enemyStateIdle = new EnemyStateIdle();
         _enemyStateTrace = new EnemyStateTrace();
         _enemyStateAttack = new EnemyStateAttack();
-        _enemyStateGetHit = new EnemyStateGetHit();
         _enemyStateDead = new EnemyStateDead();
-        _enemyStateMove = new EnemyStateMove();
 
         _enemyStates = new Dictionary<EnemyState, IEnemyState>
         {
             { EnemyState.Idle, _enemyStateIdle },
             { EnemyState.Trace, _enemyStateTrace },
             { EnemyState.Attack, _enemyStateAttack },
-            { EnemyState.GetHit, _enemyStateGetHit },
             { EnemyState.Dead, _enemyStateDead },
-            { EnemyState.Move, _enemyStateMove}
         };
 
         SetState(EnemyState.Idle);
     }
 
-    private void Update()
+    protected void Update()
     {
         if (CurrentState != EnemyState.None)
         {
@@ -88,6 +86,24 @@ public abstract class EnemyController : CharacterBase
         }
         CurrentState = newState;
         _enemyStates[CurrentState].Enter(this);
+    }
+
+    public void SetInBattle(bool battle)
+    {
+        _isInBattle = battle;
+    }
+
+
+    public override void Die()
+    {
+        base.Die();
+        // TODO : 사망 후 동작
+
+    }
+
+    public void SetAttackTrigger(bool value)
+    {
+        AttackTrigger = value;
     }
 
     #region 적 탐지

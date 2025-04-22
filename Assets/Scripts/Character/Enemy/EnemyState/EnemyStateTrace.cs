@@ -29,6 +29,7 @@ public class EnemyStateTrace : IEnemyState
         }
 
         _enemyController.EnemyAnimator.SetBool(Trace, true);
+        _enemyController.SetInBattle(true);
     }
 
     public void Update()

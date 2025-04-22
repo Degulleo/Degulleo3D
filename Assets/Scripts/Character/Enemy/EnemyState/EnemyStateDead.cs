@@ -6,6 +6,7 @@
     {
         _enemyController = enemyController;
         _enemyController.EnemyAnimator.SetTrigger("Dead");
+        _enemyController.SetInBattle(false);
     }
 
     public void Update()

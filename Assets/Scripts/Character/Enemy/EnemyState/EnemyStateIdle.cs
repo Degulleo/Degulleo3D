@@ -2,13 +2,13 @@
 
 public class EnemyStateIdle: IEnemyState
 {
-    private static readonly int Idle = Animator.StringToHash("Idle");
     private EnemyController _enemyController;
 
     public void Enter(EnemyController enemyController)
     {
         _enemyController = enemyController;
-        _enemyController.EnemyAnimator.SetBool(Idle, true);
+        _enemyController.EnemyAnimator.SetBool("Idle", true);
+        _enemyController.SetInBattle(false);
     }
 
     public void Update()
@@ -22,7 +22,7 @@ public class EnemyStateIdle: IEnemyState
 
     public void Exit()
     {
-        _enemyController.EnemyAnimator.SetBool(Idle, false);
+        _enemyController.EnemyAnimator.SetBool("Idle", false);
         _enemyController = null;
     }
 }
