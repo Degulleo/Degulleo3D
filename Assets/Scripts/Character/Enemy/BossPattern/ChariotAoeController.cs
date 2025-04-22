@@ -17,15 +17,17 @@ public struct DamageEffectData
 
 public class ChariotAoeController : MonoBehaviour
 {
-    private DamageEffectData _data;
     [SerializeField] private GameObject warningEffectInstance;
 
-    private EnemyController _enemyController;
+    private DamageEffectData _data;
+    private Action _destroyAction;
+    private Action _slashAction;
 
-    public void SetEffect(DamageEffectData data, EnemyController enemyController)
+    public void SetEffect(DamageEffectData data, Action slashAction, Action destroyAction)
     {
         _data = data;
-        _enemyController = enemyController;
+        _slashAction = slashAction;
+        _destroyAction = destroyAction;
 
         ShowWarningEffect();
         Invoke(nameof(Explode), _data.delay);
@@ -45,8 +47,11 @@ public class ChariotAoeController : MonoBehaviour
         // 공격 전조 제거
         warningEffectInstance.SetActive(false);
 
+        // 공격 애니메이션 실행
+        _slashAction.Invoke();
+
         effect.transform.localScale = new Vector3(_data.radius, _data.radius, _data.radius);
-        _enemyController.SetAttackTrigger(true);
+
         // 폭발 반경 내의 모든 콜라이더 가져오기
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, _data.radius, _data.targetLayer);
         foreach (Collider hit in hitColliders)
@@ -69,8 +74,7 @@ public class ChariotAoeController : MonoBehaviour
 
     private void OnDestroy()
     {
-        _enemyController.SetAttackTrigger(false);
-        _enemyController = null;
+        _destroyAction.Invoke();
     }
 
     private void OnDrawGizmosSelected()

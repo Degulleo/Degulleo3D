@@ -12,26 +12,12 @@ public abstract class EnemyController : CharacterBase
     [SerializeField] private float detectCircleRadius = 10f;    // 플레이어 탐지 범위
     [SerializeField] private LayerMask targetLayerMask;         // 플레이어 레이어 마스크
 
+    public Transform TraceTargetTransform { get; private set; }
     public NavMeshAgent Agent { get; private set; }
     public Animator EnemyAnimator { get; private set; }
     public EnemyState CurrentState {get; private set;}
     public LayerMask TargetLayerMask => targetLayerMask;
-    public bool AttackTrigger { get; protected set; }
-
-    public bool IsInBattle { get => _isInBattle; protected set=> _isInBattle = value; }
-    private bool _isInBattle = false;
-
-
-    public bool IsBoss { get => _isBoss; protected set => _isBoss = value; }
-    private bool _isBoss = false;
-    public float WalkSpeed => walkSpeed;
-    public float RunSpeed => runSpeed;
-
-    public Transform TraceTargetTransform { get; private set; }
-
-    [Header("이동 능력")]
-    [SerializeField] private float walkSpeed = 5;
-    [SerializeField] private float runSpeed = 8;
+    public float MoveSpeed => moveSpeed;
 
     // -----
     // 상태 변수
@@ -39,7 +25,6 @@ public abstract class EnemyController : CharacterBase
     private EnemyStateTrace _enemyStateTrace;
     private EnemyStateAttack _enemyStateAttack;
     private EnemyStateDead _enemyStateDead;
-
 
     private Dictionary<EnemyState, IEnemyState> _enemyStates;
 
@@ -88,22 +73,12 @@ public abstract class EnemyController : CharacterBase
         _enemyStates[CurrentState].Enter(this);
     }
 
-    public void SetInBattle(bool battle)
-    {
-        _isInBattle = battle;
-    }
-
 
     public override void Die()
     {
         base.Die();
         // TODO : 사망 후 동작
 
-    }
-
-    public void SetAttackTrigger(bool value)
-    {
-        AttackTrigger = value;
     }
 
     #region 적 탐지

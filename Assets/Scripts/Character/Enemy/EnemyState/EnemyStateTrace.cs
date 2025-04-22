@@ -29,11 +29,12 @@ public class EnemyStateTrace : IEnemyState
         }
 
         _enemyController.EnemyAnimator.SetBool(Trace, true);
-        _enemyController.SetInBattle(true);
     }
 
     public void Update()
     {
+        if (_enemyController.Agent.enabled != true) return;
+
         // 일정 주기로 찾은 플레이어의 위치를 갱신해서 갱신된 위치로 이동
         FindTargetPosition();
 
@@ -44,7 +45,6 @@ public class EnemyStateTrace : IEnemyState
             // TODO: 타겟에 도착함 -> 공격 준비
             _enemyController.SetState(EnemyState.Attack);
         }
-
     }
 
     private void FindTargetPosition()
@@ -70,24 +70,12 @@ public class EnemyStateTrace : IEnemyState
     {
         float distance = (_detectPlayerTransform.position - _enemyController.transform.position).magnitude;
 
-        if (distance > 5f)
-        {
-            // 먼 거리: 뛰기
-            _enemyController.Agent.speed = _enemyController.RunSpeed;
-            _enemyController.Agent.acceleration = 20f;
-            _enemyController.Agent.angularSpeed = 270f;
-            // _enemyController.EnemyAnimator.SetFloat("MoveSpeed", 1f); // 애니메이션도 Run으로
-
-            // NavMeshAgent 회전에 맡기기
-            _enemyController.Agent.updateRotation = true;
-        }
-        else if (distance > 2f)
+        if (distance > 2f)
         {
             // 가까운 거리: 걷기
-            _enemyController.Agent.speed = _enemyController.WalkSpeed;
+            _enemyController.Agent.speed = _enemyController.MoveSpeed;
             _enemyController.Agent.acceleration = 8f;
             _enemyController.Agent.angularSpeed = 720f;
-            // _enemyController.EnemyAnimator.SetFloat("MoveSpeed", 0.4f); // Walk 애니메이션
 
             _enemyController.Agent.updateRotation = true;
         }
@@ -108,11 +96,6 @@ public class EnemyStateTrace : IEnemyState
                     Time.deltaTime * 10f // 회전 속도
                 );
             }
-
-            // _enemyController.Agent.angularSpeed = 1080f;
-            // _enemyController.Agent.acceleration = 999f;
-
-            // _enemyController.EnemyAnimator.SetFloat("MoveSpeed", 0f);
         }
 
         // 실제 속도 기반으로 애니메이션 제어
