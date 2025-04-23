@@ -25,12 +25,7 @@ public static class HousingConstants
             { ActionType.Housework, new InteractionTexts("밀린 집안일을 처리할까?","체력 1을 사용하고 좋은일이 일어날지도 모른다","힘들어서 못해..")},
             { ActionType.Dungeon, new InteractionTexts("던전에 입장할까?","체력 3을 사용하고 3시간이 흐른다.","던전에 갈 체력이 되지 않아..")},
             { ActionType.Work, new InteractionTexts("출근한다.","체력 3을 사용하고 저녁 6시에나 돌아오겠지..", "도저히 출근할 체력이 안되는걸..?")}
-            
-            
-            
         };
-    
-
     #endregion
 
     public struct InteractionTexts

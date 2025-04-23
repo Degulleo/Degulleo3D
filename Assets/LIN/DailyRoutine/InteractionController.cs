@@ -12,13 +12,8 @@ public class InteractionController : MonoBehaviour
     [FormerlySerializedAs("housingCanvasManager")]
     [Header("UI 연동")]
     [SerializeField] HousingCanvasController housingCanvasController;
-
-
-    #region 돌발 이벤트
-    private SuddenEventController _suddenEventController = new SuddenEventController();
-
-    #endregion
     
+    private SuddenEventController _suddenEventController = new SuddenEventController();
     
     // 상호작용 가능한 사물 범위에 들어올 때
     private void OnTriggerEnter(Collider other)
@@ -51,7 +46,7 @@ public class InteractionController : MonoBehaviour
             if (playerStats.CanPerformByHealth(interactionType))
             {
                 playerStats.PerformAction(interactionType);
-                // 출근에 해당하는 돌발 이벤트 호출
+                // 출퇴근에 해당하는 돌발 이벤트 호출
                 if (interactionType != ActionType.Work) return;
                 playerStats.OnWorked += SuddenAfterWorkEventHappen();
             }
@@ -83,7 +78,7 @@ public class InteractionController : MonoBehaviour
                 });
                 break;
             case AfterWorkEvent.TeamGathering:
-                housingCanvasController.ShowSuddenEventPanel("갑자기 팀 회식이 잡혔다. 참석 해야 겠지?", () =>
+                housingCanvasController.ShowSuddenEventPanel("갑자기 팀 회식이 잡혔다. 참석 하러 가자", () =>
                 {
                     housingCanvasController.HideSuddenEventPanel();
                 });
