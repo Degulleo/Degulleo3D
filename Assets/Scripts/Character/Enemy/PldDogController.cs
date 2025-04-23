@@ -115,14 +115,15 @@ public class PldDogController : EnemyController
         Debug.Log("BombThrowPattern: 보스가 폭탄을 던집니다.");
 
         int bombCount = 1; // 한 번에 몇 개 던질지
-        float radius = 2f;
+        float radius = 2f; // 무작위로 던질 경우 범위
 
         for (int i = 0; i < bombCount; i++)
         {
-            Vector3 randomPos = TraceTargetTransform.position + (Random.insideUnitSphere * radius);
-            randomPos.y = 0.1f; // 지면에 맞추기
+            // Vector3 randomPos = TraceTargetTransform.position + (Random.insideUnitSphere * radius);
+            Vector3 targetPos = TraceTargetTransform.position;
+            targetPos.y = 0.1f; // 지면에 맞추기
 
-            var boomObj = Instantiate(chariotSlashWarning, randomPos, Quaternion.identity);
+            var boomObj = Instantiate(chariotSlashWarning, targetPos, Quaternion.identity);
             boomObj.transform.localScale = new Vector3(5f, 5f, 5f);
             var boom = boomObj.GetComponent<ChariotAoeController>();
 
@@ -135,7 +136,7 @@ public class PldDogController : EnemyController
                 explosionEffectPrefab = chariotSlash
             };
 
-            boom.SetEffect(effectData,()=>{ }, PatternClear);
+            boom.SetEffect(effectData, ()=>{ }, PatternClear);
         }
     }
 
