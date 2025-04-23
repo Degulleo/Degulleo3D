@@ -124,7 +124,7 @@ public class PldDogController : EnemyController
             targetPos.y = 0.1f; // 지면에 맞추기
 
             var boomObj = Instantiate(chariotSlashWarning, targetPos, Quaternion.identity);
-            boomObj.transform.localScale = new Vector3(5f, 5f, 5f);
+            boomObj.transform.localScale = new Vector3(5f, 5f, 5f); // TODO : 하드 코딩됨 | 개선... 해야겠지??
             var boom = boomObj.GetComponent<ChariotAoeController>();
 
             DamageEffectData effectData = new DamageEffectData()

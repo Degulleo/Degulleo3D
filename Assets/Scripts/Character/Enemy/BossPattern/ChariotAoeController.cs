@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 
-[System.Serializable]
+[Serializable]
 public struct DamageEffectData
 {
     public int damage;
