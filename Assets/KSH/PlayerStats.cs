@@ -6,6 +6,20 @@ using Random = UnityEngine.Random;
 
 public class PlayerStats : MonoBehaviour
 {
+    public class StatsChangeData // 변경된 스탯 데이터
+    {
+        public float Time { get; }
+        public float Health { get; }
+        public float Reputation { get; }
+
+        public StatsChangeData(float time, float health, float reputation)
+        {
+            Time = time;
+            Health = health;
+            Reputation = reputation;
+        }
+    }
+    
     private GameConstants _gameConstants;
     private ValueByAction _valueByAction;
     
@@ -17,6 +31,8 @@ public class PlayerStats : MonoBehaviour
     public event Action Exhaustion; // 탈진
     public event Action Overslept; // 결근(늦잠)
     public event Action ZeroReputation; // 평판 0 이벤트
+    public event Action<StatsChangeData> OnStatsChanged; // 스탯 변경 이벤트
+    public event Action OnWorked; // 퇴근 이벤트 (출근 이후 집에 돌아올 시간에 발생)
     
     private float previousAddHealth = 0f;
     
@@ -36,14 +52,7 @@ public class PlayerStats : MonoBehaviour
     {
         ActionEffect effect = _valueByAction.GetActionEffect(actionType);
 
-        if (HealthStat >= effect.healthChange)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return (HealthStat >= (effect.healthChange * -1));
     }
     
     // 행동 처리 메서드
@@ -56,6 +65,15 @@ public class PlayerStats : MonoBehaviour
         ModifyTime(effect.timeChange, actionType);
         ModifyHealth(effect.healthChange);
         ModifyReputation(effect.reputationChange);
+        
+        // 스탯 변경 이벤트 (UI 업데이트용)
+        OnStatsChanged?.Invoke(new StatsChangeData(TimeStat, HealthStat, ReputationStat));
+
+        // 스탯 - 시간이 변경된 이후 퇴근 이벤트 발생
+        if (actionType == ActionType.Work)
+        {
+            OnWorked?.Invoke();
+        }
     }
 
     // 출근 가능 여부 확인 메서드
