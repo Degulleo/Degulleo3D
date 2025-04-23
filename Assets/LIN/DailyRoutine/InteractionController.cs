@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
-using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(Rigidbody))]
 public class InteractionController : MonoBehaviour
@@ -16,24 +15,7 @@ public class InteractionController : MonoBehaviour
 
 
     #region 돌발 이벤트
-    private bool SuddenEventCalculator()
-    {
-        //TODO: 돌발이벤트 Dictionary로 작성해서 숫자별 작동하기 혹은 스위치문
-        var rand = Random.Range(0,3);
-        return rand == 1;
-    }
-
-    public Action SuddenEventHappen()
-    {
-        if (SuddenEventCalculator())
-        {
-            housingCanvasController.ShowSuddenEventPanel("갑자기 팀 회식이 잡혔다. 참석 해야 겠지?", () => { });
-            Debug.Log("SuddenEventHappen");
-        }
-        Debug.Log("퇴근 이벤트 호출됨");
-        return null;
-    }
-    
+    private SuddenEventController _suddenEventController = new SuddenEventController();
 
     #endregion
     
@@ -110,7 +92,13 @@ public class InteractionController : MonoBehaviour
                     {
                         playerStats.PerformAction(ActionType.Work);
                         housingCanvasController.HideInteractionButton();
-                        playerStats.OnWorked += SuddenEventHappen();
+                        // playerStats.OnWorked += SuddenEventHappen();
+                        
+                        //돌발 이벤트 랜덤 발생
+                        AfterWorkEvent afterWorkEvent = _suddenEventController.SuddenEventCalculator();
+                        if (afterWorkEvent == AfterWorkEvent.None)
+                            return;
+                        
                     }
                     else
                     {
