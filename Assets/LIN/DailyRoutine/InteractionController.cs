@@ -98,7 +98,22 @@ public class InteractionController : MonoBehaviour
                         AfterWorkEvent afterWorkEvent = _suddenEventController.SuddenEventCalculator();
                         if (afterWorkEvent == AfterWorkEvent.None)
                             return;
-                        
+                        switch (afterWorkEvent)
+                        {
+                            case AfterWorkEvent.OvertimeWork:
+                                housingCanvasController.ShowSuddenEventPanel("부장님이 퇴근을 안하셔.. 야근할까?", () =>
+                                {
+                                    //Todo: 컷씬과 스테이터스 변경
+                                    housingCanvasController.HideSuddenEventPanel();
+                                });
+                                break;
+                            case AfterWorkEvent.TeamGathering:
+                                housingCanvasController.ShowSuddenEventPanel("갑자기 팀 회식이 잡혔다. 참석 해야 겠지?", () =>
+                                {
+                                    housingCanvasController.HideSuddenEventPanel();
+                                });
+                                break;
+                        }
                     }
                     else
                     {

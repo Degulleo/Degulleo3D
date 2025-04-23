@@ -11,4 +11,11 @@ public static class HousingConstants
     //돌발 이벤트 확률 계산
     public static int SUDDEN_EVENT_DENOMINATOR = 5;
     public static int AFTER_WORK_DENOMINATOR = 4;
+
+
+    #region MyRegion
+
+    
+
+    #endregion
 }
