@@ -16,7 +16,7 @@ public class PlayerStateMove : IPlayerState
     {
         float inputHorizontal = _playerController.joystick.Horizontal;
         float inputVertical = _playerController.joystick.Vertical;
-        
+
         // 이동
         if (inputHorizontal != 0 || inputVertical != 0)
         {

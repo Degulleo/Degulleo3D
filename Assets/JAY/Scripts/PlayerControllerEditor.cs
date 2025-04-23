@@ -21,8 +21,7 @@ public class PlayerControllerEditor : Editor
 
 
         EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-        EditorGUILayout.LabelField("현재 상태", playerController.CurrentState.ToString(),
-            EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("현재 상태", playerController.CurrentState.ToString(), EditorStyles.boldLabel);
         EditorGUILayout.EndVertical();
 
         
@@ -39,8 +38,6 @@ public class PlayerControllerEditor : Editor
 
         if (GUILayout.Button("BattleMode"))
             playerController.SwitchBattleMode();
-        // if (GUILayout.Button("Attack"))
-        //     playerController.SetState(PlayerState.Attack);
         // if (GUILayout.Button("Hit"))
         //     playerController.SetState(PlayerState.Hit);
         // if (GUILayout.Button("Dead"))
