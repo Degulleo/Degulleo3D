@@ -23,7 +23,6 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
     // 상태 관련
     private PlayerStateIdle _playerStateIdle;
     private PlayerStateMove _playerStateMove;
-    // public PlayerStateAttack _playerStateAttack;
     
     // 행동 관련
     private PlayerActionAttack attackAction;
@@ -52,13 +51,11 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         // 상태 초기화
         _playerStateIdle = new PlayerStateIdle();
         _playerStateMove = new PlayerStateMove();
-        // _playerStateAttack = new PlayerStateAttack();
         
         _playerStates = new Dictionary<PlayerState, IPlayerState>
         {
             { PlayerState.Idle, _playerStateIdle },
             { PlayerState.Move, _playerStateMove },
-            // { PlayerState.Attack, _playerStateAttack },
         };
         
         attackAction = new PlayerActionAttack();
