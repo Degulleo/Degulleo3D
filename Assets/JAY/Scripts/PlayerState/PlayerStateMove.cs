@@ -21,7 +21,6 @@ public class PlayerStateMove : IPlayerState
         if (inputHorizontal != 0 || inputVertical != 0)
         {
             HandleMovement();
-            return;
         }
         else
         {
@@ -60,7 +59,5 @@ public class PlayerStateMove : IPlayerState
 
         Vector3 finalMove = (move + _gravityVelocity) * Time.deltaTime;
         _playerController.CharacterController.Move(finalMove);
-        
-        // _playerController.PlayerAnimator.SetFloat("Move", _playerController.CharacterController.velocity.magnitude);
     }
 }
