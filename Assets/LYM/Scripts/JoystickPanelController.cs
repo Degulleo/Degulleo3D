@@ -17,13 +17,15 @@ public class JoystickPanelController : MonoBehaviour
         dungeonUI.SetActive(false);
         housingUI.SetActive(false);
         //현재 씬 이름 확인해 UI 별 활성화 판단
-        if (SceneManager.GetActiveScene().name == "HousingUI")
+        string sceneName = SceneManager.GetActiveScene().name;
+        switch (sceneName)
         {
-            housingUI.SetActive(true);
-        }
-        else if (SceneManager.GetActiveScene().name == "DungeonUI")
-        {
-            dungeonUI.SetActive(true);
+            case "HousingUI":
+                housingUI.SetActive(true);
+                break;
+            case "DungeonUI":
+                dungeonUI.SetActive(true);
+                break;
         }
     }
 
