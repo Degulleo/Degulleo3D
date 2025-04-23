@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class GameManager : Singleton<GameManager>
+public partial class GameManager : Singleton<GameManager>
 {
     [SerializeField] private PlayerStats playerStats;
     
@@ -20,6 +20,9 @@ public class GameManager : Singleton<GameManager>
     
     private void Start()
     {
+        // 오디오 초기화
+        InitializeAudio();
+        
         // PlayerStats의 하루 종료 이벤트 구독
         if (playerStats == null)
         {
