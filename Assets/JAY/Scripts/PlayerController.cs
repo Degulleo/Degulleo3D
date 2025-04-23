@@ -131,6 +131,8 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
     
     // Animation Event에서 호출될 메서드
     public void SetAttackComboTrue() {
+        if (_weaponController.IsAttacking) return;  // 이미 공격 중이면 실행 안함
+
         if (currentAction == attackAction) {
             attackAction.EnableCombo();
             _weaponController.AttackStart();

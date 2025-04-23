@@ -29,13 +29,14 @@ public class WeaponController : MonoBehaviour, IObservable<GameObject>
         }
     }
     private PlayerController _playerController;
+    private bool _isAttacking = false;
+    public bool IsAttacking => _isAttacking;
 
     // 충돌 처리
     private Vector3[] _previousPositions;
     private HashSet<Collider> _hitColliders;
     private Ray _ray = new Ray();
     private RaycastHit[] _hits = new RaycastHit[10];
-    private bool _isAttacking = false;
 
     private void Start()
     {
@@ -82,7 +83,9 @@ public class WeaponController : MonoBehaviour, IObservable<GameObject>
                 var direction = worldPosition - _previousPositions[i];
                 _ray.origin = _previousPositions[i];
                 _ray.direction = direction;
-                
+
+                if (direction.magnitude < 0.01f) return;
+                    
                 var hitCount = Physics.SphereCastNonAlloc(_ray, 
                     _triggerZones[i].radius, _hits, 
                     direction.magnitude, targetLayerMask,
