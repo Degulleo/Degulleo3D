@@ -83,5 +83,6 @@ public class HousingCanvasController : MonoBehaviour
     public void OnClickInteractionButton()
     {
         OnInteractionButtonPressed?.Invoke();
+        HideInteractionButton();
     }
 }
