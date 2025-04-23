@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -9,8 +10,9 @@ using UnityEngine.SceneManagement;
 public class SaveManager : Singleton<SaveManager>
 {
     private const string SaveFolder = "QuickSave";
-    private const string SaveFileName = "Save_Main.json";
-    private string SaveFilePath => Path.Combine(Application.persistentDataPath, SaveFolder, SaveFileName);
+    private string MainSaveFilePath => GetSavePath("Save_Main");
+    private string BackupSaveFilePath => GetSavePath("Save_Backup");
+
     
     private Save mainSave;
     private Save backupSave;
@@ -18,17 +20,6 @@ public class SaveManager : Singleton<SaveManager>
 
     void Start()
     {
-        
-        if (!QuickSaveRaw.Exists(SaveFilePath))     // Save_Main 파일이 없을때
-        {
-            UpdateSaveInfo();
-            SaveMain();                     //Save_Main 파일 생성
-            backupSave = LoadMain();
-            SaveBackup();                   //Save_Backup 파일 생성
-            
-            Debug.Log("세이브가 존재하지 않아 새로운 세이브 생성.");
-        }
-        
         Load();                             //저장된 메인,백업 세이브를 로드
     }
 
@@ -37,23 +28,27 @@ public class SaveManager : Singleton<SaveManager>
         if(JsonUtility.ToJson(mainSave) == JsonUtility.ToJson(StatManager.instance.ToSaveData()))    //같은 상태는 저장되지 않음. 백업 덮어쓰기 방지.
             return;
         
+        EnsureSaveExists();
+        
         backupSave = LoadMain();         //메인 세이브를 백업 세이브에 로드
         SaveBackup();                   //백업 세이브 저장
         UpdateSaveInfo();               //세이브를 현재 정보로 업데이트
         SaveMain();                     //메인 세이브 저장
         
-        Debug.Log("세이브");
+        Debug.Log("세이브 되었습니다.");
     }
 
     public void Load()
     {
+        EnsureSaveExists();
+
         mainSave = LoadMain();
         backupSave = LoadBackup();
         
         StatManager.instance.loadSaveData2StataManager(mainSave);
         
-        Debug.Log("메인 로드" + mainSave.homeSave.reputation);
-        Debug.Log("백업 로드" + backupSave.homeSave.reputation);
+        Debug.Log("메인 로드" + mainSave.homeSave.reputation);  //임시 코드
+        Debug.Log("백업 로드" + backupSave.homeSave.reputation);    //임시 코드
     }
 
     private void UpdateSaveInfo()
@@ -77,26 +72,117 @@ public class SaveManager : Singleton<SaveManager>
 
     private Save LoadMain()
     {
-        return QuickSaveReader.Create("Save_Main")
-            .Read<Save>("Main");
-    }
+        try
+        {
+            return QuickSaveReader.Create("Save_Main").Read<Save>("Main");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogWarning("Main 세이브 로드 실패: " + e.Message);
+            
+            // 백업 시도
+            if (QuickSaveRaw.Exists(BackupSaveFilePath))
+            {
+                Debug.LogWarning("백업 세이브로 복구 시도");
+                return LoadBackup();
+            }
 
+            // 백업도 없을 경우 새 세이브 생성
+            Debug.LogError("세이브 전체 손상 → 새 세이브 생성");
+            return CreateNewSave();
+        }
+    }
+    
     private Save LoadBackup()
     {
-        return QuickSaveReader.Create("Save_Backup")
-            .Read<Save>("Backup");
+        try
+        {
+            return QuickSaveReader.Create("Save_Backup").Read<Save>("Backup");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogWarning("Backup 세이브 로드 실패: " + e.Message);
+            
+            // 백업 시도
+            if (QuickSaveRaw.Exists(MainSaveFilePath))
+            {
+                Debug.LogWarning("메인 세이브로 복구 시도");
+                return LoadMain();
+            }
+
+            // 메인도 없을 경우 새 세이브 생성
+            Debug.LogError("세이브 전체 손상 → 새 세이브 생성");
+            return CreateNewSave();
+        }
     }
 
+    //더미 세이브 파일 생성
+    private Save CreateNewSave()
+    {
+        var fresh = StatManager.instance.ToSaveData();
+        SaveMain();
+        SaveBackup();
+        return fresh;
+    }
+
+    //세이브 파일의 존재 여부 확인
+    private void EnsureSaveExists()
+    {
+        if (!QuickSaveRaw.Exists(MainSaveFilePath))     // Save_Main 파일이 없을때
+        {
+            if (!QuickSaveRaw.Exists(BackupSaveFilePath))   //Save_Backup 파일도 존재하지 않을때
+            {
+                UpdateSaveInfo();
+                SaveMain();                     //Save_Main 파일 생성
+                backupSave = LoadMain();
+                SaveBackup();                   //Save_Backup 파일 생성
+            
+                Debug.Log("세이브가 존재하지 않아 새로운 세이브를 생성했습니다.");
+            }
+            else
+            {
+                mainSave = LoadBackup();        //백업을 메인으로 로드.
+                SaveMain();
+                Debug.Log("메인을 백업 세이브로 로드했습니다.");
+            }
+        }
+        else
+        {
+            if (!QuickSaveRaw.Exists(BackupSaveFilePath))   //Save_Backup 파일이 없을떄
+            {
+                backupSave = LoadMain();
+                SaveBackup();
+                Debug.Log("백업을 메인 세이브로 로드했습니다.");
+            }
+            
+        }
+    }
+    
+    //세이브 파일 디렉토리 확인
+    private string GetSavePath(string fileNameWithoutExt)
+    {
+        string directory = Path.Combine(Application.persistentDataPath, SaveFolder);
+    
+        // 폴더가 없다면 생성
+        if (!Directory.Exists(directory))
+            Directory.CreateDirectory(directory);
+
+        return Path.Combine(directory, fileNameWithoutExt + ".json");
+    }
+    
+    // 씬이 바뀔 때 마다 자동저장
     protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        StartCoroutine(SaveAfterOneFrame());        //Awake와 충돌 방지를 위해 1프레임 대기 후 자동 저장
+        StartCoroutine(SaveAfterOneFrame()); 
     }
-
-    private IEnumerator SaveAfterOneFrame()
+    
+    //Start함수 이후에 호출되도록 1프레임 지연
+    IEnumerator SaveAfterOneFrame()
     {
-        yield return null; // 1 프레임 대기
+        yield return null;
         Save();
-        Debug.Log("자동저장");
+        Debug.Log("자동저장 되었습니다.");
     }
 
+    
 }

@@ -20,9 +20,13 @@ public class StatManager : MonoBehaviour
     public int stageLevel;
     
     public float time;
+    public int day;
     public float health;
     public float reputation;
+    
     public bool isEvent; //Todo 이벤트 여부 및 관련 조건들 추가
+    public int mealCount;
+    public int houseworkCount;
     
 
     private void Awake()
@@ -49,9 +53,13 @@ public class StatManager : MonoBehaviour
 
             
         time = floatValue;
+        day = intValue;
         health = floatValue;
         reputation = floatValue;
+        
         isEvent = false;
+        mealCount = intValue;
+        houseworkCount = intValue;
         
         Debug.Log("ChangeValue");
 
@@ -77,9 +85,12 @@ public class StatManager : MonoBehaviour
             homeSave = new HomeSave
             {
                 time = this.time,
+                day = this.day,
                 health = this.health,
                 reputation = this.reputation,
-                isEvent = false
+                isEvent = false,
+                mealCount = this.mealCount,
+                houseworkCount = this.houseworkCount,
             }
         };
     }
@@ -94,9 +105,12 @@ public class StatManager : MonoBehaviour
         stageLevel = saveData.dungeonSave.stageLevel;
         
         time = saveData.homeSave.time;
+        day = saveData.homeSave.day;
         health = saveData.homeSave.health;
         reputation = saveData.homeSave.reputation;
         isEvent = saveData.homeSave.isEvent;
+        mealCount = saveData.homeSave.mealCount;
+        houseworkCount = saveData.homeSave.houseworkCount;
     }
 
     public void SceneChange()

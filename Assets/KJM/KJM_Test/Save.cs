@@ -22,13 +22,16 @@ public class HomeSave
 {
     // 일상 시간
     public float time;
+    public int day;
 
     // 체력 및 평판 수치
     public float health;
     public float reputation;
 
-    // 돌발 이벤트 발생 여부
+    //이벤트
     public bool isEvent;
+    public int mealCount;
+    public int houseworkCount;
 }
 
 // 게임 전체 저장 구조
