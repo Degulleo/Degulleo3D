@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class DungeonLogic : MonoBehaviour
 {
-    public bool isCompleted = false;               // 던전 클리어 여부
-    public bool isFailed = false;                  // 던전 실패 여부
+    [NonSerialized] public bool isCompleted = false;               // 던전 클리어 여부
+    [NonSerialized] public bool isFailed = false;                  // 던전 실패 여부
     
     private PlayerController _player;
     private EnemyController _enemy;
@@ -19,7 +19,7 @@ public class DungeonLogic : MonoBehaviour
     {
         // tag를 통해 할당 / 추후 플레이어와 에너미 태그 추가 필요
         _player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
-        _enemy = GameObject.FindGameObjectWithTag("Enemy").GetComponent<EnemyController>();
+        // _enemy = GameObject.FindGameObjectWithTag("Enemy").GetComponent<EnemyController>();
         
         // 죽음 이벤트 구독
         if (_player != null)
@@ -37,7 +37,7 @@ public class DungeonLogic : MonoBehaviour
     private void OnPlayerDeath(CharacterBase player)
     {
         Debug.Log("player name:" + player.characterName);
-        if (!isFailed)
+        if (!isFailed) // 중복 실행 방지
         {
             FailDungeon();
         }
@@ -47,8 +47,7 @@ public class DungeonLogic : MonoBehaviour
     private void OnEnemyDeath(CharacterBase enemy)
     {
         Debug.Log("enemy name:" + enemy.characterName);
-        // 보스 처치 확인
-        if (!isCompleted)
+        if (!isCompleted) // 중복 실행 방지
         {
             CompleteDungeon();
         }
