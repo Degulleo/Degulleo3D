@@ -2,49 +2,46 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-public enum EnemyState { None, Idle, Trace, Attack, GetHit, Move, Dead }
+public enum EnemyState { None, Idle, Trace, Attack, Dead }
 
 [RequireComponent(typeof(NavMeshAgent))]
 [RequireComponent(typeof(Animator))]
-[RequireComponent(typeof(EnemyAttackController))]
 public abstract class EnemyController : CharacterBase
 {
     [Header("AI")]
     [SerializeField] private float detectCircleRadius = 10f;    // 플레이어 탐지 범위
     [SerializeField] private LayerMask targetLayerMask;         // 플레이어 레이어 마스크
 
+    public Transform TraceTargetTransform { get; private set; }
     public NavMeshAgent Agent { get; private set; }
     public Animator EnemyAnimator { get; private set; }
-
     public EnemyState CurrentState {get; private set;}
+    public LayerMask TargetLayerMask => targetLayerMask;
+    public float MoveSpeed => moveSpeed;
+    public bool IsMeleeCombat { get; protected set; }
 
-    public EnemyAttackController EnemyAttackController { get; private set; }
+    // -----
+    // 애니메이션 관련
+    private int _currentAnimationTrigger = -1;
 
-    public float WalkSpeed => walkSpeed;
-    public float RunSpeed => runSpeed;
-
-    public Transform TraceTargetTransform { get; private set; }
-
-    [SerializeField] private float walkSpeed = 5;
-    [SerializeField] private float runSpeed = 8;
-
+    // 애니메이션 파라미터 해시값
+    public static readonly int Idle = Animator.StringToHash("Idle");
+    public static readonly int Dead = Animator.StringToHash("Dead");
+    public static readonly int Trace = Animator.StringToHash("Trace");
 
     // -----
     // 상태 변수
     private EnemyStateIdle _enemyStateIdle;
     private EnemyStateTrace _enemyStateTrace;
     private EnemyStateAttack _enemyStateAttack;
-    private EnemyStateGetHit _enemyStateGetHit;
     private EnemyStateDead _enemyStateDead;
-    private EnemyStateMove _enemyStateMove;
 
     private Dictionary<EnemyState, IEnemyState> _enemyStates;
 
-    private void Awake()
+    protected virtual void Awake()
     {
         EnemyAnimator = GetComponent<Animator>();
         Agent = GetComponent<NavMeshAgent>();
-        EnemyAttackController = GetComponent<EnemyAttackController>();
     }
 
     protected override void Start()
@@ -55,24 +52,20 @@ public abstract class EnemyController : CharacterBase
         _enemyStateIdle = new EnemyStateIdle();
         _enemyStateTrace = new EnemyStateTrace();
         _enemyStateAttack = new EnemyStateAttack();
-        _enemyStateGetHit = new EnemyStateGetHit();
         _enemyStateDead = new EnemyStateDead();
-        _enemyStateMove = new EnemyStateMove();
 
         _enemyStates = new Dictionary<EnemyState, IEnemyState>
         {
             { EnemyState.Idle, _enemyStateIdle },
             { EnemyState.Trace, _enemyStateTrace },
             { EnemyState.Attack, _enemyStateAttack },
-            { EnemyState.GetHit, _enemyStateGetHit },
             { EnemyState.Dead, _enemyStateDead },
-            { EnemyState.Move, _enemyStateMove}
         };
 
         SetState(EnemyState.Idle);
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         if (CurrentState != EnemyState.None)
         {
@@ -88,6 +81,14 @@ public abstract class EnemyController : CharacterBase
         }
         CurrentState = newState;
         _enemyStates[CurrentState].Enter(this);
+    }
+
+
+    public override void Die()
+    {
+        base.Die();
+        // TODO : 사망 후 동작
+
     }
 
     #region 적 탐지
@@ -107,5 +108,38 @@ public abstract class EnemyController : CharacterBase
 
     #endregion
 
+    #region 애니메이션 제어
+
+    // Trigger
+    public void SetAnimation(int hashName)
+    {
+        if (_currentAnimationTrigger != -1)
+        {
+            EnemyAnimator.ResetTrigger(_currentAnimationTrigger);
+        }
+
+        EnemyAnimator.SetTrigger(hashName);
+        _currentAnimationTrigger = hashName;
+    }
+
+    // Bool
+    public void SetAnimation(int hashName, bool value)
+    {
+        EnemyAnimator.SetBool(hashName, value);
+    }
+
+    // Float
+    public void SetAnimation(int hashName, float value)
+    {
+        EnemyAnimator.SetFloat(hashName, value);
+    }
+
+    // Integer
+    public void SetAnimation(int hashName, int value)
+    {
+        EnemyAnimator.SetInteger(hashName, value);
+    }
+
+    #endregion
 }
 

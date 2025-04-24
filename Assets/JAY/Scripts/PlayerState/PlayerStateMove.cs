@@ -16,12 +16,11 @@ public class PlayerStateMove : IPlayerState
     {
         float inputHorizontal = _playerController.joystick.Horizontal;
         float inputVertical = _playerController.joystick.Vertical;
-        
+
         // 이동
         if (inputHorizontal != 0 || inputVertical != 0)
         {
             HandleMovement();
-            return;
         }
         else
         {
@@ -60,7 +59,5 @@ public class PlayerStateMove : IPlayerState
 
         Vector3 finalMove = (move + _gravityVelocity) * Time.deltaTime;
         _playerController.CharacterController.Move(finalMove);
-        
-        // _playerController.PlayerAnimator.SetFloat("Move", _playerController.CharacterController.velocity.magnitude);
     }
 }
