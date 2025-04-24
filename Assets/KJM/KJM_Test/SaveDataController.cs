@@ -6,12 +6,15 @@ using UnityEngine;
 
 public class SaveDataController : MonoBehaviour
 {
-    [SerializeField] private ISaveable[] saveables;
+    [SerializeField] private MonoBehaviour[] saveableBehaviours;
+    private ISaveable[] saveables;
     private Save tmpSave;
 
     void Awake()
     {
         tmpSave = new Save();
+        
+        saveables = saveableBehaviours.OfType<ISaveable>().ToArray();
         
         if (saveables == null || saveables.Length == 0)
             saveables = FindObjectsOfType<MonoBehaviour>().OfType<ISaveable>().ToArray();
