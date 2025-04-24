@@ -30,12 +30,6 @@ public class EnemyControllerEditor : Editor
             case EnemyState.Attack:
                 GUI.backgroundColor = new Color(1, 1, 0, 1f);
                 break;
-            case EnemyState.Move:
-                GUI.backgroundColor = new Color(0, 1, 1, 1f);
-                break;
-            case EnemyState.GetHit:
-                GUI.backgroundColor = new Color(0.1f, 0.1f, 0.1f, 1f);
-                break;
             case EnemyState.Dead:
                 GUI.backgroundColor = new Color(1, 0, 0, 1f);
                 break;
@@ -55,12 +49,10 @@ public class EnemyControllerEditor : Editor
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("Idle")) enemyController.SetState(EnemyState.Idle);
         if (GUILayout.Button("Trace")) enemyController.SetState(EnemyState.Trace);
-        if (GUILayout.Button("Attack")) enemyController.SetState(EnemyState.Attack);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        if (GUILayout.Button("Move")) enemyController.SetState(EnemyState.Move);
-        if (GUILayout.Button("GetHit")) enemyController.SetState(EnemyState.GetHit);
+        if (GUILayout.Button("Attack")) enemyController.SetState(EnemyState.Attack);
         if (GUILayout.Button("Dead")) enemyController.SetState(EnemyState.Dead);
         EditorGUILayout.EndHorizontal();
     }
