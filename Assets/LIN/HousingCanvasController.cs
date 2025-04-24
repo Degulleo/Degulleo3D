@@ -83,8 +83,7 @@ public class HousingCanvasController : MonoBehaviour
     {
         suddenPanel.SetActive(false);
         suddenText.text = "";
-        OnSuddenButtonPressed -= OnSuddenButtonPressed;
-        Debug.Log(OnSuddenButtonPressed);
+        OnSuddenButtonPressed = null;
     }
     public void OnSuddenConfirmButton()
     {

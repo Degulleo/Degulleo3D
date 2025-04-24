@@ -17,7 +17,7 @@ public class InteractionController : MonoBehaviour
 
     private void Start()
     {
-        playerStats.OnWorked += SuddenAfterWorkEventHappen();
+        playerStats.OnWorked += SuddenAfterWorkEventHappen;
     }
 
     // 상호작용 가능한 사물 범위에 들어올 때
@@ -65,12 +65,11 @@ public class InteractionController : MonoBehaviour
         return null;
     }
     
-    public Action SuddenAfterWorkEventHappen()
+    public void SuddenAfterWorkEventHappen()
     {
-        Debug.Log("돌발이벤트 발생");
         AfterWorkEvent afterWorkEvent = _suddenEventController.SuddenEventCalculator();
         if (afterWorkEvent == AfterWorkEvent.None)
-            return null;
+            return;
         switch (afterWorkEvent)
         {
             case AfterWorkEvent.OvertimeWork:
@@ -87,6 +86,5 @@ public class InteractionController : MonoBehaviour
                 });
                 break;
         }
-        return null;
     }
 }
