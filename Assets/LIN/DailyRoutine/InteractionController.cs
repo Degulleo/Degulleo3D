@@ -14,7 +14,12 @@ public class InteractionController : MonoBehaviour
     [SerializeField] HousingCanvasController housingCanvasController;
     
     private SuddenEventController _suddenEventController = new SuddenEventController();
-    
+
+    private void Start()
+    {
+        playerStats.OnWorked += SuddenAfterWorkEventHappen();
+    }
+
     // 상호작용 가능한 사물 범위에 들어올 때
     private void OnTriggerEnter(Collider other)
     {
@@ -46,9 +51,6 @@ public class InteractionController : MonoBehaviour
             if (playerStats.CanPerformByHealth(interactionType))
             {
                 playerStats.PerformAction(interactionType);
-                // 출퇴근에 해당하는 돌발 이벤트 호출
-                if (interactionType != ActionType.Work) return;
-                playerStats.OnWorked += SuddenAfterWorkEventHappen();
             }
             else
             {
@@ -65,6 +67,7 @@ public class InteractionController : MonoBehaviour
     
     public Action SuddenAfterWorkEventHappen()
     {
+        Debug.Log("돌발이벤트 발생");
         AfterWorkEvent afterWorkEvent = _suddenEventController.SuddenEventCalculator();
         if (afterWorkEvent == AfterWorkEvent.None)
             return null;
