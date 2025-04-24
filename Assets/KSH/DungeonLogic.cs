@@ -3,13 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
-// 던전 공략 성공
-//     나가기 (혹은 강화로 이동)
-// 실패 로직
-// 일상 맵으로 씬 전환 (던전에서 쫓겨났다가 재도전)
-// 재도전O: 추가 체력
-//     (추가 체력해서 재도전 시 플레이어와 몬스터 초기화 필요)
 public class DungeonLogic : MonoBehaviour
 {
     public bool isCompleted = false;               // 던전 클리어 여부
@@ -24,6 +17,10 @@ public class DungeonLogic : MonoBehaviour
 
     private void Start()
     {
+        // tag를 통해 할당 / 추후 플레이어와 에너미 태그 추가 필요
+        _player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
+        _enemy = GameObject.FindGameObjectWithTag("Enemy").GetComponent<EnemyController>();
+        
         // 죽음 이벤트 구독
         if (_player != null)
         {
@@ -32,7 +29,7 @@ public class DungeonLogic : MonoBehaviour
         
         if (_enemy != null)
         {
-            _enemy.OnDeath += OnPlayerDeath;
+            _enemy.OnDeath += OnEnemyDeath;
         }
     }
 
@@ -66,6 +63,7 @@ public class DungeonLogic : MonoBehaviour
             OnDungeonSuccess?.Invoke();
             
             // 성공 UI 표시 ?? 강화 표기
+            // TODO: 강화 시스템으로 넘어가고 일상 맵으로 이동
         }
     }
     
@@ -77,7 +75,8 @@ public class DungeonLogic : MonoBehaviour
             isFailed = true;
             OnDungeonFailure?.Invoke();
             
-            // 실패 UI 표시 ? 일상 씬으로 이동
+            // 실패 UI 표시 ?
+            GameManager.Instance.ChangeToHomeScene();
         }
     }
     
