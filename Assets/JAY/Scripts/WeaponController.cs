@@ -47,6 +47,11 @@ public class WeaponController : MonoBehaviour, IObservable<GameObject>
         }
         
         _playerController = GetComponent<PlayerController>();
+        if (_playerController == null)
+        {
+            _playerController = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
+        }
+        
         _previousPositions = new Vector3[_triggerZones.Length];
         _hitColliders = new HashSet<Collider>();
     }
@@ -103,7 +108,7 @@ public class WeaponController : MonoBehaviour, IObservable<GameObject>
                             var enemyController = hit.transform.GetComponent<EnemyController>();
                             if (enemyController != null)
                             {
-                                enemyController.TakeDamage(10f);
+                                enemyController.TakeDamage(AttackPower * _playerController.attackPower);
                             }
                         }
                         
