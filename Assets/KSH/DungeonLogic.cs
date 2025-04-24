@@ -19,7 +19,7 @@ public class DungeonLogic : MonoBehaviour
     {
         // tag를 통해 할당 / 추후 플레이어와 에너미 태그 추가 필요
         _player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
-        // _enemy = GameObject.FindGameObjectWithTag("Enemy").GetComponent<EnemyController>();
+        _enemy = GameObject.FindGameObjectWithTag("Enemy").GetComponent<EnemyController>();
         
         // 죽음 이벤트 구독
         if (_player != null)
@@ -58,6 +58,7 @@ public class DungeonLogic : MonoBehaviour
     {
         if (!isCompleted && !isFailed)
         {
+            Debug.Log("던전 공략 성공~!");
             isCompleted = true;
             OnDungeonSuccess?.Invoke();
             
@@ -71,12 +72,21 @@ public class DungeonLogic : MonoBehaviour
     {
         if (!isCompleted && !isFailed)
         {
+            Debug.Log("던전 공략 실패~!");
             isFailed = true;
             OnDungeonFailure?.Invoke();
             
-            // 실패 UI 표시 ?
-            GameManager.Instance.ChangeToHomeScene();
+            // 죽음 애니메이션 + 실패 UI 표시 ?
+            // GameManager.Instance.ChangeToHomeScene();
+            
+            StartCoroutine(DelayedSceneChange()); // 테스트를 위해 3초 대기 후 전환
         }
+    }
+    
+    private IEnumerator DelayedSceneChange()
+    {
+        yield return new WaitForSeconds(3f);
+        GameManager.Instance.ChangeToHomeScene();
     }
     
     // 게임 오브젝트 제거 시 이벤트 구독 해제

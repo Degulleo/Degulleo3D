@@ -36,6 +36,12 @@ public class VerticalAoeController : AoeControllerBase
             if (!hit.CompareTag("Player")) continue;
             Debug.Log($"{hit.name} 사각형 범위에 있어 데미지 적용");
             // TODO: 데미지 로직
+            // 임시 데이미 처리 로직
+            PlayerController playerController = hit.transform.GetComponent<PlayerController>();
+            if (playerController != null)
+            {
+                playerController.TakeDamage(_data.damage);
+            }
         }
     }
 
