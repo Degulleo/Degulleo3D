@@ -11,8 +11,8 @@ public class PlayerStateIdle : IPlayerState
 
     public void Update()
     {
-        float inputHorizontal = _playerController.joystick.Horizontal;
-        float inputVertical = _playerController.joystick.Vertical;
+        float inputHorizontal = _playerController.Joystick.Horizontal;
+        float inputVertical = _playerController.Joystick.Vertical;
         
         // 이동
         if (inputHorizontal != 0 || inputVertical != 0)
