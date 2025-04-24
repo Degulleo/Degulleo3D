@@ -62,7 +62,7 @@ public partial class GameManager : Singleton<GameManager>
         SceneManager.LoadScene("Game"); // 던전 Scene
     }
     
-    public void ChangeToMainScene()
+    public void ChangeToHomeScene()
     {
         SceneManager.LoadScene("Housing"); // Home Scene
     }

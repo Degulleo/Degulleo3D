@@ -88,7 +88,7 @@ public abstract class EnemyController : CharacterBase
     {
         base.Die();
         // TODO : 사망 후 동작
-
+        SetState(EnemyState.Dead);
     }
 
     #region 적 탐지
