@@ -20,7 +20,7 @@ public class StatManager : MonoBehaviour
     public int stageLevel;
     
     public float time;
-    public int day;
+    public int currentDay;
     public float health;
     public float reputation;
     
@@ -53,7 +53,7 @@ public class StatManager : MonoBehaviour
 
             
         time = floatValue;
-        day = intValue;
+        currentDay = intValue;
         health = floatValue;
         reputation = floatValue;
         
@@ -85,10 +85,9 @@ public class StatManager : MonoBehaviour
             homeSave = new HomeSave
             {
                 time = this.time,
-                day = this.day,
+                currentDay = this.currentDay,
                 health = this.health,
                 reputation = this.reputation,
-                isEvent = false,
                 mealCount = this.mealCount,
                 houseworkCount = this.houseworkCount,
             }
@@ -105,10 +104,9 @@ public class StatManager : MonoBehaviour
         stageLevel = saveData.dungeonSave.stageLevel;
         
         time = saveData.homeSave.time;
-        day = saveData.homeSave.day;
+        currentDay = saveData.homeSave.currentDay;
         health = saveData.homeSave.health;
         reputation = saveData.homeSave.reputation;
-        isEvent = saveData.homeSave.isEvent;
         mealCount = saveData.homeSave.mealCount;
         houseworkCount = saveData.homeSave.houseworkCount;
     }
