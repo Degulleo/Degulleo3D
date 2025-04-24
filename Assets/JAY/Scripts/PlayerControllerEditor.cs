@@ -22,6 +22,7 @@ public class PlayerControllerEditor : Editor
 
         EditorGUILayout.BeginVertical(EditorStyles.helpBox);
         EditorGUILayout.LabelField("현재 상태", playerController.CurrentState.ToString(), EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("현재 행동", playerController.CurrentAction != null ? playerController.CurrentAction.ToString() : "-", EditorStyles.boldLabel);
         EditorGUILayout.EndVertical();
 
         
