@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum PlayerState { None, Idle, Move, Hit, Dead }
+public enum PlayerState { None, Idle, Move, Win, Hit, Dead }
 
 public class PlayerController : CharacterBase, IObserver<GameObject>
 {
@@ -24,6 +24,8 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
     // 상태 관련
     private PlayerStateIdle _playerStateIdle;
     private PlayerStateMove _playerStateMove;
+    private PlayerStateWin _playerStateWin;
+    private PlayerStateDead _playerStateDead;
     
     // 행동 관련
     private PlayerActionAttack _attackAction;
@@ -53,11 +55,15 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         // 상태 초기화
         _playerStateIdle = new PlayerStateIdle();
         _playerStateMove = new PlayerStateMove();
+        _playerStateWin = new PlayerStateWin();
+        _playerStateDead = new PlayerStateDead();
         
         _playerStates = new Dictionary<PlayerState, IPlayerState>
         {
             { PlayerState.Idle, _playerStateIdle },
             { PlayerState.Move, _playerStateMove },
+            { PlayerState.Win, _playerStateWin },
+            { PlayerState.Dead, _playerStateDead },
         };
         
         _attackAction = new PlayerActionAttack();
@@ -201,8 +207,6 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
 
     public void OnNext(GameObject value)
     {
-        Debug.Log("무기 타격");
-        float playerAttackPower = _weaponController.AttackPower * attackPower; // 플레이어 공격 데미지(막타는 일반 데미지의 4배)
     }
 
     public void OnError(Exception error)
@@ -215,4 +219,5 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
     }
     
     #endregion
+
 }
