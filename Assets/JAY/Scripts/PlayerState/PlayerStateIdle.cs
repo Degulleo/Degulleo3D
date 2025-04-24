@@ -7,7 +7,6 @@ public class PlayerStateIdle : IPlayerState
     public void Enter(PlayerController playerController)
     {
         _playerController = playerController;
-        // _playerController.Animator.SetBool("Idle", true);
     }
 
     public void Update()
@@ -19,7 +18,6 @@ public class PlayerStateIdle : IPlayerState
         if (inputHorizontal != 0 || inputVertical != 0)
         {
             _playerController.SetState(PlayerState.Move);
-            return;
         }
     }
 
