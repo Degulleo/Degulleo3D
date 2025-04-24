@@ -2,9 +2,6 @@
 
 public class EnemyStateTrace : IEnemyState
 {
-    private static readonly int MoveSpeed = Animator.StringToHash("MoveSpeed");
-    private static readonly int Trace = Animator.StringToHash("Trace");
-
     private EnemyController _enemyController;
     private Transform _detectPlayerTransform;
 
@@ -14,7 +11,7 @@ public class EnemyStateTrace : IEnemyState
     public void Enter(EnemyController enemyController)
     {
         _enemyController = enemyController;
-
+        Debug.Log("## Trace 상태 진입");
         _detectPlayerTransform = _enemyController.TraceTargetTransform;
         if (!_detectPlayerTransform)
         {
@@ -28,25 +25,31 @@ public class EnemyStateTrace : IEnemyState
             _enemyController.Agent.SetDestination(_detectPlayerTransform.position);
         }
 
-        _enemyController.EnemyAnimator.SetBool(Trace, true);
+        _enemyController.SetAnimation(EnemyController.Trace, true);
     }
 
     public void Update()
     {
+        if(_enemyController.IsMeleeCombat) return;
         if (_enemyController.Agent.enabled != true) return;
-
-        // 일정 주기로 찾은 플레이어의 위치를 갱신해서 갱신된 위치로 이동
-        FindTargetPosition();
 
         PlayerTracking();
 
         if (_enemyController.Agent.remainingDistance <= _enemyController.Agent.stoppingDistance)
         {
             // TODO: 타겟에 도착함 -> 공격 준비
-            _enemyController.SetState(EnemyState.Attack);
+            // _enemyController.SetState(EnemyState.Attack);
         }
     }
 
+    public void Exit()
+    {
+        _detectPlayerTransform = null;
+        _enemyController.SetAnimation(EnemyController.Trace, false);
+        _enemyController = null;
+    }
+
+    // 일정 주기로 찾은 플레이어의 위치를 갱신해서 갱신된 위치로 이동
     private void FindTargetPosition()
     {
         if (_detectPlayerInCircleWaitTime > MaxDetectPlayerInCircleWaitTime)
@@ -68,6 +71,8 @@ public class EnemyStateTrace : IEnemyState
     // 플레이어를 추적하는 속도를 제어하는 함수
     private void PlayerTracking()
     {
+        FindTargetPosition();
+
         float distance = (_detectPlayerTransform.position - _enemyController.transform.position).magnitude;
 
         if (distance > 2f)
@@ -97,17 +102,6 @@ public class EnemyStateTrace : IEnemyState
                 );
             }
         }
-
-        // 실제 속도 기반으로 애니메이션 제어
-        float currentSpeed = _enemyController.Agent.velocity.magnitude;
-        _enemyController.EnemyAnimator.SetFloat(MoveSpeed, currentSpeed);
-    }
-
-    public void Exit()
-    {
-        _detectPlayerTransform = null;
-        _enemyController.EnemyAnimator.SetBool(Trace, false);
-        _enemyController = null;
     }
 }
 

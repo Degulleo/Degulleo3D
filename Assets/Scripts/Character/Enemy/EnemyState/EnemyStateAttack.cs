@@ -5,12 +5,11 @@ using UnityEngine;
 public class EnemyStateAttack : IEnemyState
 {
     private EnemyController _enemyController;
-    private Animator _animator;
+
 
     public void Enter(EnemyController enemyController)
     {
         _enemyController = enemyController;
-        _animator = _enemyController.EnemyAnimator;
     }
 
     public void Update()
@@ -20,7 +19,6 @@ public class EnemyStateAttack : IEnemyState
 
     public void Exit()
     {
-        _animator = null;
         _enemyController = null;
     }
 }

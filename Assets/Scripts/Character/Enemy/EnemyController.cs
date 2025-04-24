@@ -18,6 +18,16 @@ public abstract class EnemyController : CharacterBase
     public EnemyState CurrentState {get; private set;}
     public LayerMask TargetLayerMask => targetLayerMask;
     public float MoveSpeed => moveSpeed;
+    public bool IsMeleeCombat { get; protected set; }
+
+    // -----
+    // 애니메이션 관련
+    private int _currentAnimationTrigger = -1;
+
+    // 애니메이션 파라미터 해시값
+    public static readonly int Idle = Animator.StringToHash("Idle");
+    public static readonly int Dead = Animator.StringToHash("Dead");
+    public static readonly int Trace = Animator.StringToHash("Trace");
 
     // -----
     // 상태 변수
@@ -55,7 +65,7 @@ public abstract class EnemyController : CharacterBase
         SetState(EnemyState.Idle);
     }
 
-    protected void Update()
+    protected virtual void Update()
     {
         if (CurrentState != EnemyState.None)
         {
@@ -98,5 +108,38 @@ public abstract class EnemyController : CharacterBase
 
     #endregion
 
+    #region 애니메이션 제어
+
+    // Trigger
+    public void SetAnimation(int hashName)
+    {
+        if (_currentAnimationTrigger != -1)
+        {
+            EnemyAnimator.ResetTrigger(_currentAnimationTrigger);
+        }
+
+        EnemyAnimator.SetTrigger(hashName);
+        _currentAnimationTrigger = hashName;
+    }
+
+    // Bool
+    public void SetAnimation(int hashName, bool value)
+    {
+        EnemyAnimator.SetBool(hashName, value);
+    }
+
+    // Float
+    public void SetAnimation(int hashName, float value)
+    {
+        EnemyAnimator.SetFloat(hashName, value);
+    }
+
+    // Integer
+    public void SetAnimation(int hashName, int value)
+    {
+        EnemyAnimator.SetInteger(hashName, value);
+    }
+
+    #endregion
 }
 
