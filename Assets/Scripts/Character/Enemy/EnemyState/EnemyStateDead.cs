@@ -5,7 +5,7 @@
     public void Enter(EnemyController enemyController)
     {
         _enemyController = enemyController;
-        _enemyController.EnemyAnimator.SetTrigger("Dead");
+        _enemyController.SetAnimation(EnemyController.Dead);
     }
 
     public void Update()
