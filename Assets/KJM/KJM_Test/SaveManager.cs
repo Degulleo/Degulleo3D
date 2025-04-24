@@ -12,7 +12,8 @@ public class SaveManager : Singleton<SaveManager>
     private const string SaveFolder = "QuickSave";
     private string MainSaveFilePath => GetSavePath("Save_Main");
     private string BackupSaveFilePath => GetSavePath("Save_Backup");
-
+    
+    [SerializeField] private SaveDataController saveDataController;
     
     private Save mainSave;
     private Save backupSave;
@@ -25,7 +26,7 @@ public class SaveManager : Singleton<SaveManager>
 
     public void Save()
     {
-        if(JsonUtility.ToJson(mainSave) == JsonUtility.ToJson(StatManager.instance.ToSaveData()))    //같은 상태는 저장되지 않음. 백업 덮어쓰기 방지.
+        if(JsonUtility.ToJson(mainSave) == JsonUtility.ToJson(saveDataController.GetSaveData()))    //같은 상태는 저장되지 않음. 백업 덮어쓰기 방지.
             return;
         
         EnsureSaveExists();
@@ -45,7 +46,7 @@ public class SaveManager : Singleton<SaveManager>
         mainSave = LoadMain();
         backupSave = LoadBackup();
         
-        StatManager.instance.loadSaveData2StataManager(mainSave);
+        saveDataController.ApplySaveData(mainSave);
         
         Debug.Log("메인 로드" + mainSave.homeSave.reputation);  //임시 코드
         Debug.Log("백업 로드" + backupSave.homeSave.reputation);    //임시 코드
@@ -53,7 +54,7 @@ public class SaveManager : Singleton<SaveManager>
 
     private void UpdateSaveInfo()
     {
-       mainSave = StatManager.instance.ToSaveData();     //스탯을 관리하는 클래스에 선언된 스탯 업데이트 함수를 호출
+        mainSave = saveDataController.GetSaveData(); //스탯을 관리하는 클래스에 선언된 스탯 업데이트 함수를 호출
     }
     
     private void SaveMain()
@@ -119,7 +120,7 @@ public class SaveManager : Singleton<SaveManager>
     //더미 세이브 파일 생성
     private Save CreateNewSave()
     {
-        var fresh = StatManager.instance.ToSaveData();
+        var fresh = saveDataController.GetSaveData();
         SaveMain();
         SaveBackup();
         return fresh;
