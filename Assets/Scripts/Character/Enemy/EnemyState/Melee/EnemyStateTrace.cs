@@ -35,11 +35,8 @@ public class EnemyStateTrace : IEnemyState
 
         PlayerTracking();
 
-        if (_enemyController.Agent.remainingDistance <= _enemyController.Agent.stoppingDistance)
-        {
-            // TODO: 타겟에 도착함 -> 공격 준비
-            // _enemyController.SetState(EnemyState.Attack);
-        }
+        // 전투 패턴은 몬스터 객체에게 위임
+        _enemyController.BattleSequence();
     }
 
     public void Exit()
