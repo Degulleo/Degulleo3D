@@ -49,7 +49,11 @@ public class WeaponController : MonoBehaviour, IObservable<GameObject>
         _playerController = GetComponent<PlayerController>();
         if (_playerController == null)
         {
-            _playerController = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
+            var player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null)
+            {
+                _playerController = player.GetComponent<PlayerController>();
+            }
         }
         
         _previousPositions = new Vector3[_triggerZones.Length];
@@ -106,7 +110,7 @@ public class WeaponController : MonoBehaviour, IObservable<GameObject>
                         if (hit.collider.gameObject.CompareTag("Enemy"))
                         {
                             var enemyController = hit.transform.GetComponent<EnemyController>();
-                            if (enemyController != null)
+                            if (enemyController != null && _playerController != null)
                             {
                                 enemyController.TakeDamage(AttackPower * _playerController.attackPower);
                             }

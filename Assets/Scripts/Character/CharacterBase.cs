@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,7 +18,8 @@ public abstract class CharacterBase : MonoBehaviour
     [Header("상태 이상")]
     public List<StatusEffect> statusEffects = new List<StatusEffect>();
     
-    public event System.Action<CharacterBase> OnDeath; // 사망 이벤트
+    public event Action OnDeath; // 사망 이벤트
+    public event Action<CharacterBase> OnGetHit; // 피격 이벤트
 
     protected virtual void Start()
     {
@@ -34,13 +36,15 @@ public abstract class CharacterBase : MonoBehaviour
         {
             Die();
         }
+        
+        OnGetHit?.Invoke(this);
     }
 
     public virtual void Die()
     {
         Debug.Log($"{characterName}이 사망했습니다.");
         // TODO: 사망 처리
-        OnDeath?.Invoke(this);
+        OnDeath?.Invoke();
     }
 
     // 상태이상 추가 메서드

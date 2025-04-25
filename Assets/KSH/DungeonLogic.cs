@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class DungeonLogic : MonoBehaviour
 {
+    [SerializeField] private DungeonPanelController _dungeonPanelController;
+    
     [NonSerialized] public bool isCompleted = false;               // 던전 클리어 여부
     [NonSerialized] public bool isFailed = false;                  // 던전 실패 여부
     
@@ -24,19 +26,35 @@ public class DungeonLogic : MonoBehaviour
         // 죽음 이벤트 구독
         if (_player != null)
         {
+            _player.OnGetHit += OnPlayerGetHit;
             _player.OnDeath += OnPlayerDeath;
         }
         
         if (_enemy != null)
         {
+            _enemy.OnGetHit += OnEnemyGetHit;
             _enemy.OnDeath += OnEnemyDeath;
         }
     }
 
-    // 플레이어 사망 처리
-    private void OnPlayerDeath(CharacterBase player)
+    private void OnPlayerGetHit(CharacterBase player)
     {
-        Debug.Log("player name:" + player.characterName);
+        var result = _dungeonPanelController.SetPlayerHealth();
+        if (!result) // 하트 모두 소모
+        {
+            player.Die();
+        }
+    }
+
+    private void OnEnemyGetHit(CharacterBase enemy)
+    {
+        Debug.Log("Enemy HP: " + enemy.currentHP);
+        _dungeonPanelController.SetBossHealthBar(enemy.currentHP);
+    }
+
+    // 플레이어 사망 처리
+    private void OnPlayerDeath()
+    {
         if (!isFailed) // 중복 실행 방지
         {
             FailDungeon();
@@ -44,9 +62,8 @@ public class DungeonLogic : MonoBehaviour
     }
     
     // 적 사망 처리
-    private void OnEnemyDeath(CharacterBase enemy)
+    private void OnEnemyDeath()
     {
-        Debug.Log("enemy name:" + enemy.characterName);
         if (!isCompleted) // 중복 실행 방지
         {
             CompleteDungeon();
@@ -62,7 +79,7 @@ public class DungeonLogic : MonoBehaviour
             isCompleted = true;
             OnDungeonSuccess?.Invoke();
             
-            // 성공 UI 표시 ?? 강화 표기
+            _player.SetState(PlayerState.Win);
             // TODO: 강화 시스템으로 넘어가고 일상 맵으로 이동
         }
     }
@@ -76,10 +93,8 @@ public class DungeonLogic : MonoBehaviour
             isFailed = true;
             OnDungeonFailure?.Invoke();
             
-            // 죽음 애니메이션 + 실패 UI 표시 ?
-            // GameManager.Instance.ChangeToHomeScene();
-            
-            StartCoroutine(DelayedSceneChange()); // 테스트를 위해 3초 대기 후 전환
+            _player.SetState(PlayerState.Dead);
+            StartCoroutine(DelayedSceneChange()); // 3초 대기 후 전환
         }
     }
     
