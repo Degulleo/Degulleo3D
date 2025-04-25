@@ -146,6 +146,7 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         if (_currentAction == _attackAction && _attackAction.IsActive)
         {
             _attackAction.EndAction();  // 애니메이션도 중단
+            _weaponController.AttackEnd();
         }
 
         // 기존 대시 중이면 중복 실행 안 함
