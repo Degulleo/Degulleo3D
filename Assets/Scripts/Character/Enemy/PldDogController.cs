@@ -37,7 +37,7 @@ public class PldDogController : EnemyController
     [SerializeField] private GameObject horizontalWarning;
     [SerializeField] private GameObject horizontalSlash;
 
-    [SerializeField] private float _patternTimer = 0f;
+    private float _patternTimer = 0f;
     private int _lastPatternIndex = -1;
     private bool _isPatternRunning = false;
     private bool _isFirstAttack = true;

@@ -110,12 +110,23 @@ public abstract class EnemyController : CharacterBase
     }
 
 
+    #region 몬스터의 행동 패턴 위임
+
     // 전략 패턴과 템플릿 메서드 패턴을 활용
     public virtual void BattleSequence()
     {
         // 이 메서드는 자식 요소에서 오버라이드하여 구현합니다.
-        Debug.LogWarning("BattleSequence가 구현되지 않음 : " + "BattleSequence()를 오버라이드하여 구현하십시오.");
+        Debug.LogWarning("BattleSequence가 구현되지 않음 : BattleSequence()를 오버라이드하여 구현하십시오.");
     }
+
+    // 도망치며 싸우는 몬스터가 도망칠 곳이 없을때 취할 행동
+    public virtual void OnCannotFleeBehaviour()
+    {
+        Debug.LogWarning("OnCannotFleeBehaviour가 구현되지 않음 : OnCannotFleeBehaviour() 오버라이드하여 구현하십시오.");
+    }
+
+    #endregion
+
 
     public override void Die()
     {
