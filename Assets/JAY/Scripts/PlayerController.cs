@@ -70,6 +70,8 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         _actionDash = new PlayerActionDash();
         
         PlayerInit();
+
+        SwitchBattleMode();
     }
     
     private void Update()
@@ -211,6 +213,16 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
 
     public void OnNext(GameObject value)
     {
+        float playerAttackPower = _weaponController.AttackPower * attackPower;
+        
+        if (value.CompareTag("Enemy")) // 적이 Enemy일 때만 공격 처리
+        {
+            var enemyController = value.transform.GetComponent<EnemyController>();
+            if (enemyController != null)
+            {
+                enemyController.TakeDamage(playerAttackPower);
+            }
+        }
     }
 
     public void OnError(Exception error)

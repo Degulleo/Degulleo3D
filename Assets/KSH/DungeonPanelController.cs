@@ -20,11 +20,8 @@ public class DungeonPanelController : MonoBehaviour
     public bool SetPlayerHealth()
     {
         StartCoroutine(WaitForOneSecond());
-        
-        if (_countHealth > _playerHealthImages.Length - 1) // out of index error 방지
-        {
-            return false;
-        }
+        // out of index error 방지
+        if (_countHealth > _playerHealthImages.Length - 1) return false;
         
         _playerHealthImages[_countHealth].color = Color.black;
         _countHealth++;
