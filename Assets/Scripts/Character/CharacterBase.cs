@@ -28,6 +28,8 @@ public abstract class CharacterBase : MonoBehaviour
 
     public virtual void TakeDamage(float damage)
     {
+        if (currentHP <= 0) return;
+        
         float actualDamage = Mathf.Max(0, damage - defensePower);
         currentHP -= Mathf.RoundToInt(actualDamage);
         Debug.Log($"{characterName}이 {actualDamage}의 피해를 입었습니다. 현재 체력: {currentHP}");
@@ -35,6 +37,7 @@ public abstract class CharacterBase : MonoBehaviour
         if (currentHP <= 0)
         {
             Die();
+            return;
         }
         
         OnGetHit?.Invoke(this);

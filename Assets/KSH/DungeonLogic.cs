@@ -41,6 +41,8 @@ public class DungeonLogic : MonoBehaviour
     {
         if (isFailed || isCompleted) return; // 어느 한 쪽 사망시 더이상 피격 X
         
+        // TODO: 플레이어 피격 효과음
+        
         var result = _dungeonPanelController.SetPlayerHealth();
         if (!result) // 하트 모두 소모
         {
@@ -51,6 +53,8 @@ public class DungeonLogic : MonoBehaviour
     private void OnEnemyGetHit(CharacterBase enemy)
     {
         if (isFailed || isCompleted) return;
+        
+        // TODO: 에너미 피격 효과음
         
         _dungeonPanelController.SetBossHealthBar(enemy.currentHP);
     }

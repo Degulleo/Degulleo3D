@@ -89,7 +89,8 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         }
         
         // 공격 입력 처리
-        if (Input.GetKeyDown(KeyCode.X) && (_currentAction == null || !_currentAction.IsActive)) {
+        if (Input.GetKeyDown(KeyCode.X) && (_currentAction == null || !_currentAction.IsActive)
+            && (CurrentState != PlayerState.Win && CurrentState != PlayerState.Dead)) {
             Debug.Log("X 버튼 Down 됨");
             StartAttackAction();
         }
