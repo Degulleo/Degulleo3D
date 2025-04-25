@@ -22,6 +22,7 @@ public class PlayerControllerEditor : Editor
 
         EditorGUILayout.BeginVertical(EditorStyles.helpBox);
         EditorGUILayout.LabelField("현재 상태", playerController.CurrentState.ToString(), EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("현재 행동", playerController.CurrentAction != null ? playerController.CurrentAction.ToString() : "-", EditorStyles.boldLabel);
         EditorGUILayout.EndVertical();
 
         
@@ -38,10 +39,12 @@ public class PlayerControllerEditor : Editor
 
         if (GUILayout.Button("BattleMode"))
             playerController.SwitchBattleMode();
+        if (GUILayout.Button("Win"))
+            playerController.SetState(PlayerState.Win);
         // if (GUILayout.Button("Hit"))
         //     playerController.SetState(PlayerState.Hit);
-        // if (GUILayout.Button("Dead"))
-        //     playerController.SetState(PlayerState.Dead);
+        if (GUILayout.Button("Dead"))
+            playerController.SetState(PlayerState.Dead);
         
         EditorGUILayout.EndHorizontal();
     }

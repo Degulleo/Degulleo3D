@@ -1,0 +1,105 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class DungeonLogic : MonoBehaviour
+{
+    [NonSerialized] public bool isCompleted = false;               // 던전 클리어 여부
+    [NonSerialized] public bool isFailed = false;                  // 던전 실패 여부
+    
+    private PlayerController _player;
+    private EnemyController _enemy;
+    
+    // 던전 결과 이벤트
+    public event Action OnDungeonSuccess;
+    public event Action OnDungeonFailure;
+
+    private void Start()
+    {
+        // tag를 통해 할당 / 추후 플레이어와 에너미 태그 추가 필요
+        _player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
+        _enemy = GameObject.FindGameObjectWithTag("Enemy").GetComponent<EnemyController>();
+        
+        // 죽음 이벤트 구독
+        if (_player != null)
+        {
+            _player.OnDeath += OnPlayerDeath;
+        }
+        
+        if (_enemy != null)
+        {
+            _enemy.OnDeath += OnEnemyDeath;
+        }
+    }
+
+    // 플레이어 사망 처리
+    private void OnPlayerDeath(CharacterBase player)
+    {
+        Debug.Log("player name:" + player.characterName);
+        if (!isFailed) // 중복 실행 방지
+        {
+            FailDungeon();
+        }
+    }
+    
+    // 적 사망 처리
+    private void OnEnemyDeath(CharacterBase enemy)
+    {
+        Debug.Log("enemy name:" + enemy.characterName);
+        if (!isCompleted) // 중복 실행 방지
+        {
+            CompleteDungeon();
+        }
+    }
+    
+    // 던전 성공 처리
+    public void CompleteDungeon()
+    {
+        if (!isCompleted && !isFailed)
+        {
+            Debug.Log("던전 공략 성공~!");
+            isCompleted = true;
+            OnDungeonSuccess?.Invoke();
+            
+            // 성공 UI 표시 ?? 강화 표기
+            // TODO: 강화 시스템으로 넘어가고 일상 맵으로 이동
+        }
+    }
+    
+    // 던전 실패 처리
+    public void FailDungeon()
+    {
+        if (!isCompleted && !isFailed)
+        {
+            Debug.Log("던전 공략 실패~!");
+            isFailed = true;
+            OnDungeonFailure?.Invoke();
+            
+            // 죽음 애니메이션 + 실패 UI 표시 ?
+            // GameManager.Instance.ChangeToHomeScene();
+            
+            StartCoroutine(DelayedSceneChange()); // 테스트를 위해 3초 대기 후 전환
+        }
+    }
+    
+    private IEnumerator DelayedSceneChange()
+    {
+        yield return new WaitForSeconds(3f);
+        GameManager.Instance.ChangeToHomeScene();
+    }
+    
+    // 게임 오브젝트 제거 시 이벤트 구독 해제
+    private void OnDestroy()
+    {
+        if (_player != null)
+        {
+            _player.OnDeath -= OnPlayerDeath;
+        }
+        
+        if (_enemy != null)
+        {
+            _enemy.OnDeath -= OnEnemyDeath;
+        }
+    }
+}

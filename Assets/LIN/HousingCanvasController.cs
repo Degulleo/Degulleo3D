@@ -6,19 +6,26 @@ using UnityEngine;
 
 public class HousingCanvasController : MonoBehaviour
 {
+    [Header("일상행동 상호작용")] 
     [SerializeField] GameObject interactionButton;
     [SerializeField] TMP_Text actionText;
     [SerializeField] TMP_Text descriptionText;
-    
-    public Action OnInteractionButtonPressed;
 
+    [Header("돌발 이벤트")] 
+    [SerializeField] private GameObject suddenPanel;
+    [SerializeField] private TMP_Text suddenText;
+
+    public Action OnInteractionButtonPressed;
+    public Action OnSuddenButtonPressed;
     
     void Awake()
     {
-        InitTexts();
+        InitInteractionTexts();
         interactionButton.SetActive(false);
+        suddenPanel.SetActive(false);
     }
     
+    #region 상호작용 일상 행동
     //사물 이름 세팅
     public void SetActionText(string text = "")
     {
@@ -30,7 +37,7 @@ public class HousingCanvasController : MonoBehaviour
         descriptionText.text = text;
     }
 
-    private void InitTexts()
+    private void InitInteractionTexts()
     {
         SetActionText();
         SetDescriptionText();
@@ -46,7 +53,6 @@ public class HousingCanvasController : MonoBehaviour
         //각 행동 별로 실행되어야 할 이벤트 구독
         OnInteractionButtonPressed = onInteractionButtonPressed;
     }
-    
     //범위에서 벗어나면 상호작용 버튼 off
     public void HideInteractionButton()
     {
@@ -62,5 +68,27 @@ public class HousingCanvasController : MonoBehaviour
     public void OnClickInteractionButton()
     {
         OnInteractionButtonPressed?.Invoke();
+        HideInteractionButton();
     }
+    #endregion
+    
+    #region 돌발 이벤트
+    public void ShowSuddenEventPanel(string actText, Action onSuddenButtonPressed)
+    {
+        suddenPanel.SetActive(true);
+        suddenText.text = actText;
+        OnSuddenButtonPressed += onSuddenButtonPressed;
+    }
+    public void HideSuddenEventPanel()
+    {
+        suddenPanel.SetActive(false);
+        suddenText.text = "";
+        OnSuddenButtonPressed = null;
+    }
+    public void OnSuddenConfirmButton()
+    {
+        OnSuddenButtonPressed?.Invoke();
+    }
+    #endregion
+    
 }

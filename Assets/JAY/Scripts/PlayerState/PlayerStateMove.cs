@@ -14,8 +14,8 @@ public class PlayerStateMove : IPlayerState
 
     public void Update()
     {
-        float inputHorizontal = _playerController.joystick.Horizontal;
-        float inputVertical = _playerController.joystick.Vertical;
+        float inputHorizontal = _playerController.Joystick.Horizontal;
+        float inputVertical = _playerController.Joystick.Vertical;
 
         // 이동
         if (inputHorizontal != 0 || inputVertical != 0)
@@ -36,8 +36,8 @@ public class PlayerStateMove : IPlayerState
     
     private void HandleMovement()
     {
-        float inputHorizontal = _playerController.joystick.Horizontal;
-        float inputVertical = _playerController.joystick.Vertical;
+        float inputHorizontal = _playerController.Joystick.Horizontal;
+        float inputVertical = _playerController.Joystick.Vertical;
 
         Vector3 moveDir = new Vector3(inputHorizontal, 0, inputVertical);
         Vector3 move = moveDir.normalized * _playerController.moveSpeed;

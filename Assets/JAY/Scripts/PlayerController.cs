@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum PlayerState { None, Idle, Move, Hit, Dead }
+public enum PlayerState { None, Idle, Move, Win, Hit, Dead }
 
 public class PlayerController : CharacterBase, IObserver<GameObject>
 {
@@ -17,18 +17,22 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
     private GameObject weapon;
     private WeaponController _weaponController;
 
-    private IPlayerState CurrentStateClass { get; set; }
-    private IPlayerAction currentAction;
+    private IPlayerState _currentStateClass { get; set; }
+    private IPlayerAction _currentAction;
+    public IPlayerAction CurrentAction => _currentAction;
     
     // 상태 관련
     private PlayerStateIdle _playerStateIdle;
     private PlayerStateMove _playerStateMove;
+    private PlayerStateWin _playerStateWin;
+    private PlayerStateDead _playerStateDead;
     
     // 행동 관련
-    private PlayerActionAttack attackAction;
+    private PlayerActionAttack _attackAction;
+    private PlayerActionDash _actionDash;
     
     // 외부에서도 사용하는 변수
-    public FixedJoystick joystick { get; private set; }
+    public FixedJoystick Joystick { get; private set; }
     public PlayerState CurrentState { get; private set; }
     private Dictionary<PlayerState, IPlayerState> _playerStates;
     public Animator PlayerAnimator { get; private set; }
@@ -38,9 +42,9 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
     {
         PlayerAnimator = GetComponent<Animator>();
         _characterController = GetComponent<CharacterController>();
-        if (joystick == null)
+        if (Joystick == null)
         {
-            joystick = FindObjectOfType<FixedJoystick>();
+            Joystick = FindObjectOfType<FixedJoystick>();
         }
     }
     
@@ -51,14 +55,19 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         // 상태 초기화
         _playerStateIdle = new PlayerStateIdle();
         _playerStateMove = new PlayerStateMove();
+        _playerStateWin = new PlayerStateWin();
+        _playerStateDead = new PlayerStateDead();
         
         _playerStates = new Dictionary<PlayerState, IPlayerState>
         {
             { PlayerState.Idle, _playerStateIdle },
             { PlayerState.Move, _playerStateMove },
+            { PlayerState.Win, _playerStateWin },
+            { PlayerState.Dead, _playerStateDead },
         };
         
-        attackAction = new PlayerActionAttack();
+        _attackAction = new PlayerActionAttack();
+        _actionDash = new PlayerActionDash();
         
         PlayerInit();
     }
@@ -70,20 +79,23 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
             _playerStates[CurrentState].Update();
         }
         
-        // 현재 액션이 활성화 되어 있으면 Update 호출
-        if (currentAction != null && currentAction.IsActive) {
-            currentAction.UpdateAction();
+        // 대시 우선 입력 처리
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            StartDashAction();
+            return;
         }
         
         // 공격 입력 처리
-        if (Input.GetKeyDown(KeyCode.X) && (currentAction == null || !currentAction.IsActive)) {
+        if (Input.GetKeyDown(KeyCode.X) && (_currentAction == null || !_currentAction.IsActive)) {
             StartAttackAction();
         }
-    }
-    
-    public void StartAttackAction() {
-        currentAction = attackAction;
-        currentAction.StartAction(this);
+        
+        // 액션 업데이트
+        if (_currentAction != null && _currentAction.IsActive)
+        {
+            _currentAction.UpdateAction();
+        }
     }
 
     #region 초기화 관련
@@ -108,7 +120,9 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
     }
     
     #endregion
-    
+
+    #region 상태, 동작 변화 관련
+
     public void SetState(PlayerState state)
     {
         if (CurrentState != PlayerState.None)
@@ -116,10 +130,36 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
             _playerStates[CurrentState].Exit();
         }
         CurrentState = state;
-        CurrentStateClass = _playerStates[state];
-        CurrentStateClass.Enter(this);
+        _currentStateClass = _playerStates[state];
+        _currentStateClass.Enter(this);
     }
     
+        
+    public void StartAttackAction() {
+        _currentAction = _attackAction;
+        _currentAction.StartAction(this);
+    }
+
+    public void StartDashAction()
+    {
+        // 만약 공격 중이면 강제로 공격 종료
+        if (_currentAction == _attackAction && _attackAction.IsActive)
+        {
+            _attackAction.EndAction();  // 애니메이션도 중단
+        }
+
+        // 기존 대시 중이면 중복 실행 안 함
+        if (_actionDash.IsActive)
+            return;
+
+        _currentAction = _actionDash;
+        _actionDash.StartAction(this);
+    }
+
+    #endregion
+
+    #region 공격 관련
+
     public void SwitchBattleMode()
     {
         _isBattle = !_isBattle;
@@ -130,25 +170,43 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
     public void SetAttackComboTrue() {
         if (_weaponController.IsAttacking) return;  // 이미 공격 중이면 실행 안함
 
-        if (currentAction == attackAction) {
-            attackAction.EnableCombo();
+        if (_currentAction == _attackAction) {
+            _attackAction.EnableCombo();
             _weaponController.AttackStart();
         }
     }
 
     public void SetAttackComboFalse() {
-        if (currentAction == attackAction) {
-            attackAction.DisableCombo();
+        if (_currentAction == _attackAction) {
+            _attackAction.DisableCombo();
             _weaponController.AttackEnd();
         }
     }
+
+    #endregion
+
+    #region 대시 관련
+
+    public Vector3 GetMoveDirectionOrForward()
+    {
+        Vector3 dir = new Vector3(Joystick.Horizontal, 0, Joystick.Vertical);
+        return dir.sqrMagnitude > 0.01f ? dir.normalized : transform.forward;
+    }
+    
+    public void DashButtonPressed()
+    {
+        if (!_actionDash.IsActive)
+        {
+            StartDashAction();
+        }
+    }
+
+    #endregion
 
     #region IObserver 관련
 
     public void OnNext(GameObject value)
     {
-        Debug.Log("무기 타격");
-        float playerAttackPower = _weaponController.AttackPower * attackPower; // 플레이어 공격 데미지(막타는 일반 데미지의 4배)
     }
 
     public void OnError(Exception error)
@@ -161,4 +219,5 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
     }
     
     #endregion
+
 }
