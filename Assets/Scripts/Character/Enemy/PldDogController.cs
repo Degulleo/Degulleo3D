@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -37,7 +38,7 @@ public class PldDogController : EnemyController
     [SerializeField] private GameObject horizontalSlash;
 
     [SerializeField] private float _patternTimer = 0f;
-    private int _currentPatternIndex = 0;
+    private int _lastPatternIndex = -1;
     private bool _isPatternRunning = false;
     private bool _isFirstAttack = true;
 
@@ -92,9 +93,16 @@ public class PldDogController : EnemyController
         Agent.isStopped = true;
         IsMeleeCombat = true;
 
-        _patternActions[_currentPatternIndex]?.Invoke();
+        var available = Enumerable
+            .Range(0, _patternActions.Count)
+            .Where(i => i != _lastPatternIndex)
+            .ToList();
 
-        _currentPatternIndex = (_currentPatternIndex + 1) % _patternActions.Count; // 패턴 순환
+        int nextIndex = available[Random.Range(0, available.Count)];
+
+        _patternActions[nextIndex]?.Invoke();
+
+        _lastPatternIndex = nextIndex;
     }
 
     // 순환 패턴과 별개로 동작하는 특수 패턴

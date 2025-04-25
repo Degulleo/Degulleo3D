@@ -26,7 +26,7 @@ public class EnemyStateFlee :IEnemyState
 
     public void Update()
     {
-    // 도망치는 방향 계산
+        // 도망치는 방향 계산
         Vector3 fleeDirection = (_enemyController.transform.position - _detectPlayerTransform.position).normalized;
         Vector3 fleeTarget = _enemyController.transform.position + fleeDirection * _fleeDistance;
 
@@ -34,14 +34,7 @@ public class EnemyStateFlee :IEnemyState
 
         float distance = Vector3.Distance(_enemyController.transform.position, _detectPlayerTransform.position);
 
-        // 일정 범위 안으로 플레이어가 접근하면 공격 시퀸스
-        if (distance <= _attackRange)
-        {
-
-            return;
-        }
-
-
+        _enemyController.BattleSequence();
     }
 
     public void Exit()

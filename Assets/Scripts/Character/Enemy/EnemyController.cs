@@ -114,7 +114,7 @@ public abstract class EnemyController : CharacterBase
     public virtual void BattleSequence()
     {
         // 이 메서드는 자식 요소에서 오버라이드하여 구현합니다.
-        Debug.LogWarning("BattleSequence가 구현되지 않았습니다.");
+        Debug.LogWarning("BattleSequence가 구현되지 않음 : " + "BattleSequence()를 오버라이드하여 구현하십시오.");
     }
 
     public override void Die()
