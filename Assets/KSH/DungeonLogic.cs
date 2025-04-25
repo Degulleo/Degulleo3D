@@ -39,6 +39,8 @@ public class DungeonLogic : MonoBehaviour
 
     private void OnPlayerGetHit(CharacterBase player)
     {
+        if (isFailed || isCompleted) return; // 어느 한 쪽 사망시 더이상 피격 X
+        
         var result = _dungeonPanelController.SetPlayerHealth();
         if (!result) // 하트 모두 소모
         {
@@ -48,7 +50,8 @@ public class DungeonLogic : MonoBehaviour
 
     private void OnEnemyGetHit(CharacterBase enemy)
     {
-        Debug.Log("Enemy HP: " + enemy.currentHP);
+        if (isFailed || isCompleted) return;
+        
         _dungeonPanelController.SetBossHealthBar(enemy.currentHP);
     }
 
@@ -78,6 +81,8 @@ public class DungeonLogic : MonoBehaviour
             Debug.Log("던전 공략 성공~!");
             isCompleted = true;
             OnDungeonSuccess?.Invoke();
+
+            _dungeonPanelController.SetBossHealthBar(0.0f); // 보스 체력 0 재설정
             
             _player.SetState(PlayerState.Win);
             // TODO: 강화 시스템으로 넘어가고 일상 맵으로 이동
@@ -94,6 +99,11 @@ public class DungeonLogic : MonoBehaviour
             OnDungeonFailure?.Invoke();
             
             _player.SetState(PlayerState.Dead);
+            
+            // enemy가 더이상 Trace 하지 않도록 처리
+            _player.gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
+            _enemy.SetState(EnemyState.Idle);
+            
             StartCoroutine(DelayedSceneChange()); // 3초 대기 후 전환
         }
     }

@@ -88,6 +88,7 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         
         // 공격 입력 처리
         if (Input.GetKeyDown(KeyCode.X) && (_currentAction == null || !_currentAction.IsActive)) {
+            Debug.Log("X 버튼 Down 됨");
             StartAttackAction();
         }
         
@@ -171,6 +172,7 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         if (_weaponController.IsAttacking) return;  // 이미 공격 중이면 실행 안함
 
         if (_currentAction == _attackAction) {
+            Debug.Log($"Attack True");
             _attackAction.EnableCombo();
             _weaponController.AttackStart();
         }
@@ -178,8 +180,10 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
 
     public void SetAttackComboFalse() {
         if (_currentAction == _attackAction) {
+            Debug.Log($"Attack False"); 
+            // 이벤트 중복 호출? 공격 종료 시 SetAttackComboFalse가 아니라 ~True로 끝나서 오류 발생. (공격 안하는 상태여도 공격으로 판정됨)
             _attackAction.DisableCombo();
-            _weaponController.AttackEnd();
+            _weaponController.AttackEnd(); // IsAttacking = false로 변경
         }
     }
 

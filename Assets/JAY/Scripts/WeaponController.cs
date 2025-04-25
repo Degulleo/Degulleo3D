@@ -106,7 +106,6 @@ public class WeaponController : MonoBehaviour, IObservable<GameObject>
                     {
                         _hitColliders.Add(hit.collider);
 
-                        Debug.Log("hit.collider.name: " + hit.collider.name);
                         if (hit.collider.gameObject.CompareTag("Enemy"))
                         {
                             var enemyController = hit.transform.GetComponent<EnemyController>();
