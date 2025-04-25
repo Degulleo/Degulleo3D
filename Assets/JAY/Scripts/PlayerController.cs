@@ -167,7 +167,8 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
     }
     
     // Animation Event에서 호출될 메서드
-    public void SetAttackComboTrue() {
+    public void SetAttackComboTrue()
+    {
         if (_weaponController.IsAttacking) return;  // 이미 공격 중이면 실행 안함
 
         if (_currentAction == _attackAction) {
@@ -176,11 +177,17 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         }
     }
 
-    public void SetAttackComboFalse() {
+    public void SetAttackComboFalse()
+    {
         if (_currentAction == _attackAction) {
             _attackAction.DisableCombo();
             _weaponController.AttackEnd();
         }
+    }
+
+    public void OnActionEnded(IPlayerAction action)
+    {
+        if (_currentAction == action) _currentAction = null;
     }
 
     #endregion

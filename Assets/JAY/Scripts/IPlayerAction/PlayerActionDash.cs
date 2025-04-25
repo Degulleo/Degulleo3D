@@ -51,6 +51,7 @@ public class PlayerActionDash : IPlayerAction
     public void EndAction()
     {
         IsActive = false;
+        player.OnActionEnded(this);
         player = null;
     }
 }
