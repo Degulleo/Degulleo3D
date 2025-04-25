@@ -155,6 +155,11 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         _currentAction = _actionDash;
         _actionDash.StartAction(this);
     }
+    
+    public void OnActionEnded(IPlayerAction action)
+    {
+        if (_currentAction == action) _currentAction = null;
+    }
 
     #endregion
 
@@ -183,11 +188,6 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
             _attackAction.DisableCombo();
             _weaponController.AttackEnd();
         }
-    }
-
-    public void OnActionEnded(IPlayerAction action)
-    {
-        if (_currentAction == action) _currentAction = null;
     }
 
     #endregion

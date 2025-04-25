@@ -28,12 +28,11 @@ public class PlayerActionAttack : IPlayerAction {
     public void EndAction() {
         player.PlayerAnimator.SetBool(Attack, false);
         IsActive = false;
-        player.OnActionEnded(this);
+        player.OnActionEnded(this); // player 에서도 action 초기화
         player = null;
     }
 
     public void EnableCombo() {
-        if (comboStep > 4) return; // 마지막 공격일 땐 콤보 허용 X
         canReceiveCombo = true;
     }
 
