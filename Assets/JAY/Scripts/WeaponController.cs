@@ -69,10 +69,24 @@ public class WeaponController : MonoBehaviour, IObservable<GameObject>
         }
         _isAttacking = true;
         _hitColliders.Clear();
+        
+        StopAllCoroutines();
+        StartCoroutine(AutoEndAttack()); // 자동 공격 종료
 
         for (int i = 0; i < _triggerZones.Length; i++)
         {
             _previousPositions[i] = transform.position + transform.TransformVector(_triggerZones[i].position);
+        }
+    }
+    
+    private IEnumerator AutoEndAttack()
+    {
+        yield return new WaitForSeconds(0.6f); // 0.6초 가량 대기
+    
+        if (_isAttacking)  // 아직 공격 중이면
+        {
+            Debug.Log("공격 자동 종료 - 타임아웃");
+            AttackEnd();
         }
     }
 
