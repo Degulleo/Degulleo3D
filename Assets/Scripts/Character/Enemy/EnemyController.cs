@@ -60,14 +60,11 @@ public abstract class EnemyController : CharacterBase
         // Commons
         _enemyStateIdle = new EnemyStateIdle();
         _enemyStateDead = new EnemyStateDead();
-        // Melee
-        _enemyStateTrace = new EnemyStateTrace();
-        // Caster
-        _enemyStateFlee = new EnemyStateFlee();
 
         switch (MonsterType)
         {
             case MonsterType.Melee:
+                _enemyStateTrace = new EnemyStateTrace();
                 _enemyStates = new Dictionary<EnemyState, IEnemyState>
                 {
                     { EnemyState.Idle, _enemyStateIdle },
@@ -76,6 +73,7 @@ public abstract class EnemyController : CharacterBase
                 };
                 break;
             case MonsterType.Caster:
+                _enemyStateFlee = new EnemyStateFlee();
                 _enemyStates = new Dictionary<EnemyState, IEnemyState>
                 {
                     { EnemyState.Idle, _enemyStateIdle },

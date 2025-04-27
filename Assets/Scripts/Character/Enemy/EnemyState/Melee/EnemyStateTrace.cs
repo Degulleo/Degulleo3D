@@ -30,8 +30,8 @@ public class EnemyStateTrace : IEnemyState
 
     public void Update()
     {
-        if(_enemyController.IsMeleeCombat) return;
-        if (_enemyController.Agent.enabled != true) return;
+        if (_enemyController.Agent.enabled != true ||
+            _enemyController.IsMeleeCombat) return;
 
         PlayerTracking();
 
