@@ -11,9 +11,12 @@ public partial class GameManager : Singleton<GameManager>
     private Canvas _canvas;
     
     // 게임 진행 상태
-    private int currentDay = 1;
+    private int currentDay = 1; // 날짜
     public int CurrentDay => currentDay;
     private int maxDays = GameConstants.maxDays;
+    
+    private int stageLevel = 1; // 스테이지 정보
+    public int StageLevel => stageLevel;
     
     // 날짜 변경 이벤트, 추후에 UI 상의 날짜를 변경할 때 사용
     public event Action<int> OnDayChanged;
@@ -44,17 +47,10 @@ public partial class GameManager : Singleton<GameManager>
         OnDayChanged?.Invoke(currentDay);
         
         // 최대 일수 도달 체크
-        if (currentDay > maxDays)
+        if (currentDay > maxDays) // 8일차에 검사
         {
             TriggerTimeEnding();
         }
-    }
-    
-    // 엔딩 트리거
-    private void TriggerTimeEnding()
-    {
-        // TODO: 엔딩 처리 로직
-        Debug.Log("7일이 지나 게임이 종료됩니다.");
     }
     
     public void ChangeToGameScene()
