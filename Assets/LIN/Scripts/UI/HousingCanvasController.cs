@@ -3,14 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class HousingCanvasController : MonoBehaviour
 {
     [Header("일상행동 상호작용")] 
-    [SerializeField] GameObject interactionButton;
-    [SerializeField] TMP_Text actionText;
-    [SerializeField] TMP_Text descriptionText;
-
+    [SerializeField] private GameObject interactionButton;
+    public InteractionTextsContoller interactionTextsController;
+    
     [Header("돌발 이벤트")] 
     [SerializeField] private GameObject suddenPanel;
     [SerializeField] private TMP_Text suddenText;
@@ -20,34 +20,16 @@ public class HousingCanvasController : MonoBehaviour
     
     void Awake()
     {
-        InitInteractionTexts();
+        interactionTextsController.InitInteractionTexts();
         interactionButton.SetActive(false);
         suddenPanel.SetActive(false);
     }
     
     #region 상호작용 일상 행동
-    //사물 이름 세팅
-    public void SetActionText(string text = "")
-    {
-        actionText.text = text;
-    }
-    //사물 상호작용 내용 설명
-    public void SetDescriptionText(string text = "")
-    {
-        descriptionText.text = text;
-    }
-
-    private void InitInteractionTexts()
-    {
-        SetActionText();
-        SetDescriptionText();
-    }
-
     // 상호작용 가능한 사물에 가까이 갔을 때 화면에 텍스트, 버튼 표시
     public void ShowInteractionButton(string actText, string descText,Action onInteractionButtonPressed)
     {
-        SetActionText(actText);
-        SetDescriptionText(descText);
+        interactionTextsController.ActiveTexts(actText, descText);
         interactionButton.SetActive(true);
         
         //각 행동 별로 실행되어야 할 이벤트 구독
@@ -56,8 +38,6 @@ public class HousingCanvasController : MonoBehaviour
     //범위에서 벗어나면 상호작용 버튼 off
     public void HideInteractionButton()
     {
-        SetActionText();
-        SetDescriptionText();
         interactionButton.SetActive(false);
         
         //구독해놓은 이벤트 해제
@@ -68,6 +48,7 @@ public class HousingCanvasController : MonoBehaviour
     public void OnClickInteractionButton()
     {
         OnInteractionButtonPressed?.Invoke();
+        OnInteractionButtonPressed = null;
         HideInteractionButton();
     }
     #endregion

@@ -12,6 +12,7 @@ public class InteractionController : MonoBehaviour
     [FormerlySerializedAs("housingCanvasManager")]
     [Header("UI 연동")]
     [SerializeField] HousingCanvasController housingCanvasController;
+    [SerializeField] private InteractionAnimationPanelController interactionAnimationPanelController;
     
     private SuddenEventController _suddenEventController = new SuddenEventController();
 
@@ -38,6 +39,7 @@ public class InteractionController : MonoBehaviour
         if (interactionLayerMask == (interactionLayerMask | (1 << other.gameObject.layer)))
         {
             housingCanvasController.HideInteractionButton();
+            housingCanvasController.interactionTextsController.InitInteractionTexts();
         }
     }
     
@@ -51,11 +53,12 @@ public class InteractionController : MonoBehaviour
             if (playerStats.CanPerformByHealth(interactionType))
             {
                 playerStats.PerformAction(interactionType);
+                interactionAnimationPanelController.ShowAnimationPanel(interactionType,interactionTexts.AnimationText);
+
             }
             else
             {
-                housingCanvasController.SetActionText(interactionTexts.LackOfHealth);
-                housingCanvasController.SetDescriptionText();
+                housingCanvasController.interactionTextsController.ActiveTexts(interactionTexts.LackOfHealth);
             }
         });
     }
