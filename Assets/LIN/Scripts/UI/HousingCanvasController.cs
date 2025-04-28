@@ -47,9 +47,13 @@ public class HousingCanvasController : MonoBehaviour
     //상호작용 버튼 눌렀을 때
     public void OnClickInteractionButton()
     {
+        //상호작용 별 행동 수행
         OnInteractionButtonPressed?.Invoke();
         OnInteractionButtonPressed = null;
+        
+        //상호작용 버튼과 텍스트 숨김
         HideInteractionButton();
+        interactionTextsController.InitInteractionTexts();
     }
     #endregion
     

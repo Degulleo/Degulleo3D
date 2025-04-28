@@ -12,13 +12,11 @@ public class InteractionAnimationPanelController : MonoBehaviour
     [SerializeField] private Image doingImage;
     [SerializeField] private TMP_Text doingText;
     [SerializeField] private Animator animator;
+    [SerializeField] private float animationDuration = 2.0f;
 
     private Coroutine _textAnimCoroutine;
+    private Coroutine _autoHideCoroutine;
 
-    // private void Start()
-    // {
-    //     ShowAnimationPanel(LoadingState.Housework);
-    // }
     public void SetDoingText(string text)
     {
         doingText.text = text;
@@ -26,11 +24,13 @@ public class InteractionAnimationPanelController : MonoBehaviour
 
     public void ShowAnimationPanel(ActionType actionType, string animationText)
     {
+        // 1) 패널 활성화
         panel.SetActive(true);
-        if (_textAnimCoroutine != null)
-        {
-            StopCoroutine(_textAnimCoroutine);
-        }
+        // 2) 기존 코루틴 정리
+        if (_textAnimCoroutine != null)    StopCoroutine(_textAnimCoroutine);
+        if (_autoHideCoroutine != null)    StopCoroutine(_autoHideCoroutine);
+
+        // 3) 텍스트 및 애니메이션 세팅
         doingText.text = animationText;
         switch (actionType)
         {
@@ -39,7 +39,6 @@ public class InteractionAnimationPanelController : MonoBehaviour
             case ActionType.Work:
                 break;
             case ActionType.Eat:
-                doingText.text = "식사하는 중";
                 break;
             case ActionType.Dungeon:
                 break;
@@ -48,6 +47,7 @@ public class InteractionAnimationPanelController : MonoBehaviour
                 break;
         }
         _textAnimCoroutine = StartCoroutine(TextDotsAnimation());
+        _autoHideCoroutine = StartCoroutine(AutoHidePanel());
     }
     
     private IEnumerator TextDotsAnimation()
@@ -63,7 +63,44 @@ public class InteractionAnimationPanelController : MonoBehaviour
             }
             yield return new WaitForSeconds(0.3f);
         }
-        _textAnimCoroutine = null;
+    }
+
+    /// <summary>
+    /// 패널이 2초후 자동으로 닫히거나 터치시 닫히도록 합니다.
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator AutoHidePanel()
+    {
+        float startTime = Time.time;
+        while (Time.time - startTime < animationDuration)
+        {
+            if (Input.touchCount > 0 || Input.GetMouseButtonDown(0))
+            {
+                break;
+            }
+            yield return null;
+        }
+        
+        //패널 닫고 애니메이션 null처리
+        HidePanel();
+        _autoHideCoroutine = null;
+    }
+    
+    private void HidePanel()
+    {
+        panel.SetActive(false);
+
+        if (_textAnimCoroutine != null)
+        {
+            StopCoroutine(_textAnimCoroutine);
+            _textAnimCoroutine = null;
+        }
+
+        if (_autoHideCoroutine != null)
+        {
+            StopCoroutine(_autoHideCoroutine);
+            _autoHideCoroutine = null;
+        }
     }
 }
  

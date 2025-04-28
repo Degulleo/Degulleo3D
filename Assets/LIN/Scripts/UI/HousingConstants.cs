@@ -27,7 +27,8 @@ public static class HousingConstants
             { ActionType.Dungeon, new InteractionTexts("던전에 입장할까?","체력 3을 사용하고 3시간이 흐른다.",
                 "던전에 갈 체력이 되지 않아..","던전 진입하는 중")},
             { ActionType.Work, new InteractionTexts("출근한다.","체력 3을 사용하고 저녁 6시에나 돌아오겠지..", 
-                "도저히 출근할 체력이 안되는걸..?","출근하는 중")}
+                "도저히 출근할 체력이 안되는걸..?","출근하는 중")},
+            {ActionType.Eat, new InteractionTexts("식사를 하자","1시간 동안 체력 1을 회복한다.","밥 먹는 중")}
         };
     #endregion
 
