@@ -150,6 +150,7 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         if (_currentAction == _attackAction && _attackAction.IsActive)
         {
             _attackAction.EndAction();  // 애니메이션도 중단
+            _weaponController.AttackEnd();
         }
 
         // 기존 대시 중이면 중복 실행 안 함
@@ -158,6 +159,11 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
 
         _currentAction = _actionDash;
         _actionDash.StartAction(this);
+    }
+    
+    public void OnActionEnded(IPlayerAction action)
+    {
+        if (_currentAction == action) _currentAction = null;
     }
 
     #endregion
@@ -171,7 +177,8 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
     }
     
     // Animation Event에서 호출될 메서드
-    public void SetAttackComboTrue() {
+    public void SetAttackComboTrue()
+    {
         if (_weaponController.IsAttacking) return;  // 이미 공격 중이면 실행 안함
 
         if (_currentAction == _attackAction) {
@@ -181,7 +188,8 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         }
     }
 
-    public void SetAttackComboFalse() {
+    public void SetAttackComboFalse()
+    {
         if (_currentAction == _attackAction) {
             Debug.Log($"Attack False"); 
             // 이벤트 중복 호출? 공격 종료 시 SetAttackComboFalse가 아니라 ~True로 끝나서 오류 발생. (공격 안하는 상태여도 공격으로 판정됨)
