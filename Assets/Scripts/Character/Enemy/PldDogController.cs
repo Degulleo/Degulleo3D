@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -8,6 +9,8 @@ using Random = UnityEngine.Random;
 
 public class PldDogController : EnemyController
 {
+    // ----
+    // 팔라딘 독 고유 액션
     private static readonly int WindUp = Animator.StringToHash("WindUp");
     private static readonly int Slash = Animator.StringToHash("Slash");
     private static readonly int BoomShot = Animator.StringToHash("BoomShot");
@@ -35,7 +38,7 @@ public class PldDogController : EnemyController
     [SerializeField] private GameObject horizontalSlash;
 
     private float _patternTimer = 0f;
-    private int _currentPatternIndex = 0;
+    private int _lastPatternIndex = -1;
     private bool _isPatternRunning = false;
     private bool _isFirstAttack = true;
 
@@ -53,23 +56,20 @@ public class PldDogController : EnemyController
         };
     }
 
-    protected override void Update()
+    public override void BattleSequence()
     {
-        base.Update();
-
-        if (CurrentState != EnemyState.Trace || _isPatternRunning)
-            return;
+        _patternTimer += Time.deltaTime;
+        if (_isPatternRunning) return;
 
         float distanceToPlayer = Vector3.Distance(transform.position, TraceTargetTransform.position);
 
         if (distanceToPlayer <= meleeRange) // 근접 범위
         {
             if (!Agent.isStopped) Agent.isStopped = true;
-            _patternTimer += Time.deltaTime;
 
             if (!_isPatternRunning && (_isFirstAttack || _patternTimer >= patternInterval))
             {
-                ExecutePattern(_currentPatternIndex);
+                ExecutePattern();
 
                 _isFirstAttack = false;
             }
@@ -78,24 +78,31 @@ public class PldDogController : EnemyController
         {
             if (Agent.isStopped) Agent.isStopped = false;
             Agent.SetDestination(TraceTargetTransform.position);
-            _patternTimer += Time.deltaTime;
 
             if (!_isPatternRunning && _patternTimer >= patternInterval)
             {
+                Debug.Log("## 폭탄 던질 조건 만족");
                 BombThrowPattern();
             }
         }
     }
 
-    private void ExecutePattern(int patternIndex)
+    private void ExecutePattern()
     {
         _isPatternRunning = true;
         Agent.isStopped = true;
         IsMeleeCombat = true;
 
-        _patternActions[_currentPatternIndex]?.Invoke();
+        var available = Enumerable
+            .Range(0, _patternActions.Count)
+            .Where(i => i != _lastPatternIndex)
+            .ToList();
 
-        _currentPatternIndex = (_currentPatternIndex + 1) % _patternActions.Count; // 패턴 순환
+        int nextIndex = available[Random.Range(0, available.Count)];
+
+        _patternActions[nextIndex]?.Invoke();
+
+        _lastPatternIndex = nextIndex;
     }
 
     // 순환 패턴과 별개로 동작하는 특수 패턴

@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public enum EnemyState { None, Idle, Trace, Attack, Dead }
+public enum EnemyState { None, Idle, Trace, Dead, Flee}
+public enum MonsterType { Melee, Caster, Ranged }
 
 [RequireComponent(typeof(NavMeshAgent))]
 [RequireComponent(typeof(Animator))]
@@ -11,10 +13,12 @@ public abstract class EnemyController : CharacterBase
     [Header("AI")]
     [SerializeField] private float detectCircleRadius = 10f;    // 플레이어 탐지 범위
     [SerializeField] private LayerMask targetLayerMask;         // 플레이어 레이어 마스크
+    [SerializeField] private MonsterType monsterType;
 
+    public MonsterType MonsterType => monsterType;
     public Transform TraceTargetTransform { get; private set; }
     public NavMeshAgent Agent { get; private set; }
-    public Animator EnemyAnimator { get; private set; }
+    private Animator EnemyAnimator { get; set; }
     public EnemyState CurrentState {get; private set;}
     public LayerMask TargetLayerMask => targetLayerMask;
     public float MoveSpeed => moveSpeed;
@@ -31,10 +35,14 @@ public abstract class EnemyController : CharacterBase
 
     // -----
     // 상태 변수
+    // Commons
     private EnemyStateIdle _enemyStateIdle;
-    private EnemyStateTrace _enemyStateTrace;
-    private EnemyStateAttack _enemyStateAttack;
     private EnemyStateDead _enemyStateDead;
+    // Melee
+    private EnemyStateTrace _enemyStateTrace;
+    // Caster
+    private EnemyStateFlee _enemyStateFlee;
+
 
     private Dictionary<EnemyState, IEnemyState> _enemyStates;
 
@@ -49,18 +57,34 @@ public abstract class EnemyController : CharacterBase
         base.Start();
 
         // 상태 객체 생성
+        // Commons
         _enemyStateIdle = new EnemyStateIdle();
-        _enemyStateTrace = new EnemyStateTrace();
-        _enemyStateAttack = new EnemyStateAttack();
         _enemyStateDead = new EnemyStateDead();
 
-        _enemyStates = new Dictionary<EnemyState, IEnemyState>
+        switch (MonsterType)
         {
-            { EnemyState.Idle, _enemyStateIdle },
-            { EnemyState.Trace, _enemyStateTrace },
-            { EnemyState.Attack, _enemyStateAttack },
-            { EnemyState.Dead, _enemyStateDead },
-        };
+            case MonsterType.Melee:
+                _enemyStateTrace = new EnemyStateTrace();
+                _enemyStates = new Dictionary<EnemyState, IEnemyState>
+                {
+                    { EnemyState.Idle, _enemyStateIdle },
+                    { EnemyState.Trace, _enemyStateTrace },
+                    { EnemyState.Dead, _enemyStateDead },
+                };
+                break;
+            case MonsterType.Caster:
+                _enemyStateFlee = new EnemyStateFlee();
+                _enemyStates = new Dictionary<EnemyState, IEnemyState>
+                {
+                    { EnemyState.Idle, _enemyStateIdle },
+                    { EnemyState.Flee, _enemyStateFlee },
+                    { EnemyState.Dead, _enemyStateDead },
+                };
+                break;
+            case MonsterType.Ranged:
+                break;
+        }
+
 
         SetState(EnemyState.Idle);
     }
@@ -84,6 +108,24 @@ public abstract class EnemyController : CharacterBase
     }
 
 
+    #region 몬스터의 행동 패턴 위임
+
+    // 전략 패턴과 템플릿 메서드 패턴을 활용
+    public virtual void BattleSequence()
+    {
+        // 이 메서드는 자식 요소에서 오버라이드하여 구현합니다.
+        Debug.LogWarning("BattleSequence가 구현되지 않음 : BattleSequence()를 오버라이드하여 구현하십시오.");
+    }
+
+    // 도망치며 싸우는 몬스터가 도망칠 곳이 없을때 취할 행동
+    public virtual void OnCannotFleeBehaviour()
+    {
+        Debug.LogWarning("OnCannotFleeBehaviour가 구현되지 않음 : OnCannotFleeBehaviour() 오버라이드하여 구현하십시오.");
+    }
+
+    #endregion
+
+
     public override void Die()
     {
         base.Die();
@@ -104,6 +146,12 @@ public abstract class EnemyController : CharacterBase
             return TraceTargetTransform;
         }
         return null;
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, detectCircleRadius);
     }
 
     #endregion

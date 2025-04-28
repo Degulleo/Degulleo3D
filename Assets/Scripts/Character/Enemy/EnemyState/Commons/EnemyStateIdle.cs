@@ -1,8 +1,8 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class EnemyStateIdle: IEnemyState
 {
-
     private EnemyController _enemyController;
 
     public void Enter(EnemyController enemyController)
@@ -17,7 +17,17 @@ public class EnemyStateIdle: IEnemyState
         var detectPlayerTransform = _enemyController.DetectPlayerInCircle();
         if (detectPlayerTransform)
         {
-            _enemyController.SetState(EnemyState.Trace);
+            switch (_enemyController.MonsterType)
+            {
+                case MonsterType.Melee:
+                    _enemyController.SetState(EnemyState.Trace);
+                    break;
+                case MonsterType.Caster:
+                    _enemyController.SetState(EnemyState.Flee);
+                    break;
+                case MonsterType.Ranged:
+                    break;
+            }
         }
     }
 

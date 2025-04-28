@@ -30,16 +30,13 @@ public class EnemyStateTrace : IEnemyState
 
     public void Update()
     {
-        if(_enemyController.IsMeleeCombat) return;
-        if (_enemyController.Agent.enabled != true) return;
+        if (_enemyController.Agent.enabled != true ||
+            _enemyController.IsMeleeCombat) return;
 
         PlayerTracking();
 
-        if (_enemyController.Agent.remainingDistance <= _enemyController.Agent.stoppingDistance)
-        {
-            // TODO: 타겟에 도착함 -> 공격 준비
-            // _enemyController.SetState(EnemyState.Attack);
-        }
+        // 전투 패턴은 몬스터 객체에게 위임
+        _enemyController.BattleSequence();
     }
 
     public void Exit()
