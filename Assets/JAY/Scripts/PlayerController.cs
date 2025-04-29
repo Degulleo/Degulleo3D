@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.TextCore.Text;
 using UnityEngine;
 
 public enum PlayerState { None, Idle, Move, Win, Hit, Dead }
@@ -10,8 +11,10 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
     // 외부 접근 가능 변수
     [Header("Attach Points")] 
     [SerializeField] private Transform rightHandTransform;
-    
+    [SerializeField] private CameraShake cameraShake;
+
     // 내부에서만 사용하는 변수
+    private PlayerHitEffectController hitEffectController;
     private CharacterController _characterController;
     private bool _isBattle;
     private GameObject weapon;
@@ -52,25 +55,9 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
     {
         base.Start();
         
-        // 상태 초기화
-        _playerStateIdle = new PlayerStateIdle();
-        _playerStateMove = new PlayerStateMove();
-        _playerStateWin = new PlayerStateWin();
-        _playerStateDead = new PlayerStateDead();
-        
-        _playerStates = new Dictionary<PlayerState, IPlayerState>
-        {
-            { PlayerState.Idle, _playerStateIdle },
-            { PlayerState.Move, _playerStateMove },
-            { PlayerState.Win, _playerStateWin },
-            { PlayerState.Dead, _playerStateDead },
-        };
-        
-        _attackAction = new PlayerActionAttack();
-        _actionDash = new PlayerActionDash();
+        hitEffectController = GetComponentInChildren<PlayerHitEffectController>();
         
         PlayerInit();
-
         SwitchBattleMode();
     }
     
@@ -91,7 +78,6 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         // 공격 입력 처리
         if (Input.GetKeyDown(KeyCode.X) && (_currentAction == null || !_currentAction.IsActive)
             && (CurrentState != PlayerState.Win && CurrentState != PlayerState.Dead)) {
-            Debug.Log("X 버튼 Down 됨");
             StartAttackAction();
         }
         
@@ -101,11 +87,36 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
             _currentAction.UpdateAction();
         }
     }
+    
+    private void OnDestroy()
+    {
+        OnGetHit -= TakeDamage;
+    }
 
     #region 초기화 관련
 
     private void PlayerInit()
     {
+        // 상태 초기화
+        _playerStateIdle = new PlayerStateIdle();
+        _playerStateMove = new PlayerStateMove();
+        _playerStateWin = new PlayerStateWin();
+        _playerStateDead = new PlayerStateDead();
+        
+        _playerStates = new Dictionary<PlayerState, IPlayerState>
+        {
+            { PlayerState.Idle, _playerStateIdle },
+            { PlayerState.Move, _playerStateMove },
+            { PlayerState.Win, _playerStateWin },
+            { PlayerState.Dead, _playerStateDead },
+        };
+        
+        _attackAction = new PlayerActionAttack();
+        _actionDash = new PlayerActionDash();
+        
+        OnGetHit -= TakeDamage;
+        OnGetHit += TakeDamage;
+        
         SetState(PlayerState.Idle);
 
         InstantiateWeapon();
@@ -182,7 +193,6 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         if (_weaponController.IsAttacking) return;  // 이미 공격 중이면 실행 안함
 
         if (_currentAction == _attackAction) {
-            Debug.Log($"Attack True");
             _attackAction.EnableCombo();
             _weaponController.AttackStart();
         }
@@ -191,7 +201,6 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
     public void SetAttackComboFalse()
     {
         if (_currentAction == _attackAction) {
-            Debug.Log($"Attack False"); 
             // 이벤트 중복 호출? 공격 종료 시 SetAttackComboFalse가 아니라 ~True로 끝나서 오류 발생. (공격 안하는 상태여도 공격으로 판정됨)
             _attackAction.DisableCombo();
             _weaponController.AttackEnd(); // IsAttacking = false로 변경
@@ -245,4 +254,40 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
     
     #endregion
 
+    #region 회피 관련
+
+    // TODO: Editor에서 확인하기 위한 임시용
+    public void TakeDamage()
+    {
+        if (CurrentState == PlayerState.Dead) return;
+        
+        // 피격 이벤트 재생
+        PlayerHitEffect();
+        
+        // 죽었는지 체크
+        if (currentHP <= 0) SetState(PlayerState.Dead);
+    }
+
+    
+    public void TakeDamage(CharacterBase character)
+    {
+        if (character != this) return; // 혹시 다른 애가 맞은 경우 무시
+        if (CurrentState == PlayerState.Dead) return;
+        
+        // 피격 이벤트 재생
+        PlayerHitEffect();
+        
+        // 죽었는지 체크
+        if (currentHP <= 0) SetState(PlayerState.Dead);
+    }
+
+    private void PlayerHitEffect()
+    {
+        if (_currentAction != _attackAction || !_attackAction.IsActive)
+            PlayerAnimator.SetTrigger("GetHit");
+        hitEffectController.PlayHitEffect();
+        cameraShake.Shake();
+    }
+
+    #endregion
 }

@@ -41,8 +41,8 @@ public class PlayerControllerEditor : Editor
             playerController.SwitchBattleMode();
         if (GUILayout.Button("Win"))
             playerController.SetState(PlayerState.Win);
-        // if (GUILayout.Button("Hit"))
-        //     playerController.SetState(PlayerState.Hit);
+        if (GUILayout.Button("Hit"))
+            playerController.TakeDamage();
         if (GUILayout.Button("Dead"))
             playerController.SetState(PlayerState.Dead);
         
