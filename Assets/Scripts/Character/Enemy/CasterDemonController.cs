@@ -5,6 +5,10 @@ using UnityEngine;
 public class CasterDemonController : EnemyController
 {
     private bool _doneBattleSequence = true;
+    private bool _isFirstNoPath = true;
+
+    [SerializeField] private Transform teleportTransform;
+    [SerializeField] private GameObject magicMissilePrefab;
 
     public override void BattleSequence()
     {
@@ -25,6 +29,25 @@ public class CasterDemonController : EnemyController
 
     public override void OnCannotFleeBehaviour()
     {
-        Debug.Log("## 몬스터가 막다른 길에 몰려 뭔가 함");
+        if (_isFirstNoPath)
+        {
+            Debug.Log("## 몬스터가 처음으로 막다른 길에 몰렸습니다.");
+        }
+        else
+        {
+            Debug.Log("## 몬스터가 다시 막다른 길에 몰렸습니다.");
+        }
     }
+
+    private void ShotMagicMissile()
+    {
+        this.transform.LookAt(TraceTargetTransform.position);
+    }
+
+    private void Teleport()
+    {
+
+    }
+
+
 }
