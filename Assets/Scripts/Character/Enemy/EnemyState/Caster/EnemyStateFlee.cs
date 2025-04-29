@@ -10,13 +10,14 @@ public class EnemyStateFlee :IEnemyState
 
     // 경로 탐색 주기 조절용
     private float _fleeSearchTimer = 0;
-    private float _fleeThresholdTime = 0.2f;
+    private const float FleeThresholdTime = 0.2f;
 
     // 막다른길 검사용
     private Vector3 _lastPosition;
     private float _stuckTimer = 0f;
     private const float StuckThresholdTime = 1f;   // 1초 동안 거의 못 움직이면 막힌 걸로 간주
     private const float StuckMoveThreshold = 0.1f; // 이내 이동은 “제자리”로 본다
+    private int _stuckCount = 0;
 
     public void Enter(EnemyController enemyController)
     {
@@ -25,7 +26,6 @@ public class EnemyStateFlee :IEnemyState
 
         _playerTransform = _enemyController.TraceTargetTransform;
         _lastPosition = _enemyController.transform.position;
-
         _enemyController.Agent.ResetPath();
         _enemyController.Agent.isStopped = false;
         _stuckTimer = 0f;
@@ -76,8 +76,6 @@ public class EnemyStateFlee :IEnemyState
             _stuckTimer += Time.deltaTime;
             if (_stuckTimer >= StuckThresholdTime)
             {
-
-                Debug.Log("## 끼임");
                 HandleDeadEnd();
                 _stuckTimer = 0f;
             }
@@ -91,7 +89,7 @@ public class EnemyStateFlee :IEnemyState
     private void FindPositionFlee()
     {
         _fleeSearchTimer += Time.deltaTime;
-        if (_fleeSearchTimer <= _fleeThresholdTime) return;
+        if (_fleeSearchTimer <= FleeThresholdTime) return;
 
         // 1) 목표 도망 위치 계산
         Vector3 fleeDirection = (_enemyController.transform.position - _playerTransform.position).normalized;
@@ -107,6 +105,13 @@ public class EnemyStateFlee :IEnemyState
 
     private void HandleDeadEnd()
     {
+        if (_stuckCount >= 4)
+        {
+            _enemyController.OnCannotFleeBehaviour();
+            _stuckCount = 0;
+            return;
+        }
+        _stuckCount++;
         // 무작위 도망 지점 샘플링 시도
         Vector3 randomDirection = Random.insideUnitSphere * (_fleeDistance * 2);
         randomDirection += _playerTransform.position;
@@ -116,14 +121,15 @@ public class EnemyStateFlee :IEnemyState
             // 샘플링에 성공했으면 일단 그 위치로 가 보도록 세팅
             Debug.Log("## 일단 가봄");
             _enemyController.Agent.SetDestination(hit.position);
-            _enemyController.OnCannotFleeBehaviour();
+            // _enemyController.OnCannotFleeBehaviour();
         }
-        else
-        {
-            // 대체 경로도 찾을 수 없는 경우
-            Debug.Log("## 대체 경로도 못찾음");
-            _enemyController.OnCannotFleeBehaviour();
-        }
+
+        // else
+        // {
+        //     // 대체 경로도 찾을 수 없는 경우
+        //     Debug.Log("## 대체 경로도 못찾음");
+        //     _enemyController.OnCannotFleeBehaviour();
+        // }
     }
 
 
