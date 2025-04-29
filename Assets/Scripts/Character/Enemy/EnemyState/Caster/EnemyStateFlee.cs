@@ -6,7 +6,11 @@ public class EnemyStateFlee :IEnemyState
     private EnemyController _enemyController;
     private Transform _playerTransform;
     private float _fleeDistance = 5f;   // 도망치는 거리
-    private float _attackRange = 7f;    // 공격 범위
+    private float _safeRange = 7f;    // 공격 범위
+
+    // 경로 탐색 주기 조절용
+    private float _fleeSearchTimer = 0;
+    private float _fleeThresholdTime = 0.2f;
 
     // 막다른길 검사용
     private Vector3 _lastPosition;
@@ -21,9 +25,11 @@ public class EnemyStateFlee :IEnemyState
 
         _playerTransform = _enemyController.TraceTargetTransform;
         _lastPosition = _enemyController.transform.position;
+
+        _enemyController.Agent.ResetPath();
+        _enemyController.Agent.isStopped = false;
         _stuckTimer = 0f;
-
-
+        _fleeSearchTimer = 0;
     }
 
     public void Update()
@@ -34,7 +40,27 @@ public class EnemyStateFlee :IEnemyState
             return;
         }
 
+        float currentDist = Vector3.Distance(
+            _enemyController.transform.position,
+            _playerTransform.position
+        );
+        if (currentDist >= _safeRange)
+        {
+            // 목적지 리셋 후 전투 시작
+            _enemyController.Agent.isStopped = true;
+            _enemyController.Agent.ResetPath();
+            _enemyController.BattleSequence();
+            return;
+        }
+
         FindPositionFlee();
+
+        if (!_enemyController.Agent.pathPending &&
+            _enemyController.Agent.pathStatus == NavMeshPathStatus.PathInvalid)
+        {
+            // 막다른 길임 : 대체 행동 실행
+            HandleDeadEnd();
+        }
 
         // 막힘 감지 (실제 이동 체크)
         CheckPath();
@@ -44,45 +70,37 @@ public class EnemyStateFlee :IEnemyState
 
     private void CheckPath()
     {
-        float distance = Vector3.Distance(_enemyController.transform.position, _playerTransform.position);
-        if (distance < StuckMoveThreshold)
+        float moved = Vector3.Distance(_enemyController.transform.position, _lastPosition);
+        if (moved < StuckMoveThreshold)
         {
             _stuckTimer += Time.deltaTime;
             if (_stuckTimer >= StuckThresholdTime)
             {
-                // 막다른 길임 : 대체 행동 실행
                 HandleDeadEnd();
                 _stuckTimer = 0f;
             }
         }
         else
         {
-            // 정상적인 길: 배틀 루프 실행
-            _enemyController.BattleSequence();
             _stuckTimer = 0f;
         }
     }
 
     private void FindPositionFlee()
     {
+        _fleeSearchTimer += Time.deltaTime;
+        if (_fleeSearchTimer <= _fleeThresholdTime) return;
+
         // 1) 목표 도망 위치 계산
         Vector3 fleeDirection = (_enemyController.transform.position - _playerTransform.position).normalized;
         Vector3 fleeTarget = _enemyController.transform.position + fleeDirection * _fleeDistance;
 
         // 2) 경로 계산해 보기
-        NavMeshPath path = new NavMeshPath();
-        _enemyController.Agent.CalculatePath(fleeTarget, path);
+        _enemyController.Agent.SetDestination(fleeTarget);
 
-        if (path.status == NavMeshPathStatus.PathComplete)
-        {
-            // 제대로 도망갈 수 있으면 목적지 설정
-            _enemyController.Agent.SetDestination(fleeTarget);
-        }
-        else
-        {
-            // 막다른 길임 : 대체 행동 실행
-            HandleDeadEnd();
-        }
+        // 3) 이동
+        _enemyController.Agent.isStopped = false;
+        _fleeSearchTimer = 0;
     }
 
     private void HandleDeadEnd()
@@ -103,6 +121,8 @@ public class EnemyStateFlee :IEnemyState
 
     public void Exit()
     {
+        _enemyController.Agent.isStopped = true;
+        _enemyController.Agent.ResetPath();
         _playerTransform = null;
         _enemyController = null;
     }

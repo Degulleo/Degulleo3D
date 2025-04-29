@@ -4,11 +4,22 @@ using UnityEngine;
 
 public class CasterDemonController : EnemyController
 {
+    private bool _doneBattleSequence = true;
 
     public override void BattleSequence()
     {
-        // TODO : 배틀 중일 때 루프
-        Debug.Log("## 몬스터의 교전 행동 루프");
+        // 전투 행동이 이미 진행 중일 경우 실행 막기
+        if (_doneBattleSequence)
+        {
+            // 전투 행동 시작
+            _doneBattleSequence = false;
+
+            // TODO : 배틀 중일 때 루프
+            Debug.Log("## 몬스터의 교전 행동 루프");
+
+            // 전투 행동이 끝남
+            _doneBattleSequence = true;
+        }
     }
 
 
