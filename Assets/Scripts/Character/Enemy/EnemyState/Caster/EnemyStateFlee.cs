@@ -16,7 +16,7 @@ public class EnemyStateFlee :IEnemyState
     private Vector3 _lastPosition;
     private float _stuckTimer = 0f;
     private const float StuckThresholdTime = 1f;   // 1초 동안 거의 못 움직이면 막힌 걸로 간주
-    private const float StuckMoveThreshold = 0.1f; // 이내 이동은 “제자리”로 본다
+    private const float StuckMoveThreshold = 0.01f; // 이내 이동은 “제자리”로 본다
 
     public void Enter(EnemyController enemyController)
     {
@@ -58,7 +58,7 @@ public class EnemyStateFlee :IEnemyState
         if (!_enemyController.Agent.pathPending &&
             _enemyController.Agent.pathStatus == NavMeshPathStatus.PathInvalid)
         {
-            // 막다른 길임 : 대체 행동 실행
+            Debug.Log("## 길을 못찾음");
             HandleDeadEnd();
         }
 
@@ -76,6 +76,8 @@ public class EnemyStateFlee :IEnemyState
             _stuckTimer += Time.deltaTime;
             if (_stuckTimer >= StuckThresholdTime)
             {
+
+                Debug.Log("## 끼임");
                 HandleDeadEnd();
                 _stuckTimer = 0f;
             }
@@ -111,13 +113,19 @@ public class EnemyStateFlee :IEnemyState
 
         if (NavMesh.SamplePosition(randomDirection, out var hit, (_fleeDistance * 2), NavMesh.AllAreas))
         {
+            // 샘플링에 성공했으면 일단 그 위치로 가 보도록 세팅
+            Debug.Log("## 일단 가봄");
             _enemyController.Agent.SetDestination(hit.position);
-            return;
+            _enemyController.OnCannotFleeBehaviour();
         }
-
-        // 대체 경로도 찾을 수 없는 경우
-        _enemyController.OnCannotFleeBehaviour();
+        else
+        {
+            // 대체 경로도 찾을 수 없는 경우
+            Debug.Log("## 대체 경로도 못찾음");
+            _enemyController.OnCannotFleeBehaviour();
+        }
     }
+
 
     public void Exit()
     {

@@ -10,7 +10,7 @@ public class CasterDemonController : EnemyController
     [SerializeField] private Transform teleportTransform;
     [SerializeField] private Transform bulletShotPosition;
     [SerializeField] private GameObject magicMissilePrefab;
-
+    [SerializeField] private GameObject teleportEffectPrefab;
     public override void BattleSequence()
     {
         // 전투 행동이 이미 진행 중일 경우 실행 막기
@@ -22,21 +22,15 @@ public class CasterDemonController : EnemyController
             // TODO : 배틀 중일 때 루프
             Debug.Log("## 몬스터의 교전 행동 루프");
             StartCoroutine(ShotMagicMissile());
-
         }
     }
 
-
     public override void OnCannotFleeBehaviour()
     {
-        if (_isFirstNoPath)
-        {
-            Debug.Log("## 몬스터가 처음으로 막다른 길에 몰렸습니다.");
-        }
-        else
-        {
-            Debug.Log("## 몬스터가 다시 막다른 길에 몰렸습니다.");
-        }
+        // 구석에 끼인 경우 탈출
+
+        Debug.Log("## 텔레포트 시전");
+        Teleport();
     }
 
     private IEnumerator ShotMagicMissile()
@@ -83,7 +77,16 @@ public class CasterDemonController : EnemyController
 
     private void Teleport()
     {
+        if (teleportEffectPrefab != null)
+            Instantiate(teleportEffectPrefab, transform.position, Quaternion.identity);
 
+        if (Agent != null && teleportTransform != null)
+            Agent.Warp(teleportTransform.position);
+        else if (teleportTransform != null)
+            transform.position = teleportTransform.position;
+
+        if (teleportEffectPrefab != null && teleportTransform != null)
+            Instantiate(teleportEffectPrefab, teleportTransform.position, Quaternion.identity);
     }
 
 
