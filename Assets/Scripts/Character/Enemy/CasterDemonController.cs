@@ -8,6 +8,7 @@ public class CasterDemonController : EnemyController
     private bool _isFirstNoPath = true;
 
     [SerializeField] private Transform teleportTransform;
+    [SerializeField] private Transform bulletShotPosition;
     [SerializeField] private GameObject magicMissilePrefab;
 
     public override void BattleSequence()
@@ -20,9 +21,8 @@ public class CasterDemonController : EnemyController
 
             // TODO : 배틀 중일 때 루프
             Debug.Log("## 몬스터의 교전 행동 루프");
+            StartCoroutine(ShotMagicMissile());
 
-            // 전투 행동이 끝남
-            _doneBattleSequence = true;
         }
     }
 
@@ -39,15 +39,54 @@ public class CasterDemonController : EnemyController
         }
     }
 
-    private void ShotMagicMissile()
+    private IEnumerator ShotMagicMissile()
     {
-        this.transform.LookAt(TraceTargetTransform.position);
+        for (int i = 0; i < 3; i++)
+        {
+            // 1. 기본 위치
+            Vector3 basePos = TraceTargetTransform.position;
+            Vector3 aimPosition = basePos;
+
+            // 2. 플레이어 Rigidbody로 속도 얻기
+            if (TraceTargetTransform.TryGetComponent<Rigidbody>(out var rb))
+            {
+                // 아주 짧은 시간만 예측
+                float predictionTime = 0.3f;
+                aimPosition += rb.velocity * predictionTime;
+            }
+
+            // 높이는 변경할 필요 없음
+            float fixedY = bulletShotPosition.position.y;
+            aimPosition.y = fixedY;
+
+            // 3. 그 위치를 바라보고
+            transform.LookAt(aimPosition);
+
+            // 4. 미사일 생성 및 초기화
+            var missile = Instantiate(
+                magicMissilePrefab,
+                bulletShotPosition.position,
+                transform.rotation
+            );
+            missile.GetComponent<MagicMissile>()
+                .Initialize(new BulletData(aimPosition, 5f, 10f, 5f));
+
+            yield return new WaitForSeconds(0.4f);
+        }
+
+        // 짧은 텀 후 끝내기
+        yield return new WaitForSeconds(1f);
+        _doneBattleSequence = true;
     }
+
+
 
     private void Teleport()
     {
 
     }
+
+
 
 
 }

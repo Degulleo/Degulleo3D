@@ -57,6 +57,8 @@ public class BulletBase : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        // TODO: 주인공 캐릭터를 찾는 로직 추가 필요
+        // 주인공 스크립트를 찾아 처리할 것.
         var character = other.GetComponent<CharacterBase>();
         if (character != null)
         {
