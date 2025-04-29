@@ -1,0 +1,158 @@
+﻿{
+  "dialogues": [
+    {
+      "id": "fairy_intro_1",
+      "name": "???",
+      "text": "일어나라 소년, 아니 청년, ...아니 34세의 회사원... 그대의 도움이 필요하다.",
+      "nextId": "fairy_intro_2",
+      "phase": "intro"
+    },
+    {
+      "id": "fairy_intro_2",
+      "name": "냉장고 요정",
+      "text": "나는 냉장고의 요정. \n이 냉장고는 세상을 멸망시킬 던전이 잠들어 있다, 그대가 부디 클리어 해주길 바란다. \n...일주일 안에!",
+      "nextId": "player_intro_1",
+      "phase": "intro"
+    },
+    {
+      "id": "player_intro_1",
+      "name": "주인공",
+      "text": "...(어쩐지 감자 마켓 온도가 -99도더니...) 내가 왜",
+      "nextId": "fairy_intro_3",
+      "phase": "intro"
+    },
+    {
+      "id": "fairy_intro_3",
+      "name": "냉장고 요정",
+      "text": "안 하면 냉장고 터진다.",
+      "nextId": "player_intro_2",
+      "phase": "intro"
+    },
+    {
+      "id": "player_intro_2",
+      "name": "주인공",
+      "text": "안돼! 3만원에 사온 내 비X코프 냉장고가! \n(실제 냉장고 상호명과는 아무 관계 없습니다.)",
+      "nextId": "fairy_intro_4",
+      "phase": "intro"
+    },
+    {
+      "id": "fairy_intro_4",
+      "name": "냉장고 요정",
+      "text": "또한 냉장고 폭파로 인한 화재가 발생할 수 있으며, 이는 부주의로 인하였기에 보험 적용에 제한이 있을 수 있습니다.",
+      "nextId": "player_intro_3",
+      "phase": "intro"
+    },
+    {
+      "id": "player_intro_3",
+      "name": "주인공",
+      "text": "할 수 밖에 없잖아...!!",
+      "nextId": "",
+      "phase": "intro"
+    },
+    {
+      "id": "fairy_gameplay_1",
+      "name": "냉장고 요정",
+      "text": "일주일 후 평판이 3이면 좋은 일이 발생할 지도 몰라",
+      "nextId": "",
+      "phase": "gameplay"
+    },
+    {
+      "id": "fairy_gameplay_2",
+      "name": "냉장고 요정",
+      "text": "출근 한 번 안했다고 평판 2씩이나 깎는 회사가 있으려나...",
+      "nextId": "player_gameplay_2",
+      "phase": "gameplay"
+    },
+    {
+      "id": "player_gameplay_2",
+      "name": "주인공",
+      "text": "(여기 있다.)",
+      "nextId": "",
+      "phase": "gameplay"
+    },
+    {
+      "id": "fairy_gameplay_3",
+      "name": "냉장고 요정",
+      "text": "던전은 총 2스테이지까지 있으며 모두 클리어한다면...",
+      "nextId": "player_gameplay_3",
+      "phase": "gameplay"
+    },
+    {
+      "id": "player_gameplay_3",
+      "name": "주인공",
+      "text": "한다면... 설마 부와 명예를?",
+      "nextId": "fairy_gameplay_4",
+      "phase": "gameplay"
+    },
+    {
+      "id": "fairy_gameplay_4",
+      "name": "냉장고 요정",
+      "text": "축하의 박수를 쳐줄게~",
+      "nextId": "",
+      "phase": "gameplay"
+    },
+    {
+      "id": "fairy_end_1",
+      "name": "냉장고 요정",
+      "text": "일주일이 지났네! 수고했어! 이제 이 비스X프 냉장고는 너의 것이야!",
+      "nextId": "player_end_1",
+      "phase": "end"
+    },
+    {
+      "id": "player_end_1",
+      "name": "주인공",
+      "text": "(네 도움이 없었다면 불가능했을 거야. 정말 고마워.) \n아자!!!!!!!!!",
+      "nextId": "fairy_end_2",
+      "phase": "end"
+    },
+    {
+      "id": "fairy_end_2",
+      "name": "냉장고 요정",
+      "text": "네 덕분에 이 세계는 다시 평화를 되찾았어.",
+      "nextId": "player_end_2",
+      "phase": "end"
+    },
+    {
+      "id": "player_end_2",
+      "name": "주인공",
+      "text": "그래... 이제 넌 어떻게 되는 거지?",
+      "nextId": "fairy_end_3",
+      "phase": "end"
+    },
+    {
+      "id": "fairy_end_3",
+      "name": "냉장고 요정",
+      "text": "여기 있지...?",
+      "nextId": "player_end_3",
+      "phase": "end"
+    },
+    {
+      "id": "player_end_3",
+      "name": "주인공",
+      "text": "?",
+      "nextId": "fairy_end_4",
+      "phase": "end"
+    },
+    {
+      "id": "fairy_end_4",
+      "name": "냉장고 요정",
+      "text": "?",
+      "nextId": "player_end_4",
+      "phase": "end"
+    },
+    {
+      "id": "player_end_4",
+      "name": "주인공",
+      "text": "... ?",
+      "nextId": "fairy_end_5",
+      "phase": "end"
+    },
+    {
+      "id": "fairy_end_5",
+      "name": "냉장고 요정",
+      "text": "... 엔딩 크레딧 출력!",
+      "nextId": "",
+      "phase": "end"
+    }
+  ]
+}
