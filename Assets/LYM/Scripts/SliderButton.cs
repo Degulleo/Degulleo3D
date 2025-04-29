@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,12 +16,13 @@ public class SliderButton : MonoBehaviour
     private Color32 _offColor = new Color32(125, 125, 125, 255);
     private Color32 _onColor = new Color32(70, 255, 90, 255);
     
-
     public void Init(bool isActive)
     {
         IsActive = isActive;
         var xLocation = IsActive ? _onXLocation : _offXLocation;
+        var color = IsActive ? _onColor : _offColor;
         handle.transform.localPosition = new Vector3(xLocation, handle.transform.localPosition.y, 0);
+        backgroundImage.color = color;
     }
 
     public void OnClicked()
@@ -28,11 +30,12 @@ public class SliderButton : MonoBehaviour
         if (IsActive)
         {
             handle.transform.DOLocalMoveX(_offXLocation, 0.2f);
-            backgroundImage.DOColor()
+            backgroundImage.DOColor(_offColor, 0.2f);
         }
-        else
+        else 
         {
-            handle.transform.DOLocalMoveX(_onXLocation, 0.2f);   
+            handle.transform.DOLocalMoveX(_onXLocation, 0.2f);
+            backgroundImage.DOColor(_onColor, 0.2f);
         }
         IsActive = !IsActive;
     }

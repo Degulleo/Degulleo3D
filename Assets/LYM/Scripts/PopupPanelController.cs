@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,26 +9,18 @@ public class PopupPanelController : PanelController
 {
     [SerializeField] private GameObject confirmButton;
     [SerializeField] private GameObject contradictButton;
+    [SerializeField] private TMP_Text popupText;
 
     public delegate void OnConfirmDelegate();
     private OnConfirmDelegate _onConfirmDelegate;
     public delegate void OnContradictDelegate();
     private OnContradictDelegate _onContradictDelegate;
-    private void Start()
-    {
-        Show(false, "수면에 들 시간입니다.", () => {});
-    }
 
-    public void Show(bool isNeed2Contradict, string message, OnConfirmDelegate onConfirm)
+    public void Show(string message, OnConfirmDelegate onConfirm, OnContradictDelegate onContradict = null)
     {
-        confirmButton.SetActive(isNeed2Contradict);
-        _onConfirmDelegate = onConfirm;
-        base.Show();
-    }
-
-    public void Show(bool isNeed2Contradict, string message, OnConfirmDelegate onConfirm, OnContradictDelegate onContradict)
-    {
-        confirmButton.SetActive(isNeed2Contradict);
+        bool isNeed2Contradict = onContradict != null;
+        contradictButton.SetActive(isNeed2Contradict);
+        popupText.text = message;
         _onConfirmDelegate = onConfirm;
         _onContradictDelegate = onContradict;
         base.Show();

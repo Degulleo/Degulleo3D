@@ -26,5 +26,6 @@ public class PanelController : MonoBehaviour
     {
         if (_canvasGroup == null) return;
         _canvasGroup.alpha = 0;
+        Destroy(gameObject);
     }
 }
