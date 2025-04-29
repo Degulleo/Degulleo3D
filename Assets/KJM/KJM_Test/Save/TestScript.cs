@@ -11,11 +11,11 @@ using Random = UnityEngine.Random;
 public class TestScript : MonoBehaviour,ISaveable
 {
     //던전
-    private int attackLevel;
+    private int attackPowerLevel;
     private int attackSpeedLevel;
     private int heartLevel;
     private int moveSpeedLevel;
-    private int evasionTimeLevel;
+    private int dashCoolDownLevel;
     private int stageLevel;
     
     //일상
@@ -34,7 +34,7 @@ public class TestScript : MonoBehaviour,ISaveable
         float floatValue = Random.Range(0f, 2f);
         int intValue = Random.Range(0, 10);
         
-        attackLevel = intValue;
+        attackPowerLevel = intValue;
         attackSpeedLevel = intValue;
         heartLevel = intValue;
         moveSpeedLevel = intValue;
@@ -59,11 +59,11 @@ public class TestScript : MonoBehaviour,ISaveable
      {
          if (save?.dungeonSave != null)
          {
-             attackLevel = save.dungeonSave.attackLevel;
+             attackPowerLevel = save.dungeonSave.attackPowerLevel;
              attackSpeedLevel = save.dungeonSave.attackSpeedLevel;
              heartLevel = save.dungeonSave.heartLevel;
              moveSpeedLevel = save.dungeonSave.moveSpeedLevel;
-             evasionTimeLevel = save.dungeonSave.evasionTimeLevel;
+             dashCoolDownLevel = save.dungeonSave.dashCoolDownLevel;
              stageLevel = save.dungeonSave.stageLevel;
          }
          
@@ -90,11 +90,11 @@ public class TestScript : MonoBehaviour,ISaveable
          {
              dungeonSave = new DungeonSave()
              {
-                 attackLevel = this.attackLevel,
+                 attackPowerLevel = this.attackPowerLevel,
                  attackSpeedLevel = this.attackSpeedLevel,
                  heartLevel = this.heartLevel,
                  moveSpeedLevel = this.moveSpeedLevel,
-                 evasionTimeLevel = this.evasionTimeLevel,
+                 dashCoolDownLevel = this.dashCoolDownLevel,
                  stageLevel = this.stageLevel,
                  
              },

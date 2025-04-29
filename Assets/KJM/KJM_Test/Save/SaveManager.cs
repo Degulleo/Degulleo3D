@@ -18,7 +18,6 @@ public class SaveManager : Singleton<SaveManager>
     private Save mainSave;
     private Save backupSave;
     
-
     void Start()
     {
         Load();                             //저장된 메인,백업 세이브를 로드

@@ -6,11 +6,11 @@ using UnityEngine;
 public class DungeonSave
 {
     // 강화 수치
-    public int attackLevel = 0;
+    public int attackPowerLevel = 0;
     public int attackSpeedLevel = 0;
     public int heartLevel = 0;
     public int moveSpeedLevel = 0;
-    public int evasionTimeLevel = 0;
+    public int dashCoolDownLevel = 0;
 
     // 현재 진행 중인 스테이지
     public int stageLevel = 0;
@@ -20,11 +20,11 @@ public class DungeonSave
     {
         if (other == null) return;
 
-        if (other.attackLevel != 0) attackLevel = other.attackLevel;
+        if (other.attackPowerLevel != 0) attackPowerLevel = other.attackPowerLevel;
         if (other.attackSpeedLevel != 0) attackSpeedLevel = other.attackSpeedLevel;
         if (other.heartLevel != 0) heartLevel = other.heartLevel;
         if (other.moveSpeedLevel != 0) moveSpeedLevel = other.moveSpeedLevel;
-        if (other.evasionTimeLevel != 0) evasionTimeLevel = other.evasionTimeLevel;
+        if (other.dashCoolDownLevel != 0) dashCoolDownLevel = other.dashCoolDownLevel;
         if (other.stageLevel != 0) stageLevel = other.stageLevel;
     }
 }
