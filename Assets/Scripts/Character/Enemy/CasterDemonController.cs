@@ -73,8 +73,6 @@ public class CasterDemonController : EnemyController
         _doneBattleSequence = true;
     }
 
-
-
     private void Teleport()
     {
         if (teleportEffectPrefab != null)

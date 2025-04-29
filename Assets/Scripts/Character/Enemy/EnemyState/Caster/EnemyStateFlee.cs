@@ -16,7 +16,7 @@ public class EnemyStateFlee :IEnemyState
     private Vector3 _lastPosition;
     private float _stuckTimer = 0f;
     private const float StuckThresholdTime = 1f;   // 1초 동안 거의 못 움직이면 막힌 걸로 간주
-    private const float StuckMoveThreshold = 0.01f; // 이내 이동은 “제자리”로 본다
+    private const float StuckMoveThreshold = 0.1f; // 이내 이동은 “제자리”로 본다
 
     public void Enter(EnemyController enemyController)
     {
