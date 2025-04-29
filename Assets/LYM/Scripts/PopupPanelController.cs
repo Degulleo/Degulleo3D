@@ -15,7 +15,7 @@ public class PopupPanelController : PanelController
     private OnContradictDelegate _onContradictDelegate;
     private void Start()
     {
-        Show(false, "", () => {});
+        Show(false, "수면에 들 시간입니다.", () => {});
     }
 
     public void Show(bool isNeed2Contradict, string message, OnConfirmDelegate onConfirm)
