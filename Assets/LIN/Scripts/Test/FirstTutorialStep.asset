@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b22d834cf5e26e647be215074940d40e, type: 3}
+  m_Name: FirstTutorialStep
+  m_EditorClassIdentifier: 
+  message: Let's begin tutorial. First, touch next button.
+  onBegin:
+    m_PersistentCalls:
+      m_Calls: []
+  onComplete:
+    m_PersistentCalls:
+      m_Calls: []
+  timeout: 0
+  requiredKey: 0
+  touchTargetIndex: 0
+  nextStep: {fileID: 11400000, guid: 83b9fc17fee6d884fb0c4ea5fc25e175, type: 2}
