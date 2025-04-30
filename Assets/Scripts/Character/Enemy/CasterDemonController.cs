@@ -17,6 +17,10 @@ public class CasterDemonController : EnemyController
     [SerializeField] private GameObject magicMissilePrefab;
     [SerializeField] private GameObject teleportEffectPrefab;
 
+    [Header("각종 데미지 이펙트 세트")]
+    [SerializeField] private GameObject chariotWarning;
+    [SerializeField] private GameObject chariotEffect;
+
     private float _teleportDistance = 4f; // 플레이어 뒤로 떨어질 거리
 
     // 텔레포트 쿨타임
@@ -49,7 +53,7 @@ public class CasterDemonController : EnemyController
             _doneBattleSequence = false;
 
             // TODO : 배틀 중일 때 루프
-            Debug.Log("## 몬스터의 교전 행동 루프");
+            // Debug.Log("## 몬스터의 교전 행동 루프");
             Thinking();
         }
     }
@@ -147,23 +151,45 @@ public class CasterDemonController : EnemyController
         if (teleportEffectPrefab != null)
             Instantiate(teleportEffectPrefab, startPos, Quaternion.identity);
 
-        // 플레이어 뒤쪽 위치 계산
-        Vector3 playerPos = TraceTargetTransform.position;
-        Vector3 behindDir = -TraceTargetTransform.forward;
-        Vector3 targetPos = playerPos + behindDir.normalized * _teleportDistance;
+        // 텔레포트와 함께 시전하는 범위 공격
+        var aoe = Instantiate(chariotWarning, startPos, Quaternion.identity).GetComponent<ChariotAoeController>();
 
-        // NavMesh 유효 위치 확인
-        Vector3 finalPos = targetPos;
-        if (NavMesh.SamplePosition(targetPos, out NavMeshHit hit, 1f, NavMesh.AllAreas))
+        var effectData = new DamageEffectData
         {
-            finalPos = hit.position;
-        }
+            damage = (int)attackPower,
+            radius = 10,
+            delay = 1.5f,
+            targetLayer = TargetLayerMask,
+            explosionEffectPrefab = chariotEffect
+        };
 
-        // 텔레포트 실행
-        Agent.Warp(finalPos);
+        aoe.SetEffect(effectData, null, null);
+
+        // // 플레이어 뒤쪽 위치 계산
+        // Vector3 playerPos = TraceTargetTransform.position;
+        // Vector3 behindDir = -TraceTargetTransform.forward;
+        // Vector3 targetPos = playerPos + behindDir.normalized * _teleportDistance;
+        //
+        // // NavMesh 유효 위치 확인
+        // Vector3 finalPos = targetPos;
+        // if (NavMesh.SamplePosition(targetPos, out NavMeshHit hit, 1f, NavMesh.AllAreas))
+        // {
+        //     finalPos = hit.position;
+        // }
+        //
+        // // 텔레포트 실행
+        // Agent.Warp(finalPos);
+        //
+        // if (teleportEffectPrefab != null)
+        //     Instantiate(teleportEffectPrefab, finalPos, Quaternion.identity);
+
+
+        // 중앙으로 이동
+        Agent.Warp(Vector3.zero);
 
         if (teleportEffectPrefab != null)
-            Instantiate(teleportEffectPrefab, finalPos, Quaternion.identity);
+            Instantiate(teleportEffectPrefab, Vector3.zero, Quaternion.identity);
+
     }
 
     private void SetSequence(IEnumerator newSequence)
