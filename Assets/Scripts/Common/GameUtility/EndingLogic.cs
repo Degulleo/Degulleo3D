@@ -10,7 +10,7 @@ public enum EndingType
     Happy // 던전 공략 O, 평판 기본 스탯 값 * 1.5 이상
 }
 
-public partial class GameManager : Singleton<GameManager>
+public partial class GameManager 
 {
     private float happyEndReputation = 3.0f;
     
@@ -23,6 +23,9 @@ public partial class GameManager : Singleton<GameManager>
     // 엔딩 관련 메서드. 7일차에 실행
     private void TriggerTimeEnding()
     {
+        // npc와의 마지막 대화 출력
+        StartNPCDialogue(GamePhase.End);
+        
         // 플레이어 상태에 따라 엔딩 판별
         EndingType endingType = DetermineEnding();
         

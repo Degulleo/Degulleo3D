@@ -21,6 +21,8 @@ public partial class GameManager : Singleton<GameManager>
     // 날짜 변경 이벤트, 추후에 UI 상의 날짜를 변경할 때 사용
     public event Action<int> OnDayChanged;
     
+    private ChatWindowController chatWindowController; // 대화창 컨트롤러
+    
     private void Start()
     {
         // 오디오 초기화
@@ -39,6 +41,23 @@ public partial class GameManager : Singleton<GameManager>
         }
         playerStats.OnDayEnded += AdvanceDay;
     }
+
+    #region 대화 관련
+    
+    public void StartNPCDialogue(GamePhase phase) // intro, gameplay, end 존재
+    {
+        if(chatWindowController == null)
+            SetChatWindowController();
+        
+        chatWindowController.SetGamePhase(phase);
+    }
+    
+    private void SetChatWindowController()
+    {
+        chatWindowController = FindObjectOfType<ChatWindowController>();
+    }
+
+    #endregion
     
     // 날짜 진행
     public void AdvanceDay()

@@ -44,6 +44,7 @@ public class ChatWindowController : MonoBehaviour, IPointerClickHandler
     [SerializeField] private TMP_Text chatText;
     [SerializeField] private Image clickIndicator;
     [SerializeField] private GameObject chatWindowObject; // 대화 종료용
+    [SerializeField] private AudioClip typingClip; // 타이핑 사운드
 
     private Coroutine _typingCoroutine;
     private Coroutine _clickCoroutine;
@@ -52,8 +53,6 @@ public class ChatWindowController : MonoBehaviour, IPointerClickHandler
     
     public delegate void OnComplete();
     public OnComplete onComplete;
-    
-    private bool _dialogueEnded = false;  // 대화 종료 여부
     
     private FairyDialogueManager _dialogueManager;
     
@@ -65,48 +64,29 @@ public class ChatWindowController : MonoBehaviour, IPointerClickHandler
     
     private void Start()
     {
-        // FairyDialogueManager 초기화
         _dialogueManager = new FairyDialogueManager(this);
         
-        // 완료 콜백 설정
         onComplete = () => {
+            // 대화문 종료 call back
             Debug.Log("대화가 완료되었습니다.");
         };
-        
-        // 테스트 코드: 인트로 대화 시작
-        Debug.Log("인트로 대화 시작");
-        _dialogueManager.SetGamePhase(GamePhase.Intro);
-        
-        // 테스트 코드: 게임플레이 및 엔딩 대화 테스트를 위한 코루틴 시작
-        StartCoroutine(TestDialogueSequence());
     }
-    
-    // 테스트 코드
-    private IEnumerator TestDialogueSequence()
+
+    // 외부 호출용 함수 (대화 시작)
+    public void SetGamePhase(GamePhase phase)
     {
-        // 인트로 대화가 끝날 시간을 대략적으로 기다림
-        yield return new WaitForSeconds(5f);
-        
-        // 게임플레이 단계로 전환
-        Debug.Log("게임플레이 대화 시작");
-        _dialogueManager.SetGamePhase(GamePhase.Gameplay);
-        _dialogueManager.TalkToFairy();
-        
-        // 3초 후 다른 게임플레이 대화 테스트
-        yield return new WaitForSeconds(3f);
-        _dialogueManager.StartDialogueById("fairy_gameplay_2");
-        
-        // 3초 후 엔딩 대화 테스트
-        yield return new WaitForSeconds(3f);
-        Debug.Log("엔딩 대화 시작");
-        _dialogueManager.SetGamePhase(GamePhase.End);
+        _dialogueManager.SetGamePhase(phase);
+
+        // Gameplay 상태라면 랜덤 대화 출력
+        if (phase == GamePhase.Gameplay) _dialogueManager.ShowRandomGameplayDialogue();
     }
+
+    #region Show and Hide
     
     // 대화창 표시
     public void ShowWindow()
     {
         chatWindowObject.SetActive(true);
-        _dialogueEnded = false;
         
         if (_inputQueue.Count > 0)
         {
@@ -134,12 +114,13 @@ public class ChatWindowController : MonoBehaviour, IPointerClickHandler
         }
     }
 
+    #endregion
+    
     // 대화 시퀀스 설정
     public void SetDialogueSequence(List<DialogueStruct> sequence)
     {
         // 기존 큐 초기화
         _inputQueue.Clear();
-        _dialogueEnded = false;
         
         // 새 대화 시퀀스를 큐에 추가
         foreach (DialogueStruct dialog in sequence)
@@ -153,7 +134,8 @@ public class ChatWindowController : MonoBehaviour, IPointerClickHandler
     {
         if (_inputQueue.Count == 0)
         {
-            _dialogueEnded = true;
+            HideWindow();
+            onComplete?.Invoke();
             return;
         }
         
@@ -191,6 +173,7 @@ public class ChatWindowController : MonoBehaviour, IPointerClickHandler
             strText.Append(text[i]);
             chatText.text = strText.ToString();
             yield return new WaitForSeconds(0.05f);
+            SoundManager.Instance.PlaySFX(typingClip); // 타이핑 사운드
         }
 
         _clickCoroutine = StartCoroutine(ClickIndicatorCoroutine());
@@ -217,8 +200,8 @@ public class ChatWindowController : MonoBehaviour, IPointerClickHandler
         {
             StopCoroutine(_typingCoroutine);
             _typingCoroutine = null;
-            chatText.text = _inputText;
-            _clickCoroutine = StartCoroutine(ClickIndicatorCoroutine());
+            if (chatText != null) chatText.text = _inputText;
+            if (clickIndicator != null) _clickCoroutine = StartCoroutine(ClickIndicatorCoroutine());
         }
         else
         {
@@ -228,23 +211,14 @@ public class ChatWindowController : MonoBehaviour, IPointerClickHandler
                 _clickCoroutine = null;
             }
             
-            // 대화가 끝났으면 창 닫기
-            if (_dialogueEnded)
-            {
-                HideWindow();
-                onComplete?.Invoke();
-                return;
-            }
-            
             if (_inputQueue.Count > 0) // 대화가 남은 경우
             {
                 ShowNextDialogue();
             }
             else
             {
-                _dialogueEnded = true; // 일단 대화창 닫고 이후 콜백 호출
+                HideWindow(); // 대화 종료되면 창 닫기
             }
         }
     }
-    
 }

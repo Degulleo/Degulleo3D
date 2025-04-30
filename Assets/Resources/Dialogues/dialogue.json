@@ -80,14 +80,7 @@
     {
       "id": "player_gameplay_3",
       "name": "주인공",
-      "text": "한다면... 설마 부와 명예를?",
-      "nextId": "fairy_gameplay_4",
-      "phase": "gameplay"
-    },
-    {
-      "id": "fairy_gameplay_4",
-      "name": "냉장고 요정",
-      "text": "축하의 박수를 쳐줄게~",
+      "text": "한다면... 뭐지?",
       "nextId": "",
       "phase": "gameplay"
     },
@@ -150,7 +143,7 @@
     {
       "id": "fairy_end_5",
       "name": "냉장고 요정",
-      "text": "... 엔딩 크레딧 출력!",
+      "text": "... GameManager.Instance.ShowCredit(GamePhase.End);",
       "nextId": "",
       "phase": "end"
     }

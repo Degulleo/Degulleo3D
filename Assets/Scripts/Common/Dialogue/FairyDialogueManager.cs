@@ -4,25 +4,22 @@ using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-// 일반 클래스로 변경된 FairyDialogueManager
 public class FairyDialogueManager
 {
     private ChatWindowController _chatWindow;
     private string _dialogueFileName;
     
-    // 현재 게임 단계
-    private GamePhase _currentGamePhase = GamePhase.Intro;
+    private GamePhase _currentGamePhase = GamePhase.Intro; // 현재 게임 단계
     
     private DialogueData _database;
     private Dictionary<string, DialogueStruct> _dialogueDict;
-    
-    // 단계별 대화 모음
     private Dictionary<string, List<DialogueStruct>> _phaseDialogues;
     
     // 이미 보여준 게임플레이 대화 추적
     private HashSet<string> _shownGameplayDialogueIds;
+
+    private string _fairyName = "냉장고 요정";
     
-    // 생성자 
     public FairyDialogueManager(ChatWindowController chatWindow, string dialogueFileName = "dialogue.json")
     {
         _chatWindow = chatWindow;
@@ -41,33 +38,15 @@ public class FairyDialogueManager
         
         if (jsonFile == null)
         {
-            Debug.LogError($"Failed to load dialogue database: {filePath}");
+            Debug.LogError($"경로 오류로 인한 대화 데이터 로딩 실패 : {filePath}");
             _database = new DialogueData { dialogues = new List<DialogueStruct>() };
             return;
         }
         
-        Debug.Log($"JSON 파일 내용: {jsonFile.text.Substring(0, Mathf.Min(200, jsonFile.text.Length))}..."); // 파일 내용 확인
-        
         try {
             _database = JsonUtility.FromJson<DialogueData>(jsonFile.text);
-            Debug.Log($"대화 항목 수: {_database.dialogues.Count}");
-        
-            // 검증: 각 단계별 대화 항목 수 확인
-            Dictionary<string, int> phaseCount = new Dictionary<string, int>();
-            foreach (var dialogue in _database.dialogues)
-            {
-                if (!phaseCount.ContainsKey(dialogue.phase))
-                    phaseCount[dialogue.phase] = 0;
-                phaseCount[dialogue.phase]++;
-            }
-        
-            foreach (var phase in phaseCount)
-            {
-                Debug.Log($"단계 '{phase.Key}': {phase.Value}개 항목");
-            }
-        
-            // 대화 사전 초기화
-            _dialogueDict = new Dictionary<string, DialogueStruct>();
+            
+            _dialogueDict = new Dictionary<string, DialogueStruct>(); // 대화 사전 초기화
             foreach (DialogueStruct entry in _database.dialogues)
             {
                 _dialogueDict[entry.id] = entry;
@@ -95,12 +74,11 @@ public class FairyDialogueManager
         }
     }
     
-    // 게임 단계 설정
+    // 게임 단계 설정, GamePlay는 따로 실행
     public void SetGamePhase(GamePhase phase)
     {
         _currentGamePhase = phase;
         
-        // Intro 또는 End 단계로 진입 시 자동으로 해당 대화 시작
         if (phase == GamePhase.Intro)
         {
             StartPhaseDialogue("intro");
@@ -120,13 +98,12 @@ public class FairyDialogueManager
             return;
         }
         
-        // 해당 단계의 첫 대화 항목 찾기 (요정이 먼저 말하는 대화)
+        // 첫 대화 찾기 (요정이 먼저 말함)
         DialogueStruct startEntry = _phaseDialogues[phaseName]
-            .FirstOrDefault(d => d.name == "냉장고 요정" && !string.IsNullOrEmpty(d.nextId));
+            .FirstOrDefault(d => d.name == _fairyName && !string.IsNullOrEmpty(d.nextId));
         
         if (startEntry == null)
         {
-            // 적합한 시작 대화가 없으면 첫 번째 대화 사용
             startEntry = _phaseDialogues[phaseName][0];
         }
         
@@ -134,18 +111,14 @@ public class FairyDialogueManager
         StartDialogueSequence(startEntry.id);
     }
     
-    // 랜덤 게임플레이 대화 보여주기
+    // Gameplay일 때 랜덤 대화 출력
     public void ShowRandomGameplayDialogue()
     {
-        if (_currentGamePhase != GamePhase.Gameplay)
-        {
-            Debug.LogWarning("Random dialogue can only be shown during gameplay phase");
-            return;
-        }
+        if (_currentGamePhase != GamePhase.Gameplay) return;
         
-        // 게임플레이 단계의 요정 대화 중 아직 보여주지 않은 것 찾기
+        // 요정 대화 중 아직 보여주지 않은 것 찾기
         var availableDialogues = _phaseDialogues["gameplay"]
-            .Where(d => d.name == "냉장고 요정" && !_shownGameplayDialogueIds.Contains(d.id))
+            .Where(d => d.name == _fairyName && !_shownGameplayDialogueIds.Contains(d.id))
             .ToList();
         
         // 모든 대화를 다 보여줬다면 다시 초기화
@@ -153,7 +126,7 @@ public class FairyDialogueManager
         {
             _shownGameplayDialogueIds.Clear();
             availableDialogues = _phaseDialogues["gameplay"]
-                .Where(d => d.name == "냉장고 요정")
+                .Where(d => d.name == _fairyName)
                 .ToList();
         }
         
@@ -174,17 +147,11 @@ public class FairyDialogueManager
     // 대화 ID로 대화 시작
     public void StartDialogueSequence(string startDialogueId)
     {
-        if (!_dialogueDict.ContainsKey(startDialogueId))
-        {
-            Debug.LogError($"Dialogue ID not found: {startDialogueId}");
-            return;
-        }
+        if (!_dialogueDict.ContainsKey(startDialogueId)) return;
         
-        // 시작 대화 항목 가져오기
-        DialogueStruct startEntry = _dialogueDict[startDialogueId];
+        DialogueStruct startEntry = _dialogueDict[startDialogueId]; // 시작 대화
         
-        // 대화 시퀀스 구성
-        List<DialogueStruct> sequence = BuildDialogueSequence(startEntry);
+        List<DialogueStruct> sequence = BuildDialogueSequence(startEntry); // 대화 시퀀스 구성
         
         // 대화창에 대화 시퀀스 전달
         _chatWindow.SetDialogueSequence(sequence);
@@ -217,24 +184,7 @@ public class FairyDialogueManager
         return sequence;
     }
     
-    // 요정에게 말 걸기 (게임 중 언제든 사용 가능)
-    public void TalkToFairy()
-    {
-        switch (_currentGamePhase)
-        {
-            case GamePhase.Intro:
-                StartPhaseDialogue("intro");
-                break;
-            case GamePhase.Gameplay:
-                ShowRandomGameplayDialogue();
-                break;
-            case GamePhase.End:
-                StartPhaseDialogue("end");
-                break;
-        }
-    }
-    
-    // 특정 대화 ID로 대화 시작 (외부에서 호출 가능)
+    // 특정 대화 ID로 대화 시작 (세이브/로드 시 사용)
     public void StartDialogueById(string dialogueId)
     {
         if (_dialogueDict.ContainsKey(dialogueId))
@@ -245,11 +195,5 @@ public class FairyDialogueManager
         {
             Debug.LogError($"Dialogue ID not found: {dialogueId}");
         }
-    }
-    
-    // 완료 콜백 설정
-    public void SetOnCompleteCallback(ChatWindowController.OnComplete callback)
-    {
-        _chatWindow.onComplete = callback;
     }
 }
