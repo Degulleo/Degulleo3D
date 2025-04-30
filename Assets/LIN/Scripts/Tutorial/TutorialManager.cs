@@ -15,7 +15,7 @@ public class TutorialManager : MonoBehaviour
     [Header("튜토리얼 터치 타겟들")]
     [SerializeField] private GameObject[] touchTargets;  
     
-    [Header("터치 타겟에 맞춰 감춰놓을 게임 오브젝트")]
+    [Header("감춰놓을 게임 오브젝트")]
     [SerializeField] private GameObject[] lockTargets;  
     
     private Coroutine _runningCoroutine;
@@ -28,6 +28,7 @@ public class TutorialManager : MonoBehaviour
 
     public void StartTutorial()
     {
+        overlay.gameObject.SetActive(true);
         overlay.alpha = 1f;
         overlay.blocksRaycasts = true;
         RunStep(firstStep);
@@ -53,7 +54,12 @@ public class TutorialManager : MonoBehaviour
         if (step.touchTargetIndex >= 0)
         {
             targetRt = touchTargets[step.touchTargetIndex].GetComponent<RectTransform>();
-            lockTargets[step.touchTargetIndex].SetActive(false);
+            touchTargets[step.touchTargetIndex].SetActive(true);
+        }
+        //화면에서 숨겨야 할 요소가 있는지 체크
+        if (step.deactiveObjectIndex >= 0)
+        {
+            lockTargets[step.deactiveObjectIndex].SetActive(false);
         }
 
         while (!done)
@@ -73,9 +79,18 @@ public class TutorialManager : MonoBehaviour
                     if (RectTransformUtility.RectangleContainsScreenPoint(
                             targetRt, screenPos, overlayCanvas.worldCamera))
                     {
-                        yield return new WaitForSeconds(1f);
-                        // done = true;
-                        // Debug.Log("영역 터치");
+                        Debug.Log("타겟 터치");
+                        targetRt = null;
+                        touchTargets[step.touchTargetIndex].SetActive(false);        
+                        if (step.deactiveObjectIndex >= 0)
+                        {
+                            lockTargets[step.deactiveObjectIndex].SetActive(true);
+                        }
+                        done = true;
+                    }
+                    else
+                    {
+                        Debug.Log("타겟이 아닌 곳 터치");
                     }
                 }
             }

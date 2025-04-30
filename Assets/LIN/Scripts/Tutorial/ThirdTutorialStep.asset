@@ -10,14 +10,27 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b22d834cf5e26e647be215074940d40e, type: 3}
-  m_Name: FirstTutorialStep
+  m_Name: ThirdTutorialStep
   m_EditorClassIdentifier: 
-  message: "\uD29C\uD1A0\uB9AC\uC5BC\uC744 \uC2DC\uC791\uD569\uB2C8\uB2E4.\n2\uCD08
-    \uB4A4 \uC790\uB3D9\uC73C\uB85C \uC0AC\uB77C\uC9C0\uB294 \uBA54\uC138\uC9C0\uC785\uB2C8\uB2E4."
+  message: "\uAC00\uC9DC \uC870\uC774\uC2A4\uD2F1 \uBC29\uD5A5\uB300\uB85C \uC9C1\uC9C4\uD569\uB2C8\uB2E4..
+    \uBC29\uD5A5 \uC81C\uD55C\uD560 \uC544\uC774\uB514\uC5B4 \uAD6C\uD574\uC694.."
   onBegin:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: -3457973789329276246, guid: 7d3bc5ecd8c87f64f8a9e137674ee021,
+      - m_Target: {fileID: 6973777276245600638, guid: ac48046581f0206449e480caaee1ae59,
+          type: 3}
+        m_TargetAssemblyTypeName: FowardFixedJoystickController, Assembly-CSharp
+        m_MethodName: Show
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: -3457973789329276246, guid: 29492c975fd1aaa40903e821b69daa29,
           type: 3}
         m_TargetAssemblyTypeName: TutorialPlayerController, Assembly-CSharp
         m_MethodName: Show
@@ -33,9 +46,9 @@ MonoBehaviour:
   onComplete:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: -3457973789329276246, guid: 7d3bc5ecd8c87f64f8a9e137674ee021,
+      - m_Target: {fileID: 6973777276245600638, guid: ac48046581f0206449e480caaee1ae59,
           type: 3}
-        m_TargetAssemblyTypeName: TutorialPlayerController, Assembly-CSharp
+        m_TargetAssemblyTypeName: FowardFixedJoystickController, Assembly-CSharp
         m_MethodName: Hide
         m_Mode: 1
         m_Arguments:
@@ -46,8 +59,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  timeout: 2
+  timeout: 2.3
   requiredKey: 0
   touchTargetIndex: -1
-  deactiveObjectIndex: -1
-  nextStep: {fileID: 11400000, guid: a6f10decfc8504843b358ab8893c01f7, type: 2}
+  deactiveObjectIndex: 0
+  nextStep: {fileID: 11400000, guid: 3629cede21d4bb340924cd9b1d401bb9, type: 2}

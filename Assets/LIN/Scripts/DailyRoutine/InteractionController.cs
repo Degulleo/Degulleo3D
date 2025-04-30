@@ -19,6 +19,10 @@ public class InteractionController : MonoBehaviour
     private void Start()
     {
         playerStats.OnWorked += SuddenAfterWorkEventHappen;
+        if (housingCanvasController == null)
+        {
+            housingCanvasController = FindObjectOfType<HousingCanvasController>();
+        }
     }
 
     // 상호작용 가능한 사물 범위에 들어올 때

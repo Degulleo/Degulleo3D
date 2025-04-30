@@ -15,6 +15,8 @@ public class TutorialStep : ScriptableObject
     
     [Tooltip("터치해야 할 위치가 있다면, 게임매니저에게 인덱스 전달")]
     public int touchTargetIndex=-1;
+    [Tooltip("배경캔버스에서 끌 오브젝트 인덱스 전달")]
+    public int deactiveObjectIndex=-1;
 
     [Tooltip("다음 단계로 넘어갈 TutorialStep, null이면 튜토리얼 종료")]
     public TutorialStep nextStep;
