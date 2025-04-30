@@ -1,5 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.AI;
+using Random = UnityEngine.Random;
 
 public class EnemyStateFlee :IEnemyState
 {
@@ -107,11 +109,9 @@ public class EnemyStateFlee :IEnemyState
     {
         if (_stuckCount >= 4)
         {
-            _enemyController.OnCannotFleeBehaviour();
-            _stuckCount = 0;
+            _enemyController.OnCannotFleeBehaviour(() => { _stuckCount = 0;});
             return;
         }
-        _stuckCount++;
         // 무작위 도망 지점 샘플링 시도
         Vector3 randomDirection = Random.insideUnitSphere * (_fleeDistance * 2);
         randomDirection += _playerTransform.position;
@@ -120,16 +120,10 @@ public class EnemyStateFlee :IEnemyState
         {
             // 샘플링에 성공했으면 일단 그 위치로 가 보도록 세팅
             Debug.Log("## 일단 가봄");
+            _stuckCount++;
             _enemyController.Agent.SetDestination(hit.position);
             // _enemyController.OnCannotFleeBehaviour();
         }
-
-        // else
-        // {
-        //     // 대체 경로도 찾을 수 없는 경우
-        //     Debug.Log("## 대체 경로도 못찾음");
-        //     _enemyController.OnCannotFleeBehaviour();
-        // }
     }
 
 

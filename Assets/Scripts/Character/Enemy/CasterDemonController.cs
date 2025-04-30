@@ -16,12 +16,12 @@ public class CasterDemonController : EnemyController
     [SerializeField] private Transform bulletShotPosition;
     [SerializeField] private GameObject magicMissilePrefab;
     [SerializeField] private GameObject teleportEffectPrefab;
-    [SerializeField] private float teleportDistance = 4f; // 플레이어 뒤로 떨어질 거리
 
+    private float _teleportDistance = 4f; // 플레이어 뒤로 떨어질 거리
 
     // 텔레포트 쿨타임
     private float _teleportTimer = 0;
-    private const float TeleportThresholdTime = 3.5f;
+    private const float TeleportThresholdTime = 20f;
 
     private bool CanTeleport {
         get
@@ -82,12 +82,16 @@ public class CasterDemonController : EnemyController
                 SetSequence(ShotMagicMissile());
                 break;
         }
+
     }
 
-    public override void OnCannotFleeBehaviour()
+    public override void OnCannotFleeBehaviour(Action action)
     {
-        if(CanTeleport)
-            SetSequence(Teleport());
+        if (CanTeleport)
+        {
+            action();
+            Teleport();
+        }
     }
 
     private IEnumerator ShotMagicMissile()
@@ -137,7 +141,7 @@ public class CasterDemonController : EnemyController
         return aimPosition;
     }
 
-    private IEnumerator Teleport()
+    private void Teleport()
     {
         Vector3 startPos = transform.position;
         if (teleportEffectPrefab != null)
@@ -146,7 +150,7 @@ public class CasterDemonController : EnemyController
         // 플레이어 뒤쪽 위치 계산
         Vector3 playerPos = TraceTargetTransform.position;
         Vector3 behindDir = -TraceTargetTransform.forward;
-        Vector3 targetPos = playerPos + behindDir.normalized * teleportDistance;
+        Vector3 targetPos = playerPos + behindDir.normalized * _teleportDistance;
 
         // NavMesh 유효 위치 확인
         Vector3 finalPos = targetPos;
@@ -155,15 +159,11 @@ public class CasterDemonController : EnemyController
             finalPos = hit.position;
         }
 
-        yield return new WaitForSeconds(0.3f);
-
         // 텔레포트 실행
         Agent.Warp(finalPos);
 
         if (teleportEffectPrefab != null)
             Instantiate(teleportEffectPrefab, finalPos, Quaternion.identity);
-
-        yield return null;
     }
 
     private void SetSequence(IEnumerator newSequence)
