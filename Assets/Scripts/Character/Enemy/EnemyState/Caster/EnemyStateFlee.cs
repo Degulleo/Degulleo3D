@@ -32,6 +32,8 @@ public class EnemyStateFlee :IEnemyState
         _enemyController.Agent.isStopped = false;
         _stuckTimer = 0f;
         _fleeSearchTimer = 0;
+
+        _enemyController.SetAnimation(CasterDemonController.Flee, true);
     }
 
     public void Update()
@@ -129,6 +131,7 @@ public class EnemyStateFlee :IEnemyState
 
     public void Exit()
     {
+        _enemyController.SetAnimation(CasterDemonController.Flee, false);
         _enemyController.Agent.isStopped = true;
         _enemyController.Agent.ResetPath();
         _playerTransform = null;

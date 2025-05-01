@@ -1,12 +1,17 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 using Random = UnityEngine.Random;
 
 public class CasterDemonController : EnemyController
 {
+    // Animation
+    public static readonly int Cast = Animator.StringToHash("Cast");
+    public static readonly int Flee = Animator.StringToHash("Flee");
+
     private bool _doneBattleSequence = true;
     private bool _isFirstNoPath = true;
 
@@ -20,6 +25,10 @@ public class CasterDemonController : EnemyController
     [Header("각종 데미지 이펙트 세트")]
     [SerializeField] private GameObject chariotWarning;
     [SerializeField] private GameObject chariotEffect;
+
+    [Space(10)]
+    [SerializeField] private GameObject slowFieldWarning;
+    [SerializeField] private GameObject slowFieldEffect;
 
     private float _teleportDistance = 4f; // 플레이어 뒤로 떨어질 거리
 
@@ -83,7 +92,8 @@ public class CasterDemonController : EnemyController
             case 8:
 
             case 9:
-                SetSequence(ShotMagicMissile());
+                // SetSequence(ShotMagicMissile());
+                SetSequence(SlowFieldSpell());
                 break;
         }
 
@@ -104,14 +114,10 @@ public class CasterDemonController : EnemyController
         {
             var aimPosition = TargetPosOracle(out var basePos, out var rb);
 
-            // 높이는 변경할 필요 없음
-            float fixedY = bulletShotPosition.position.y;
-            aimPosition.y = fixedY;
-
-            // 3. 그 위치를 바라보고
+            // 플레이어 위치를 바라보고
             transform.LookAt(aimPosition);
 
-            // 4. 미사일 생성 및 초기화
+            // 미사일 생성 및 초기화
             var missile = Instantiate(
                 magicMissilePrefab,
                 bulletShotPosition.position,
@@ -142,6 +148,10 @@ public class CasterDemonController : EnemyController
             aimPosition += rb.velocity * predictionTime;
         }
 
+        // 높이는 변경할 필요 없음
+        float fixedY = bulletShotPosition.position.y;
+        aimPosition.y = fixedY;
+
         return aimPosition;
     }
 
@@ -165,31 +175,39 @@ public class CasterDemonController : EnemyController
 
         aoe.SetEffect(effectData, null, null);
 
-        // // 플레이어 뒤쪽 위치 계산
-        // Vector3 playerPos = TraceTargetTransform.position;
-        // Vector3 behindDir = -TraceTargetTransform.forward;
-        // Vector3 targetPos = playerPos + behindDir.normalized * _teleportDistance;
-        //
-        // // NavMesh 유효 위치 확인
-        // Vector3 finalPos = targetPos;
-        // if (NavMesh.SamplePosition(targetPos, out NavMeshHit hit, 1f, NavMesh.AllAreas))
-        // {
-        //     finalPos = hit.position;
-        // }
-        //
-        // // 텔레포트 실행
-        // Agent.Warp(finalPos);
-        //
-        // if (teleportEffectPrefab != null)
-        //     Instantiate(teleportEffectPrefab, finalPos, Quaternion.identity);
-
-
         // 중앙으로 이동
         Agent.Warp(Vector3.zero);
 
         if (teleportEffectPrefab != null)
             Instantiate(teleportEffectPrefab, Vector3.zero, Quaternion.identity);
+    }
 
+    private IEnumerator SlowFieldSpell()
+    {
+        var aimPosition = TargetPosOracle(out var basePos, out var rb);
+        // 1. 시전 애니메이션
+        transform.LookAt(aimPosition);
+        SetAnimation(Cast);
+        // 2. 장판 생성과 세팅
+
+        var effectData = new DamageEffectData
+        {
+            damage = 0,
+            radius = 7.5f,
+            delay = 2.5f,
+            targetLayer = TargetLayerMask,
+            explosionEffectPrefab = slowFieldEffect
+        };
+
+        var fixedPos = new Vector3(aimPosition.x, 0, aimPosition.z);
+        var warning = Instantiate(chariotWarning, fixedPos, Quaternion.identity).GetComponent<MagicAoEField>();
+
+        warning.SetEffect(effectData, null, null);
+        // TODO : 효과 적용
+
+        // 3. 짧은 텀 후 끝내기
+        yield return new WaitForSeconds(1f);
+        _doneBattleSequence = true;
     }
 
     private void SetSequence(IEnumerator newSequence)
