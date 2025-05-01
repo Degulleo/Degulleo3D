@@ -1,45 +1,65 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using UnityEngine.EventSystems;
 
-public class FailedPanelController : MonoBehaviour
+public class FailedPanelController : PanelController, IPointerClickHandler
 {
     [SerializeField] private CanvasGroup failedPanel;
     [SerializeField] private Image failedPanelArmImage;
     [SerializeField] private Image failedTextImage;
 
     private Image _failedPanelBGImage;
-    private void Start()
+    public Action onCompleted;
+    
+    private void Awake()
     {
+        base.Awake();
         _failedPanelBGImage = GetComponent<Image>();
-        Init();
     }
 
+    private void Start()
+    {
+        //임시 코드
+        Show(() =>
+        {
+            Debug.Log("OnCompleted");
+        });
+    }
+
+    public void Show(Action onCompleted)
+    {
+        base.Show();
+        this.onCompleted = onCompleted;
+        Init();
+    }
+    
     private void Init()
     {
         _failedPanelBGImage.DOFade(0, 0);
         failedTextImage.DOFade(0, 0);
         failedTextImage.rectTransform.DOScale(0, 0);
         failedPanel.DOFade(0, 0);
-        StartCoroutine(FailedAnimationCoroutine());
+        FailedAnimation();
     }
 
-    private IEnumerator FailedAnimationCoroutine()
+    private void FailedAnimation()
     {
-        _failedPanelBGImage.DOFade(0.98f, 0.5f).OnComplete(() =>
-        {
-            failedPanel.DOFade(1, 0.5f).OnComplete(() =>
-            {
-                failedPanelArmImage.rectTransform.DORotate(new Vector3(0, 0, 15), 0.3f).OnComplete((() =>
-                {
-                    failedPanelArmImage.rectTransform.DORotate(Vector3.zero, 0.3f);
-                }));
-                failedTextImage.rectTransform.DOScale(1f, 0.5f).SetEase(Ease.OutBack);
-                failedTextImage.DOFade(1, 0.5f);
-            });
-        });
-        yield return null;
+        Sequence seq = DOTween.Sequence();
+        seq.Append(_failedPanelBGImage.DOFade(0.98f, 0.5f))
+            .Append(failedPanel.DOFade(1, 0.5f))
+            .Append(failedPanelArmImage.rectTransform.DORotate(new Vector3(0, 0, 15), 0.3f))
+            .Append(failedPanelArmImage.rectTransform.DORotate(Vector3.zero, 0.3f))
+            .Join(failedTextImage.rectTransform.DOScale(1f, 0.5f).SetEase(Ease.OutBack))
+            .Join(failedTextImage.DOFade(1, 0.5f));
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        onCompleted?.Invoke();
+        Hide();
     }
 }
