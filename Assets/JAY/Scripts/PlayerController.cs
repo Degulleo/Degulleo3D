@@ -12,6 +12,8 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
     [Header("Attach Points")] 
     [SerializeField] private Transform rightHandTransform;
     [SerializeField] private CameraShake cameraShake;
+    [SerializeField] private GameObject normalModel; // char_body : 일상복
+    [SerializeField] private GameObject battleModel; // warrior_1 : 전투복
 
     // 내부에서만 사용하는 변수
     private PlayerHitEffectController hitEffectController;
@@ -40,15 +42,17 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
     private Dictionary<PlayerState, IPlayerState> _playerStates;
     public Animator PlayerAnimator { get; private set; }
     public CharacterController CharacterController => _characterController;
+    public bool IsBattle => _isBattle;
 
     private void Awake()
     {
-        PlayerAnimator = GetComponent<Animator>();
-        _characterController = GetComponent<CharacterController>();
         if (Joystick == null)
         {
             Joystick = FindObjectOfType<FixedJoystick>();
         }
+
+        AssignCharacterController();
+        AssignAnimator();
     }
     
     protected override void Start()
@@ -134,6 +138,50 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         }
     }
     
+    /// <summary>
+    /// 애니메이션 초기화
+    /// </summary>
+    private void InitializeAnimatorParameters()
+    {
+        if (PlayerAnimator == null) return;
+
+        SafeSetBool("Walk", false);
+        SafeSetBool("Run", false);
+        // SafeSetBool(Dead, false);
+        SafeResetTrigger("Bore");
+        SafeResetTrigger("GetHit");
+        PlayerAnimator.Rebind(); // 레이어 초기화
+        PlayerAnimator.Update(0f); // 즉시 반영
+    }
+    
+    public void SafeSetBool(string paramName, bool value)
+    {
+        if (PlayerAnimator == null) return;
+
+        foreach (var param in PlayerAnimator.parameters)
+        {
+            if (param.name == paramName && param.type == AnimatorControllerParameterType.Bool)
+            {
+                PlayerAnimator.SetBool(paramName, value);
+                break;
+            }
+        }
+    }
+    
+    private void SafeResetTrigger(string triggerName)
+    {
+        if (PlayerAnimator == null) return;
+
+        foreach (var param in PlayerAnimator.parameters)
+        {
+            if (param.name == triggerName && param.type == AnimatorControllerParameterType.Trigger)
+            {
+                PlayerAnimator.ResetTrigger(triggerName);
+                break;
+            }
+        }
+    }
+    
     #endregion
 
     #region 상태, 동작 변화 관련
@@ -176,6 +224,28 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
     {
         if (_currentAction == action) _currentAction = null;
     }
+    
+    /// <summary>
+    /// 전투, 일상 모드 플레이어 프리팹에 따라 애니메이터 가져오기
+    /// </summary>
+    private void AssignAnimator()
+    {
+        PlayerAnimator = _isBattle
+            ? battleModel.GetComponent<Animator>()
+            : normalModel.GetComponent<Animator>();
+        
+        InitializeAnimatorParameters();
+    }
+    
+    /// <summary>
+    /// 전투, 일상 모드 플레이어 프리팹에 따라 Character Controller 가져오기
+    /// </summary>
+    private void AssignCharacterController()
+    {
+        _characterController = _isBattle
+            ? battleModel.GetComponent<CharacterController>()
+            : normalModel.GetComponent<CharacterController>();
+    }
 
     #endregion
 
@@ -184,6 +254,16 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
     public void SwitchBattleMode()
     {
         _isBattle = !_isBattle;
+
+        // 복장 전환
+        normalModel.SetActive(!_isBattle);
+        battleModel.SetActive(_isBattle);
+
+        // Animator, Character Controller 다시 참조 (복장에 붙은 걸로)
+        AssignAnimator();
+        AssignCharacterController();
+
+        // 무기도 전투모드에만
         weapon.SetActive(_isBattle);
     }
     
@@ -254,7 +334,7 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
     
     #endregion
 
-    #region 회피 관련
+    #region 피격 관련
 
     // TODO: Editor에서 확인하기 위한 임시용
     public void TakeDamage()

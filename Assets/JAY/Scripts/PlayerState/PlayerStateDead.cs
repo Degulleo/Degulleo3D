@@ -7,7 +7,7 @@ public class PlayerStateDead : IPlayerState
     public void Enter(PlayerController playerController)
     {
         _playerController = playerController;
-        _playerController.PlayerAnimator.SetBool("Dead", true);
+        // _playerController.PlayerAnimator.SetBool("Dead", true);
     }
 
     public void Update()
@@ -16,7 +16,7 @@ public class PlayerStateDead : IPlayerState
 
     public void Exit()
     {
-        _playerController.PlayerAnimator.SetBool("Dead", false);
+        // _playerController.PlayerAnimator.SetBool("Dead", false);
         _playerController = null;
     }
 }
