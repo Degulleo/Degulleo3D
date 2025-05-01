@@ -83,8 +83,9 @@ public class DungeonLogic : MonoBehaviour
         if (!isCompleted && !isFailed)
         {
             Debug.Log("던전 공략 성공~!");
+            GameManager.Instance.ClearStage(); // 스테이지 수 증가
             isCompleted = true;
-            OnDungeonSuccess?.Invoke();
+            // OnDungeonSuccess?.Invoke();
 
             _dungeonPanelController.SetBossHealthBar(0.0f); // 보스 체력 0 재설정
             
@@ -100,7 +101,7 @@ public class DungeonLogic : MonoBehaviour
         {
             Debug.Log("던전 공략 실패~!");
             isFailed = true;
-            OnDungeonFailure?.Invoke();
+            // OnDungeonFailure?.Invoke();
             
             _player.SetState(PlayerState.Dead);
             
