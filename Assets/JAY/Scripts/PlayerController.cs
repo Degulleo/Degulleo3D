@@ -58,7 +58,6 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         hitEffectController = GetComponentInChildren<PlayerHitEffectController>();
         
         PlayerInit();
-        SwitchBattleMode();
     }
     
     private void Update()
