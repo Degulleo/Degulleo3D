@@ -40,4 +40,7 @@ public class GameConstants
     
     // 날짜 한계 값
     public static int maxDays = 7;
+    
+    // 스테이지 한계 값
+    public static int maxStage = 3; // 기본 값 1 + 스테이지 2가지
 }
