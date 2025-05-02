@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEditor.TextCore.Text;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public enum PlayerState { None, Idle, Move, Win, Hit, Dead }
 
@@ -62,6 +64,11 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         hitEffectController = GetComponentInChildren<PlayerHitEffectController>();
         
         PlayerInit();
+        
+        // isBattle 초기화 (임시)
+        /*bool isHousingScene = SceneManager.GetActiveScene().name.Contains("Housing");
+        _isBattle = !isHousingScene;
+        Debug.Log("_isBattle: " + _isBattle);*/
     }
     
     private void Update()

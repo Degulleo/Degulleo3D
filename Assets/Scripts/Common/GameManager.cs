@@ -80,7 +80,8 @@ public partial class GameManager : Singleton<GameManager>
     
     private void OnDestroy()
     {
-        PlayerStats.Instance.OnDayEnded -= AdvanceDay; // 이벤트 구독 해제
+        if(PlayerStats.Instance != null)
+            PlayerStats.Instance.OnDayEnded -= AdvanceDay; // 이벤트 구독 해제
     }
     
     private void OnApplicationQuit()
