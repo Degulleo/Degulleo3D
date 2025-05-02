@@ -2,119 +2,107 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UpgradeStat : MonoBehaviour,ISaveable
+public class UpgradeStat : MonoBehaviour, ISaveable
 {
-    private const int MAX_UPGRADES = 4;
-    private const int MAX_UPGRADES_HEART = 3;
-    
-    private int attackPowerLevel = 1;
-    private int attackSpeedLevel = 1;
-    private int moveSpeedLevel = 1;
-    private int dashCoolDownLevel = 1;
-    private int heartLevel = 1;
-    
-    /// <summary>
-    /// 강화 수치 올리는 함수
-    /// </summary>
-    /// <param name="number"></param>
-    public void UpgradeLevel(StatType statType)
+    private const int DEFAULT_MAX = 4;
+    private const int MAX_HEART = 3;
+
+    private readonly Dictionary<StatType, int> levels = new();
+    private readonly Dictionary<StatType, int> maxLevels = new()
     {
-        switch (statType)
+        { StatType.AttackPower, DEFAULT_MAX },
+        { StatType.AttackSpeed, DEFAULT_MAX },
+        { StatType.MoveSpeed, DEFAULT_MAX },
+        { StatType.DashCoolDown, DEFAULT_MAX },
+        { StatType.Heart, MAX_HEART }
+    };
+
+    void Awake()
+    {
+        foreach (var stat in maxLevels.Keys)
         {
-            case StatType.AttackPower:
-                if(attackPowerLevel<MAX_UPGRADES)
-                    attackPowerLevel++;
-                break;
-            case StatType.AttackSpeed:
-                if (attackSpeedLevel < MAX_UPGRADES)
-                    attackSpeedLevel++;
-                break;
-            case StatType.MoveSpeed:
-                if(moveSpeedLevel < MAX_UPGRADES)
-                    moveSpeedLevel++;
-                break;
-            case StatType.DashCoolDown:
-                if(dashCoolDownLevel < MAX_UPGRADES)
-                    dashCoolDownLevel++;
-                break;
-            case StatType.Heart:
-                if(heartLevel < MAX_UPGRADES_HEART)
-                    heartLevel++;
-                break;
-            default:
-                break;
+            levels[stat] = 1; // 기본값 초기화
         }
     }
 
     /// <summary>
-    /// 현재 강화 수치 반환 함수
+    /// 강화 레벨 상승
     /// </summary>
-    /// <param name="number"></param>
+    /// <param name="statType"></param>
+    public void UpgradeLevel(StatType statType)
+    {
+        if (!levels.ContainsKey(statType)) return;
+
+        if (levels[statType] < maxLevels[statType])
+            levels[statType]++;
+    }
+
+    /// <summary>
+    /// 현재 강화 레벨 반환
+    /// </summary>
+    /// <param name="statType"></param>
     /// <returns></returns>
     public int CurrentUpgradeLevel(StatType statType)
     {
-        int currentUpgradeLevel = 0;
-        switch (statType)
-        {
-            case StatType.AttackPower:
-                currentUpgradeLevel = attackPowerLevel;
-                break;
-            case StatType.AttackSpeed:
-                currentUpgradeLevel = attackSpeedLevel;
-                break;
-            case StatType.MoveSpeed:
-                currentUpgradeLevel = moveSpeedLevel;
-                break;
-            case StatType.DashCoolDown:
-                currentUpgradeLevel = dashCoolDownLevel;
-                break;
-            case StatType.Heart:
-                currentUpgradeLevel = heartLevel;
-                break;
-            default:
-                break;
-        }
-        
-        int max = statType == StatType.Heart ? MAX_UPGRADES_HEART : MAX_UPGRADES;
+        if (!levels.ContainsKey(statType))
+            return 0;
 
-        return (currentUpgradeLevel < 1 || currentUpgradeLevel > max)? 1 : currentUpgradeLevel;
+        int level = levels[statType];
+        return Mathf.Clamp(level, 1, maxLevels[statType]);
     }
-    
-    
-    
+
     /// <summary>
-    /// 강화 수치 로컬에 저장
+    /// 최대 수치 검증
+    /// </summary>
+    /// <param name="statType"></param>
+    /// <returns></returns>
+    public bool IsMax(StatType statType)
+    {
+        return levels.ContainsKey(statType) && levels[statType] >= maxLevels[statType];
+    }
+
+    /// <summary>
+    /// 최대 수치 -1 검증
+    /// </summary>
+    /// <param name="statType"></param>
+    /// <returns></returns>
+    public bool IsOneBeforeMax(StatType statType)
+    {
+        return levels.ContainsKey(statType) && levels[statType] == maxLevels[statType] - 1;
+    }
+
+    /// <summary>
+    /// 세이브 매니저에 저장
     /// </summary>
     /// <returns></returns>
     public Save ExtractSaveData()
     {
         return new Save
         {
-            dungeonSave = new DungeonSave()
+            dungeonSave = new DungeonSave
             {
-                attackPowerLevel = this.attackPowerLevel,
-                attackSpeedLevel = this.attackSpeedLevel,
-                heartLevel = this.heartLevel,
-                moveSpeedLevel = this.moveSpeedLevel,
-                dashCoolDownLevel = this.dashCoolDownLevel,
-                 
+                attackPowerLevel = levels[StatType.AttackPower],
+                attackSpeedLevel = levels[StatType.AttackSpeed],
+                moveSpeedLevel = levels[StatType.MoveSpeed],
+                dashCoolDownLevel = levels[StatType.DashCoolDown],
+                heartLevel = levels[StatType.Heart]
             }
         };
     }
-    
+
     /// <summary>
-    /// 강화 수치 로컬에서 로드
+    /// 세이브 매니저에서 로드
     /// </summary>
     /// <param name="save"></param>
     public void ApplySaveData(Save save)
     {
-        if (save?.dungeonSave != null)
-        {
-            attackPowerLevel = save.dungeonSave.attackPowerLevel;
-            attackSpeedLevel = save.dungeonSave.attackSpeedLevel;
-            heartLevel = save.dungeonSave.heartLevel;
-            moveSpeedLevel = save.dungeonSave.moveSpeedLevel;
-            dashCoolDownLevel = save.dungeonSave.dashCoolDownLevel;
-        }
+        if (save?.dungeonSave == null) return;
+
+        levels[StatType.AttackPower] = save.dungeonSave.attackPowerLevel;
+        levels[StatType.AttackSpeed] = save.dungeonSave.attackSpeedLevel;
+        levels[StatType.MoveSpeed] = save.dungeonSave.moveSpeedLevel;
+        levels[StatType.DashCoolDown] = save.dungeonSave.dashCoolDownLevel;
+        levels[StatType.Heart] = save.dungeonSave.heartLevel;
     }
 }
+
