@@ -24,6 +24,14 @@ public class InteractionController : MonoBehaviour
     // 상호작용 가능한 사물 범위에 들어올 때
     private void OnTriggerEnter(Collider other)
     {
+        if(other.gameObject.layer == LayerMask.NameToLayer("NPC"))
+        {
+            housingCanvasController.ShowNpcInteractionButton(() =>
+            {
+                GameManager.Instance.StartNPCDialogue(GamePhase.Gameplay);
+            });
+        }
+        
         if (interactionLayerMask == (interactionLayerMask | (1 << other.gameObject.layer)))
         {
             ActionType interactionType = other.gameObject.GetComponent<InteractionProp>().RoutineEnter();
@@ -36,6 +44,8 @@ public class InteractionController : MonoBehaviour
     // 사물에서 벗어날 때 UI 정리
     private void OnTriggerExit(Collider other)
     {
+        if(other.gameObject.layer == LayerMask.NameToLayer("NPC")) housingCanvasController.HideInteractionButton();
+        
         if (interactionLayerMask == (interactionLayerMask | (1 << other.gameObject.layer)))
         {
             housingCanvasController.HideInteractionButton();
@@ -54,7 +64,6 @@ public class InteractionController : MonoBehaviour
             {
                 playerStats.PerformAction(interactionType);
                 interactionAnimationPanelController.ShowAnimationPanel(interactionType,interactionTexts.AnimationText);
-
             }
             else
             {
