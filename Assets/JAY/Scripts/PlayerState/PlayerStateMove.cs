@@ -1,15 +1,20 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerStateMove : IPlayerState
 {
-    private static readonly int Move = Animator.StringToHash("Move");
     private PlayerController _playerController;
     private Vector3 _gravityVelocity;
-
+    private bool isPlayerBattle;
+    
     public void Enter(PlayerController playerController)
     {
         _playerController = playerController;
-        _playerController.PlayerAnimator.SetBool(Move, true);
+        isPlayerBattle = _playerController.IsBattle; // 전투 모드인지(던전인지)
+        
+        // 파라미터가 존재하는지 확인 후 처리
+        _playerController.SafeSetBool("Run", isPlayerBattle);
+        _playerController.SafeSetBool("Walk", !isPlayerBattle);
     }
 
     public void Update()
@@ -30,7 +35,8 @@ public class PlayerStateMove : IPlayerState
 
     public void Exit()
     {
-        _playerController.PlayerAnimator.SetBool(Move, false);
+        _playerController.SafeSetBool("Run", false);
+        _playerController.SafeSetBool("Walk", false);
         _playerController = null;
     }
     
@@ -40,7 +46,8 @@ public class PlayerStateMove : IPlayerState
         float inputVertical = _playerController.Joystick.Vertical;
 
         Vector3 moveDir = new Vector3(inputHorizontal, 0, inputVertical);
-        Vector3 move = moveDir.normalized * _playerController.moveSpeed;
+        float speed = isPlayerBattle ? _playerController.moveSpeed : 2.5f; // 걷기 속도 고정
+        Vector3 move = moveDir.normalized * speed;
 
         // 회전
         if (moveDir.magnitude > 0.1f)
@@ -56,7 +63,6 @@ public class PlayerStateMove : IPlayerState
         }
 
         _gravityVelocity.y += _playerController.gravity * Time.deltaTime;
-
         Vector3 finalMove = (move + _gravityVelocity) * Time.deltaTime;
         _playerController.CharacterController.Move(finalMove);
     }
