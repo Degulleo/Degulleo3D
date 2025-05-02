@@ -13,14 +13,33 @@ public class MagicAoEField : AoeControllerBase
                 Debug.Log($"{hit.name}에게 {_data.damage} 데미지 적용");
                 // TODO: 실제 데미지 처리 로직 호출
                 // 임시 데이미 처리 로직
-                PlayerController playerController = hit.transform.GetComponent<PlayerController>();
+                ApplyEffect(hit);
+            }
+        }
+    }
+
+    private void ApplyEffect(Collider hit)
+    {
+        PlayerController playerController = hit.transform.GetComponent<PlayerController>();
+        switch (EffectName)
+        {
+            case "Slow":
+
                 if (playerController != null)
                 {
-                    // playerController.AddStatusEffect(_slowDebuff);
                     var slow = new SlowDebuff(10f, 0.5f); // 10초간 50% 속도
                     playerController.AddStatusEffect(slow);
                 }
-            }
+                break;
+            case "knockback":
+                if (playerController != null)
+                {
+                    var knPos = transform.position;
+                    knPos.y += 0.5f;
+                    var knockback = new KnockbackEffect(knPos,10f, 0.5f); // 장판 중심에서 10f만큼
+                    playerController.AddStatusEffect(knockback);
+                }
+                break;
         }
     }
 }

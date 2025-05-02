@@ -7,8 +7,8 @@ public class EnemyStateFlee :IEnemyState
 {
     private EnemyController _enemyController;
     private Transform _playerTransform;
-    private float _fleeDistance = 5f;   // 도망치는 거리
-    private float _safeRange = 7f;    // 공격 범위
+    private float _fleeDistance = 10f;   // 도망치는 거리
+    private float _attackRange = 7f;    // 공격 범위
 
     // 경로 탐색 주기 조절용
     private float _fleeSearchTimer = 0;
@@ -48,7 +48,7 @@ public class EnemyStateFlee :IEnemyState
             _enemyController.transform.position,
             _playerTransform.position
         );
-        if (currentDist >= _safeRange)
+        if (currentDist >= _attackRange)
         {
             // 목적지 리셋 후 전투 시작
             _enemyController.Agent.isStopped = true;
