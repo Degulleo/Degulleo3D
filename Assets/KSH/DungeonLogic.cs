@@ -90,7 +90,10 @@ public class DungeonLogic : MonoBehaviour
             _dungeonPanelController.SetBossHealthBar(0.0f); // 보스 체력 0 재설정
             
             _player.SetState(PlayerState.Win);
+            
             // TODO: 강화 시스템으로 넘어가고 일상 맵으로 이동
+            
+            StartCoroutine(DelayedSceneChange()); // 3초 대기 후 전환
         }
     }
     

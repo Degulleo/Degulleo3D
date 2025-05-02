@@ -6,8 +6,6 @@ using UnityEngine.SceneManagement;
 
 public partial class GameManager : Singleton<GameManager>
 {
-    [SerializeField] private PlayerStats playerStats;
-    
     private Canvas _canvas;
     
     // 게임 진행 상태
@@ -27,19 +25,7 @@ public partial class GameManager : Singleton<GameManager>
     {
         // 오디오 초기화
         InitializeAudio();
-        
-        // PlayerStats의 하루 종료 이벤트 구독
-        if (playerStats == null)
-        {
-            playerStats = FindObjectOfType<PlayerStats>();
-        }
-
-        if (playerStats == null)
-        {
-            Debug.LogError("PlayerStats 컴포넌트를 찾을 수 없습니다.");
-            return;
-        }
-        playerStats.OnDayEnded += AdvanceDay;
+        PlayerStats.Instance.OnDayEnded += AdvanceDay;
     }
 
     #region 대화 관련
@@ -74,12 +60,12 @@ public partial class GameManager : Singleton<GameManager>
     
     public void ChangeToGameScene()
     {
-        SceneManager.LoadScene("Game"); // 던전 Scene
+        SceneManager.LoadScene("DungeonTestScene"); // 던전 Scene
     }
     
     public void ChangeToHomeScene()
     {
-        SceneManager.LoadScene("Housing"); // Home Scene
+        SceneManager.LoadScene("ReHousing"); // Home Scene
     }
     
     // TODO: Open Setting Panel 등 Panel 처리
@@ -94,10 +80,7 @@ public partial class GameManager : Singleton<GameManager>
     
     private void OnDestroy()
     {
-        if (playerStats != null)
-        {
-            playerStats.OnDayEnded -= AdvanceDay; // 이벤트 구독 해제
-        }
+        PlayerStats.Instance.OnDayEnded -= AdvanceDay; // 이벤트 구독 해제
     }
     
     private void OnApplicationQuit()

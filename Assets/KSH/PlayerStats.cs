@@ -36,15 +36,29 @@ public class PlayerStats : MonoBehaviour
     
     private float previousAddHealth = 0f;
     
-    private void Start()
+    public static PlayerStats Instance;
+    private void Awake()
     {
-        _gameConstants = new GameConstants();
-        _valueByAction = new ValueByAction();
-        _valueByAction.Initialize(); // 값 초기화
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject); // 데이터값 유지용
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
         
+        _gameConstants = new GameConstants();
         HealthStat = _gameConstants.baseHealth;
         TimeStat = _gameConstants.baseTime;
         ReputationStat = _gameConstants.baseReputation;
+    }
+    
+    private void Start()
+    {
+        _valueByAction = new ValueByAction();
+        _valueByAction.Initialize(); // 값 초기화
     }
 
     // 현재 체력으로 해당 행동이 가능한 지 확인
