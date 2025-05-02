@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 // 게임 매니저의 오디오 관련 부분 클래스
-public partial class GameManager : Singleton<GameManager>
+public partial class GameManager
 {
     // 오디오 클립 참조
     [Header("오디오 설정")]
