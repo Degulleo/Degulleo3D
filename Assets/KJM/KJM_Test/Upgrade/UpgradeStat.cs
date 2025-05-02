@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,6 +19,15 @@ public class UpgradeStat : MonoBehaviour, ISaveable
     };
 
     void Awake()
+    {
+        ResetLevel();
+    }
+
+    /// <summary>
+    /// 레벨 리셋 함수
+    /// 테스트를 위해 퍼블릭으로 설정
+    /// </summary>
+    public void ResetLevel()
     {
         foreach (var stat in maxLevels.Keys)
         {
@@ -77,6 +87,7 @@ public class UpgradeStat : MonoBehaviour, ISaveable
     /// <returns></returns>
     public Save ExtractSaveData()
     {
+        Debug.Log("UpgradeStat extracting save data");
         return new Save
         {
             dungeonSave = new DungeonSave
