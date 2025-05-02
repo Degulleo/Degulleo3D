@@ -122,6 +122,10 @@ public abstract class EnemyController : CharacterBase
     {
         Debug.LogWarning("OnCannotFleeBehaviour가 구현되지 않음 : OnCannotFleeBehaviour() 오버라이드하여 구현하십시오.");
     }
+    public virtual void OnCannotFleeBehaviour(Action action)
+    {
+        Debug.LogWarning("OnCannotFleeBehaviour가 구현되지 않음 : OnCannotFleeBehaviour() 오버라이드하여 구현하십시오.");
+    }
 
     #endregion
 

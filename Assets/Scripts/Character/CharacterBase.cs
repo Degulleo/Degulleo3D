@@ -17,6 +17,8 @@ public abstract class CharacterBase : MonoBehaviour
 
     [Header("상태 이상")]
     public List<StatusEffect> statusEffects = new List<StatusEffect>();
+    private Dictionary<Type, Coroutine> _statusEffectCoroutines = new();
+    private Dictionary<Type, StatusEffect> _activeStatusEffects = new();
     
     public event Action OnDeath; // 사망 이벤트
     public event Action<CharacterBase> OnGetHit; // 피격 이벤트
@@ -53,8 +55,38 @@ public abstract class CharacterBase : MonoBehaviour
     // 상태이상 추가 메서드
     public virtual void AddStatusEffect(StatusEffect effect)
     {
+        var type = effect.GetType();
+
+        // 기존 효과가 있다면 제거
+        if (_activeStatusEffects.TryGetValue(type, out var existingEffect))
+        {
+            existingEffect.RemoveEffect(this);
+            if (_statusEffectCoroutines.TryGetValue(type, out Coroutine oldRoutine))
+            {
+                StopCoroutine(oldRoutine);
+                _statusEffectCoroutines.Remove(type);
+            }
+
+            statusEffects.Remove(existingEffect);
+        }
+
+        // 새 효과 적용
+        effect.ApplyEffect(this);
         statusEffects.Add(effect);
-        // TODO: 상태이상 처리 로직 추가
+        _activeStatusEffects[type] = effect;
+
+        // 효과 종료 처리 예약
+        Coroutine routine = StartCoroutine(RemoveStatusEffectAfterDuration(effect));
+        _statusEffectCoroutines[type] = routine;
+    }
+
+    private IEnumerator RemoveStatusEffectAfterDuration(StatusEffect effect)
+    {
+        yield return new WaitForSeconds(effect.duration);
+        effect.RemoveEffect(this);
+        statusEffects.Remove(effect);
+        _activeStatusEffects.Remove(effect.GetType());
+        _statusEffectCoroutines.Remove(effect.GetType());
     }
 }
 

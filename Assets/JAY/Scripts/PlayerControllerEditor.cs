@@ -25,6 +25,20 @@ public class PlayerControllerEditor : Editor
         EditorGUILayout.LabelField("현재 행동", playerController.CurrentAction != null ? playerController.CurrentAction.ToString() : "-", EditorStyles.boldLabel);
         EditorGUILayout.EndVertical();
 
+        // EditorGUILayout.LabelField("걷기/뛰기 상태 전환", EditorStyles.boldLabel);
+        // EditorGUILayout.BeginHorizontal();
+        // if (GUILayout.Button("Walk"))
+        // {
+        //     var moveState = playerController.GetStateInstance<PlayerStateMove>();
+        //     moveState?.HandleMoveState(true); // 걷기 모드
+        // }
+        //
+        // if (GUILayout.Button("Run"))
+        // {
+        //     var moveState = playerController.GetStateInstance<PlayerStateMove>();
+        //     moveState?.HandleMoveState(false); // 달리기 모드
+        // }
+        // EditorGUILayout.EndHorizontal();
         
         // 지면 접촉 상태
         GUI.backgroundColor = Color.white;
