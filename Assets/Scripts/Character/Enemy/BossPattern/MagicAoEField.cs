@@ -1,5 +1,11 @@
 ﻿using UnityEngine;
 
+public enum DebuffType
+{
+    Slow,
+    Knockback,
+}
+
 public class MagicAoEField : AoeControllerBase
 {
     protected override void HitCheck()
@@ -31,7 +37,7 @@ public class MagicAoEField : AoeControllerBase
                     playerController.AddStatusEffect(slow);
                 }
                 break;
-            case "knockback":
+            case "Knockback":
                 if (playerController != null)
                 {
                     var knPos = transform.position;

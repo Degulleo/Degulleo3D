@@ -43,6 +43,7 @@ public class CasterDemonController : EnemyController
     private float _tinkingTimer = 3f;
     private float _tinkingThresholedTime = 3f;
 
+    // 프로퍼티
     private bool CanTeleport {
         get
         {
@@ -54,7 +55,6 @@ public class CasterDemonController : EnemyController
             return false;
         }
     }
-
     private bool CanBattleSequence
     {
         get
@@ -96,22 +96,15 @@ public class CasterDemonController : EnemyController
         {
             case 0:
             case 1:
-
             case 2:
-
             case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
                 SetSequence(ShotMagicMissile());
                 break;
-            case 4:
-
-            case 5:
-
-            case 6:
-
-            case 7:
-
             case 8:
-
             case 9:
                 SetSequence(SlowFieldSpell());
                 break;
@@ -250,7 +243,7 @@ public class CasterDemonController : EnemyController
 
         // 넉백 발생
         var knockback = Instantiate(chariotWarning, transform).GetComponent<MagicAoEField>();
-        knockback.SetEffect(effectData, null, null, "knockback");
+        knockback.SetEffect(effectData, null, null, DebuffType.Knockback.ToString());
 
         yield return new WaitForSeconds(1f);
         _doneBattleSequence = true;

@@ -9,7 +9,7 @@ public class KnockbackEffect : StatusEffect
 
     public KnockbackEffect(Vector3 sourcePosition, float knockbackForce,float duration)
     {
-        effectName = "Knockback";
+        effectName = DebuffType.Knockback.ToString();
         this.duration = duration;
         _sourcePosition = sourcePosition;
         _knockbackForce = knockbackForce;

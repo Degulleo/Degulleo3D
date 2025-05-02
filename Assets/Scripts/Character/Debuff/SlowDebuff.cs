@@ -6,7 +6,7 @@ public class SlowDebuff : StatusEffect
 
     public SlowDebuff(float duration, float slowMultiplier)
     {
-        this.effectName = "Slow";
+        this.effectName = DebuffType.Slow.ToString();
         this.duration = duration;
         _slowMultiplier = slowMultiplier;
     }
