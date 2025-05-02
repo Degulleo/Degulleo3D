@@ -33,7 +33,7 @@ public class InteractionPanelController : MonoBehaviour
 
     private void Start()
     {
-        Init(LoadingState.Housework);
+        Init(LoadingState.Go2Work);
     }
 
     private void Init(LoadingState state)
@@ -50,15 +50,19 @@ public class InteractionPanelController : MonoBehaviour
                 break;
             case LoadingState.Go2Work:
                 doingText.text = "출근하는 중";
+                animator.Play("Go2Work");
                 break;
             case LoadingState.LeaveWork:
                 doingText.text = "퇴근하는 중";
+                animator.Play("Go2Work");
                 break;
             case LoadingState.Meal:
                 doingText.text = "식사하는 중";
+                animator.Play("Meal");
                 break;
             case LoadingState.Dungeon:
                 doingText.text = "던전 진입하는 중";
+                animator.Play("Dungeon");
                 break;
         }
         _textAnimCoroutine = StartCoroutine(TextAnimation());
