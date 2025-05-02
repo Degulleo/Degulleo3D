@@ -3,35 +3,50 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System.Collections;
+using Unity.VisualScripting;
+using UnityEngine.Serialization;
+using UnityEngine.Events;
 
 public class TutorialManager : MonoBehaviour
 {
-    [SerializeField] private TutorialStep firstStep;
-    [SerializeField] private CanvasGroup overlay;   // 입력 차단 & 다크닝용
-    [SerializeField] private TMP_Text tutorialText;
-    [SerializeField] private Canvas overlayCanvas;  // RectTransformUtility를 위한 Canvas
-    // [SerializeField] private GameObject housingUICanvas;   //튜토리얼 동안 입력 제한
+    [SerializeField] private TutorialStep firstStep;   // 인스펙터에서 첫 단계 드래그
+    
+    [Header("튜토리얼 패널 생성")]
+    [SerializeField] private GameObject[] tutorialPanelPrefabs;
+    
+    private GameObject _tutorialPanelObject;
+    private TutorialPanelController _tutorialPanelController;
 
-    [Header("튜토리얼 터치 타겟들")]
-    [SerializeField] private GameObject[] touchTargets;  
-    
-    [Header("감춰놓을 게임 오브젝트")]
-    [SerializeField] private GameObject[] lockTargets;  
-    
     private Coroutine _runningCoroutine;
+    private CanvasGroup overlay;  // 화면 암전 및 입력 차단
     private RectTransform targetRt;
-
-    public void Start()
+    private Canvas overlayCanvas;  // RectTransformUtility를 위한 Canvas
+    private Action onTutorialComplete;
+    
+    public void Start( )
     {
-        StartTutorial();
+            StartTutorial(null);
     }
+    public void StartTutorial(Action onTutorialEnd, int panelIndex = 0)
+    {        
+        var parentObject = FindObjectOfType(typeof(Canvas));
+        if (parentObject != null)
+        {
+            overlayCanvas = parentObject as Canvas;
+            
+            _tutorialPanelObject = Instantiate(tutorialPanelPrefabs[panelIndex], parentObject.GameObject().transform);
+            overlay = _tutorialPanelObject.GetComponent<CanvasGroup>();
+            _tutorialPanelController = _tutorialPanelObject.GetComponent<TutorialPanelController>();
+        }
 
-    public void StartTutorial()
-    {
-        overlay.gameObject.SetActive(true);
+        if (_tutorialPanelController != null)
+        {
+            onTutorialComplete = onTutorialEnd;
         overlay.alpha = 1f;
         overlay.blocksRaycasts = true;
         RunStep(firstStep);
+        }
+        else Debug.Log("패널 생성 실패, 튜토리얼 진행이 불가능합니다.");
     }
 
     private void RunStep(TutorialStep step)
@@ -43,30 +58,25 @@ public class TutorialManager : MonoBehaviour
     private IEnumerator RunStepCoroutine(TutorialStep step)
     {
         // 단계 시작 이벤트
-        step.onBegin?.Invoke();
+        step.onStepBegin?.Invoke();
         // 메시지 갱신
-        tutorialText.text = step.message;
+        _tutorialPanelController.setTutorialText(step.message);
 
         float elapsed = 0f;
-        bool done = false;
+        bool done = false;        
         
         //터치해야 할 위치가 있는지 체크
         if (step.touchTargetIndex >= 0)
         {
-            targetRt = touchTargets[step.touchTargetIndex].GetComponent<RectTransform>();
-            touchTargets[step.touchTargetIndex].SetActive(true);
-        }
-        //화면에서 숨겨야 할 요소가 있는지 체크
-        if (step.deactiveObjectIndex >= 0)
-        {
-            lockTargets[step.deactiveObjectIndex].SetActive(false);
+            targetRt = _tutorialPanelController.touchTargets[step.touchTargetIndex].GetComponent<RectTransform>();
+            _tutorialPanelController.touchTargets[step.touchTargetIndex].SetActive(true);
         }
 
         while (!done)
-        {            
+        {
             // 1) 영역 터치 체크
             if (targetRt != null)
-            { 
+            {
                 // 클릭 또는 터치 이벤트
                 bool pressed = Input.GetMouseButtonDown(0) || Input.touchCount > 0;
                 if (pressed)
@@ -81,11 +91,7 @@ public class TutorialManager : MonoBehaviour
                     {
                         Debug.Log("타겟 터치");
                         targetRt = null;
-                        touchTargets[step.touchTargetIndex].SetActive(false);        
-                        if (step.deactiveObjectIndex >= 0)
-                        {
-                            lockTargets[step.deactiveObjectIndex].SetActive(true);
-                        }
+                        _tutorialPanelController.touchTargets[step.touchTargetIndex].SetActive(false);
                         done = true;
                     }
                     else
@@ -94,23 +100,18 @@ public class TutorialManager : MonoBehaviour
                     }
                 }
             }
-            
+
             // 타임아웃 체크
             if (step.timeout > 0f && elapsed >= step.timeout)
                 done = true;
-
-            // 키 입력 체크
-            if (step.requiredKey != KeyCode.None && Input.GetKeyDown(step.requiredKey))
-                done = true;
-
             
             elapsed += Time.deltaTime;
             yield return null;
         }
-
+        
         // 단계 완료 이벤트
-        step.onComplete?.Invoke();
-
+        step.onStepComplete?.Invoke();
+        
         // 다음 단계로
         if (step.nextStep != null)
             RunStep(step.nextStep);
@@ -120,8 +121,19 @@ public class TutorialManager : MonoBehaviour
 
     private void EndTutorial()
     {
-        tutorialText.text = "";
+        _tutorialPanelController.setTutorialText("");
         overlay.alpha = 0f;
         overlay.blocksRaycasts = false;
+        
+        if(onTutorialComplete!=null)
+        {
+            onTutorialComplete?.Invoke();
+            onTutorialComplete = null;
+        }
+
+        if (_tutorialPanelObject == null)
+            return;
+        Destroy(_tutorialPanelObject);
+        _tutorialPanelController = null;
     }
 }
