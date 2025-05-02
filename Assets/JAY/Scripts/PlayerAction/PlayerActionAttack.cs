@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 
 public class PlayerActionAttack : IPlayerAction {
-    private static readonly int Attack = Animator.StringToHash("Attack");
     private static readonly int ComboStep = Animator.StringToHash("ComboStep");
     private PlayerController player;
     private int comboStep = 1;
@@ -16,7 +15,7 @@ public class PlayerActionAttack : IPlayerAction {
         comboStep = 1;
         comboQueued = false;
         PlayComboAnimation(comboStep);
-        player.PlayerAnimator.SetBool(Attack, true);
+        player.SafeSetBool("Attack", true);
     }
 
     public void UpdateAction() {
@@ -26,7 +25,7 @@ public class PlayerActionAttack : IPlayerAction {
     }
 
     public void EndAction() {
-        player.PlayerAnimator.SetBool(Attack, false);
+        player.SafeSetBool("Attack", false);
         IsActive = false;
         player.OnActionEnded(this); // player 에서도 action 초기화
         player = null;
@@ -48,9 +47,20 @@ public class PlayerActionAttack : IPlayerAction {
         }
     }
 
-    private void PlayComboAnimation(int step) {
-        player.PlayerAnimator.SetInteger(ComboStep, step);
-        
+    private void PlayComboAnimation(int step)
+    {
+        if (player.PlayerAnimator == null) return;
+
+        // 안전하게 파라미터 체크
+        foreach (var param in player.PlayerAnimator.parameters)
+        {
+            if (param.nameHash == ComboStep && param.type == AnimatorControllerParameterType.Int)
+            {
+                player.PlayerAnimator.SetInteger(ComboStep, step);
+                break;
+            }
+        }
+
         // 무기에 콤보 단계 전달
         var weapon = player.GetComponentInChildren<WeaponController>();
         if (weapon != null)
