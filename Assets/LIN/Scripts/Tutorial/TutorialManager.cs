@@ -13,6 +13,7 @@ public class TutorialManager : MonoBehaviour
     
     [Header("튜토리얼 패널 생성")]
     [SerializeField] private GameObject[] tutorialPanelPrefabs;
+    [FormerlySerializedAs("parentObject")] public Canvas parentCanvas;
     
     private GameObject _tutorialPanelObject;
     private TutorialPanelController _tutorialPanelController;
@@ -29,12 +30,14 @@ public class TutorialManager : MonoBehaviour
     }
     public void StartTutorial(Action onTutorialEnd, int panelIndex = 0)
     {        
-        var parentObject = FindObjectOfType(typeof(Canvas));
-        if (parentObject != null)
+        if(parentCanvas == null)
+            parentCanvas = FindObjectOfType(typeof(Canvas)) as Canvas;
+        
+        if (parentCanvas != null)
         {
-            overlayCanvas = parentObject as Canvas;
+            overlayCanvas = parentCanvas as Canvas;
             
-            _tutorialPanelObject = Instantiate(tutorialPanelPrefabs[panelIndex], parentObject.GameObject().transform);
+            _tutorialPanelObject = Instantiate(tutorialPanelPrefabs[panelIndex], parentCanvas.GameObject().transform);
             overlay = _tutorialPanelObject.GetComponent<CanvasGroup>();
             _tutorialPanelController = _tutorialPanelObject.GetComponent<TutorialPanelController>();
         }
@@ -68,8 +71,13 @@ public class TutorialManager : MonoBehaviour
         //터치해야 할 위치가 있는지 체크
         if (step.touchTargetIndex >= 0)
         {
+            _tutorialPanelController.ShowTouchTarget(step.touchTargetIndex);
             targetRt = _tutorialPanelController.touchTargets[step.touchTargetIndex].GetComponent<RectTransform>();
-            _tutorialPanelController.touchTargets[step.touchTargetIndex].SetActive(true);
+        }
+
+        if (step.imageIndex >= 0)
+        {
+            _tutorialPanelController.ShowImage(step.imageIndex);
         }
 
         while (!done)
@@ -91,7 +99,7 @@ public class TutorialManager : MonoBehaviour
                     {
                         Debug.Log("타겟 터치");
                         targetRt = null;
-                        _tutorialPanelController.touchTargets[step.touchTargetIndex].SetActive(false);
+                        _tutorialPanelController.HideTouchTarget(step.touchTargetIndex);
                         done = true;
                     }
                     else
@@ -111,6 +119,11 @@ public class TutorialManager : MonoBehaviour
         
         // 단계 완료 이벤트
         step.onStepComplete?.Invoke();
+        
+        if (step.imageIndex >= 0)
+        {
+            _tutorialPanelController.HideImage(step.imageIndex);
+        }
         
         // 다음 단계로
         if (step.nextStep != null)
