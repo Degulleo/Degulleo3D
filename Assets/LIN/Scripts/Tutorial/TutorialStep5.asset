@@ -10,16 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b22d834cf5e26e647be215074940d40e, type: 3}
-  m_Name: TutorialStep4
+  m_Name: TutorialStep5
   m_EditorClassIdentifier: 
-  message: 
-  timeout: 2
+  message: "\uB2E4\uC591\uD55C \uC0C1\uD638\uC791\uC6A9\uC744 \uD1B5\uD574 \uB2A5\uB825\uCE58\uB97C
+    \uC62C\uB9AC\uACE0 \uB358\uC804\uC744 \uACF5\uB7B5\uD574\uBCF4\uC138\uC694."
+  timeout: 0
   onStepBegin:
     m_PersistentCalls:
       m_Calls: []
   onStepComplete:
     m_PersistentCalls:
       m_Calls: []
-  touchTargetIndex: -1
-  imageIndex: 1
-  nextStep: {fileID: 11400000, guid: e3d4da4e50044c54394663ac9e7b2afa, type: 2}
+  touchTargetIndex: 1
+  imageIndex: -1
+  nextStep: {fileID: 0}

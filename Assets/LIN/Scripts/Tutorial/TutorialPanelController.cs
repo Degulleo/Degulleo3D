@@ -11,7 +11,7 @@ public class TutorialPanelController : MonoBehaviour
     [Header("튜토리얼 터치 타겟들")]
     [SerializeField]
     public GameObject[] touchTargets; 
-    [Header("튜토리얼에서 보여줄 이미지들")]
+    [Header("튜토리얼에서 보여줄 이미지 혹은 판넬들")]
     [SerializeField] private  GameObject[] images; 
 
     public void setTutorialText(string tutorialText)
@@ -38,4 +38,5 @@ public class TutorialPanelController : MonoBehaviour
     {
         images[index].SetActive(false);
     }
+
 }
