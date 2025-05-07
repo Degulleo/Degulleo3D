@@ -24,8 +24,19 @@ public class HousingCanvasController : MonoBehaviour
         interactionButton.SetActive(false);
         suddenPanel.SetActive(false);
     }
+
+    #region NPC 상호 작용
+
+    public void ShowNpcInteractionButton(Action onInteractionButtonPressed)
+    {
+        interactionButton.SetActive(true);
+        OnInteractionButtonPressed = onInteractionButtonPressed;
+    }
+
+    #endregion
     
     #region 상호작용 일상 행동
+    
     // 상호작용 가능한 사물에 가까이 갔을 때 화면에 텍스트, 버튼 표시
     public void ShowInteractionButton(string actText, string descText,Action onInteractionButtonPressed)
     {
@@ -35,6 +46,7 @@ public class HousingCanvasController : MonoBehaviour
         //각 행동 별로 실행되어야 할 이벤트 구독
         OnInteractionButtonPressed = onInteractionButtonPressed;
     }
+    
     //범위에서 벗어나면 상호작용 버튼 off
     public void HideInteractionButton()
     {
