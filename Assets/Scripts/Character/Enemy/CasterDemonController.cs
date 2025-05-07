@@ -1,9 +1,6 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.AI;
 using Random = UnityEngine.Random;
 
 public class CasterDemonController : EnemyController
@@ -15,15 +12,12 @@ public class CasterDemonController : EnemyController
     public static readonly int Telepo = Animator.StringToHash("Telepo");
     public static readonly int Spin = Animator.StringToHash("Spin");
 
-    private bool _doneBattleSequence = true;
-
-    private Coroutine _currentSequence;
-
     [SerializeField] private Transform teleportTransform;
     [SerializeField] private Transform bulletShotPosition;
     [SerializeField] private GameObject magicMissilePrefab;
     [SerializeField] private GameObject teleportEffectPrefab;
     [SerializeField] private Vector3 teleportTargetPosition = Vector3.zero;
+
     [Header("각종 데미지 이펙트 세트")]
     [SerializeField] private GameObject chariotWarning;
     [SerializeField] private GameObject chariotEffect;
@@ -31,6 +25,9 @@ public class CasterDemonController : EnemyController
     [Space(10)]
     [SerializeField] private GameObject slowFieldWarning;
     [SerializeField] private GameObject slowFieldEffect;
+    [SerializeField] private GameObject knockbackEffect;
+    private float _knockbackTimer = 10f;
+    private const float KnockBackThresholdTime = 10f;
 
     // 텔레포트 쿨타임 처음엔 빨리 사용 가능함
     private float _teleportTimer = 10f;
@@ -40,16 +37,84 @@ public class CasterDemonController : EnemyController
     private float _tinkingTimer = 3f;
     private float _thinkingThresholdTime = 3f;
 
-    // 프로퍼티
+    private bool _doneBattleSequence = true;
+    private Coroutine _currentSequence;
+
+
+    private DamageEffectData? _knockbackData;
+    private DamageEffectData KnockbackData
+    {
+        get
+        {
+            if (_knockbackData == null)
+            {
+                _knockbackData = new DamageEffectData
+                {
+                    damage = 0,
+                    radius = 7.5f,
+                    delay = 0.5f,
+                    targetLayer = TargetLayerMask,
+                    explosionEffectPrefab = knockbackEffect
+                };
+            }
+            return _knockbackData.Value;
+        }
+    }
+    private DamageEffectData? _slowFieldEffectData;
+    private DamageEffectData SlowFieldEffectData
+    {
+        get
+        {
+            if (_slowFieldEffectData == null)
+            {
+                _slowFieldEffectData = new DamageEffectData
+                {
+                    damage = 0,
+                    radius = 7.5f,
+                    delay = 2.5f,
+                    targetLayer = TargetLayerMask,
+                    explosionEffectPrefab = slowFieldEffect
+                };
+            }
+            return _slowFieldEffectData.Value;
+        }
+    }
+    private DamageEffectData? _teleportEffectData;
+    private DamageEffectData TeleportEffectData
+    {
+        get
+        {
+            if (_teleportEffectData == null)
+            {
+                _teleportEffectData = new DamageEffectData
+                {
+                    damage = (int)attackPower,
+                    radius = 10,
+                    delay = 1.5f,
+                    targetLayer = TargetLayerMask,
+                    explosionEffectPrefab = chariotEffect
+                };
+            }
+            return _teleportEffectData.Value;
+        }
+    }
+
+    // 특수 스킬 사용 가능 여부
+    private bool CanKnockback
+    {
+        get
+        {
+            if (!(_knockbackTimer >= KnockBackThresholdTime)) return false;
+            _knockbackTimer = 0f;
+            return true;
+        }
+    }
     private bool CanTeleport {
         get
         {
-            if (_teleportTimer >= TeleportThresholdTime )
-            {
-                _teleportTimer = 0;
-                return true;
-            }
-            return false;
+            if (!(_teleportTimer >= TeleportThresholdTime)) return false;
+            _teleportTimer = 0;
+            return true;
         }
     }
     private bool CanBattleSequence
@@ -70,6 +135,7 @@ public class CasterDemonController : EnemyController
     {
         _teleportTimer += Time.deltaTime;
         _tinkingTimer += Time.deltaTime;
+        _knockbackTimer += Time.deltaTime;
     }
 
     public override void BattleSequence()
@@ -96,14 +162,14 @@ public class CasterDemonController : EnemyController
             case 2:
             case 3:
             case 4:
-                SetSequence(RunPattern(ShotMagicMissile));
+                SetSequence(ShotMagicMissile);
                 break;
             case 5:
             case 6:
             case 7:
             case 8:
             case 9:
-                SetSequence(RunPattern(SlowFieldSpell));
+                SetSequence(SlowFieldSpell);
                 break;
         }
 
@@ -117,7 +183,10 @@ public class CasterDemonController : EnemyController
             Teleport();
             return;
         }
-        SetSequence(RunPattern(KnockbackSpell));
+        if (CanKnockback)
+        {
+            SetSequence(KnockbackSpell);
+        }
     }
 
     private IEnumerator ShotMagicMissile()
@@ -176,23 +245,16 @@ public class CasterDemonController : EnemyController
         // 텔레포트와 함께 시전하는 범위 공격
         var aoe = Instantiate(chariotWarning, startPos, Quaternion.identity).GetComponent<ChariotAoeController>();
 
-        var effectData = new DamageEffectData
-        {
-            damage = (int)attackPower,
-            radius = 10,
-            delay = 1.5f,
-            targetLayer = TargetLayerMask,
-            explosionEffectPrefab = chariotEffect
-        };
 
-        aoe.SetEffect(effectData, null, null);
+
+        aoe.SetEffect(TeleportEffectData, null, null);
 
         // 텔레포트 타겟 위치로 이동
         Agent.Warp(teleportTargetPosition);
         SetAnimation(Telepo);
 
         if (teleportEffectPrefab != null)
-            Instantiate(teleportEffectPrefab, Vector3.zero, Quaternion.identity);
+            Instantiate(teleportEffectPrefab, teleportTargetPosition, Quaternion.identity);
     }
 
     private IEnumerator SlowFieldSpell()
@@ -201,21 +263,12 @@ public class CasterDemonController : EnemyController
         // 1. 시전 애니메이션
         transform.LookAt(aimPosition);
         SetAnimation(Cast);
+
         // 2. 장판 생성과 세팅
-
-        var effectData = new DamageEffectData
-        {
-            damage = 0,
-            radius = 7.5f,
-            delay = 2.5f,
-            targetLayer = TargetLayerMask,
-            explosionEffectPrefab = slowFieldEffect
-        };
-
         var fixedPos = new Vector3(aimPosition.x, 0, aimPosition.z);
         var warning = Instantiate(chariotWarning, fixedPos, Quaternion.identity).GetComponent<MagicAoEField>();
 
-        warning.SetEffect(effectData, null, null);
+        warning.SetEffect(SlowFieldEffectData, null, null);
 
         // 3. 짧은 텀 후 끝내기
         yield return Wait.For(1f);
@@ -226,29 +279,20 @@ public class CasterDemonController : EnemyController
         // 시전 애니메이션
         SetAnimation(Spin);
 
-        var effectData = new DamageEffectData
-        {
-            damage = 0,
-            radius = 7.5f,
-            delay = 0.5f,
-            targetLayer = TargetLayerMask,
-            explosionEffectPrefab = slowFieldEffect
-        };
-
         // 넉백 발생
         var knockback = Instantiate(chariotWarning, transform).GetComponent<MagicAoEField>();
-        knockback.SetEffect(effectData, null, null, DebuffType.Knockback.ToString());
+        knockback.SetEffect(KnockbackData, null, null, DebuffType.Knockback.ToString());
 
         yield return Wait.For(1f);
     }
 
-    private void SetSequence(IEnumerator newSequence)
+    #region 유틸리티
+    private void SetSequence(Func<IEnumerator> newSequence)
     {
         if (_currentSequence != null)
-        {
             StopCoroutine(_currentSequence);
-        }
-        _currentSequence = StartCoroutine(newSequence);
+
+        _currentSequence = StartCoroutine(RunPattern(newSequence));
     }
 
     private IEnumerator RunPattern(Func<IEnumerator> pattern)
@@ -256,4 +300,5 @@ public class CasterDemonController : EnemyController
         yield return StartCoroutine(pattern());
         _doneBattleSequence = true;
     }
+    #endregion
 }
