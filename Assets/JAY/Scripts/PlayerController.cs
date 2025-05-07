@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEditor.TextCore.Text;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public enum PlayerState { None, Idle, Move, Win, Hit, Dead }
 
@@ -30,6 +32,7 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
     private PlayerStateIdle _playerStateIdle;
     private PlayerStateMove _playerStateMove;
     private PlayerStateWin _playerStateWin;
+    private PlayerStateHit _playerStateHit;
     private PlayerStateDead _playerStateDead;
     
     // 행동 관련
@@ -62,7 +65,11 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         hitEffectController = GetComponentInChildren<PlayerHitEffectController>();
         
         PlayerInit();
-        SwitchBattleMode();
+        
+        // isBattle 초기화 (임시)
+        /*bool isHousingScene = SceneManager.GetActiveScene().name.Contains("Housing");
+        _isBattle = !isHousingScene;
+        Debug.Log("_isBattle: " + _isBattle);*/
     }
     
     private void Update()
@@ -71,6 +78,10 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         {
             _playerStates[CurrentState].Update();
         }
+        
+        // Hit 상태거나 게임 끝났을 땐 땐 입력 무시
+        if (CurrentState == PlayerState.Hit || CurrentState == PlayerState.Dead || CurrentState == PlayerState.Win)
+            return;
         
         // 대시 우선 입력 처리
         if (Input.GetKeyDown(KeyCode.Space))
@@ -94,7 +105,7 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
     
     private void OnDestroy()
     {
-        OnGetHit -= TakeDamage;
+        OnGetHit -= HandlePlayerHit;
     }
 
     #region 초기화 관련
@@ -104,6 +115,7 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         // 상태 초기화
         _playerStateIdle = new PlayerStateIdle();
         _playerStateMove = new PlayerStateMove();
+        _playerStateHit = new PlayerStateHit();
         _playerStateWin = new PlayerStateWin();
         _playerStateDead = new PlayerStateDead();
         
@@ -111,6 +123,7 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         {
             { PlayerState.Idle, _playerStateIdle },
             { PlayerState.Move, _playerStateMove },
+            { PlayerState.Hit, _playerStateHit },
             { PlayerState.Win, _playerStateWin },
             { PlayerState.Dead, _playerStateDead },
         };
@@ -118,8 +131,8 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         _attackAction = new PlayerActionAttack();
         _actionDash = new PlayerActionDash();
         
-        OnGetHit -= TakeDamage;
-        OnGetHit += TakeDamage;
+        OnGetHit -= HandlePlayerHit;
+        OnGetHit += HandlePlayerHit;
         
         SetState(PlayerState.Idle);
 
@@ -151,9 +164,13 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         SafeResetTrigger("Bore");
         SafeResetTrigger("GetHit");
         PlayerAnimator.Rebind(); // 레이어 초기화
-        PlayerAnimator.Update(0f); // 즉시 반영
+        // PlayerAnimator.Update(0f); // 즉시 반영
     }
     
+    #endregion
+
+    #region 애니메이션 파라미터 관련
+
     public void SafeSetBool(string paramName, bool value)
     {
         if (PlayerAnimator == null) return;
@@ -181,7 +198,7 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
             }
         }
     }
-    
+
     #endregion
 
     #region 상태, 동작 변화 관련
@@ -336,37 +353,30 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
 
     #region 피격 관련
 
-    // TODO: Editor에서 확인하기 위한 임시용
-    public void TakeDamage()
+    // TODO: Editor에서 확인하기 위한 테스트용 메서드
+    public void HandlePlayerHit()
     {
         if (CurrentState == PlayerState.Dead) return;
-        
-        // 피격 이벤트 재생
-        PlayerHitEffect();
-        
-        // 죽었는지 체크
-        if (currentHP <= 0) SetState(PlayerState.Dead);
-    }
 
+        SetState(PlayerState.Hit);
+    }
     
-    public void TakeDamage(CharacterBase character)
+    private void HandlePlayerHit(CharacterBase character)
     {
-        if (character != this) return; // 혹시 다른 애가 맞은 경우 무시
+        if (character != this) return;
         if (CurrentState == PlayerState.Dead) return;
-        
-        // 피격 이벤트 재생
-        PlayerHitEffect();
-        
-        // 죽었는지 체크
-        if (currentHP <= 0) SetState(PlayerState.Dead);
+
+        SetState(PlayerState.Hit);
+    }
+    
+    public void PlayHitEffect()
+    {
+        hitEffectController?.PlayHitEffect();
     }
 
-    private void PlayerHitEffect()
+    public void ShakeCamera()
     {
-        if (_currentAction != _attackAction || !_attackAction.IsActive)
-            PlayerAnimator.SetTrigger("GetHit");
-        hitEffectController.PlayHitEffect();
-        cameraShake.Shake();
+        cameraShake?.Shake();
     }
 
     #endregion

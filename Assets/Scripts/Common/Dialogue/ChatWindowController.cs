@@ -66,10 +66,10 @@ public class ChatWindowController : MonoBehaviour, IPointerClickHandler
     {
         _dialogueManager = new FairyDialogueManager(this);
         
-        onComplete = () => {
+        /*onComplete = () => {
             // 대화문 종료 call back
             Debug.Log("대화가 완료되었습니다.");
-        };
+        };*/
     }
 
     // 외부 호출용 함수 (대화 시작)

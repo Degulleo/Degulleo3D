@@ -53,7 +53,7 @@ public partial class GameManager
         if (stageLevel < GameConstants.maxStage) // 현재 스테이지 1 혹은 2
             return EndingType.Bad;
 
-        if (playerStats.ReputationStat >= happyEndReputation) // 평판이 일정 수치 이상
+        if (PlayerStats.Instance.ReputationStat >= happyEndReputation) // 평판이 일정 수치 이상
             return EndingType.Happy;
         
         return EndingType.Normal;
