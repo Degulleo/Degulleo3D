@@ -7,8 +7,11 @@ public class EnemyStateFlee :IEnemyState
 {
     private EnemyController _enemyController;
     private Transform _playerTransform;
-    private float _fleeDistance = 10f;   // 도망치는 거리
     private float _attackRange = 7f;    // 공격 범위
+    private float _fleeDistance = 15f;   // 도망치는 거리
+
+    private float _attackRangeSqr;
+    private float _fleeDistanceSqr;
 
     // 경로 탐색 주기 조절용
     private float _fleeSearchTimer = 0;
@@ -33,6 +36,9 @@ public class EnemyStateFlee :IEnemyState
         _stuckTimer = 0f;
         _fleeSearchTimer = 0;
 
+        _attackRangeSqr = _attackRange * _attackRange;
+        _fleeDistanceSqr = _fleeDistance * _fleeDistance;
+
         _enemyController.SetAnimation(CasterDemonController.Flee, true);
     }
 
@@ -44,11 +50,17 @@ public class EnemyStateFlee :IEnemyState
             return;
         }
 
-        float currentDist = Vector3.Distance(
-            _enemyController.transform.position,
-            _playerTransform.position
-        );
-        if (currentDist >= _attackRange)
+        float currentDist = (_enemyController.transform.position - _playerTransform.position).sqrMagnitude;
+
+        if (currentDist >= _fleeDistanceSqr)
+        {
+            _enemyController.Agent.isStopped = true;
+            _enemyController.Agent.ResetPath();
+            _enemyController.SetState(EnemyState.Idle);
+            return;
+        }
+
+        if (currentDist >= _attackRangeSqr)
         {
             // 목적지 리셋 후 전투 시작
             _enemyController.Agent.isStopped = true;
@@ -74,8 +86,8 @@ public class EnemyStateFlee :IEnemyState
 
     private void CheckPath()
     {
-        float moved = Vector3.Distance(_enemyController.transform.position, _lastPosition);
-        if (moved < StuckMoveThreshold)
+        float moved = (_enemyController.transform.position - _lastPosition).sqrMagnitude;
+        if (moved < StuckMoveThreshold * StuckMoveThreshold)
         {
             _stuckTimer += Time.deltaTime;
             if (_stuckTimer >= StuckThresholdTime)
@@ -95,14 +107,12 @@ public class EnemyStateFlee :IEnemyState
         _fleeSearchTimer += Time.deltaTime;
         if (_fleeSearchTimer <= FleeThresholdTime) return;
 
-        // 1) 목표 도망 위치 계산
+        // 플레이어 반대방향으로 도망
         Vector3 fleeDirection = (_enemyController.transform.position - _playerTransform.position).normalized;
         Vector3 fleeTarget = _enemyController.transform.position + fleeDirection * _fleeDistance;
 
-        // 2) 경로 계산해 보기
+        // 경로 설정
         _enemyController.Agent.SetDestination(fleeTarget);
-
-        // 3) 이동
         _enemyController.Agent.isStopped = false;
         _fleeSearchTimer = 0;
     }
