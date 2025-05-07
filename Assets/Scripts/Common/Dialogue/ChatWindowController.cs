@@ -44,7 +44,6 @@ public class ChatWindowController : MonoBehaviour, IPointerClickHandler
     [SerializeField] private TMP_Text chatText;
     [SerializeField] private Image clickIndicator;
     [SerializeField] private GameObject chatWindowObject; // 대화 종료용
-    [SerializeField] private AudioClip typingClip; // 타이핑 사운드
 
     private Coroutine _typingCoroutine;
     private Coroutine _clickCoroutine;
@@ -173,7 +172,7 @@ public class ChatWindowController : MonoBehaviour, IPointerClickHandler
             strText.Append(text[i]);
             chatText.text = strText.ToString();
             yield return new WaitForSeconds(0.05f);
-            SoundManager.Instance.PlaySFX(typingClip); // 타이핑 사운드
+            GameManager.Instance.PlayTypingSound();
         }
 
         _clickCoroutine = StartCoroutine(ClickIndicatorCoroutine());

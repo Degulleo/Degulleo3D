@@ -1,22 +1,32 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.Serialization;
 
 // 게임 매니저의 오디오 관련 부분 클래스
 public partial class GameManager
 {
+    private SoundManager SafeSoundManager => SoundManager.Instance;
+    
     // 오디오 클립 참조
-    [Header("오디오 설정")]
+    [Header("배경음")]
     [SerializeField] private AudioClip housingBGM;
     [SerializeField] private AudioClip dungeonBGM;
-    [SerializeField] private AudioClip gameOverBGM;
-    [SerializeField] private AudioClip victoryBGM;
     
+    [Header("UI 효과음")]
+    [SerializeField] private AudioClip typingSFX;
     [SerializeField] private AudioClip buttonClickSFX;
+
+    [Header("상호 작용 효과음")] 
+    [SerializeField] private AudioClip houseworkSFX;
+    [SerializeField] private AudioClip goToWorkSFX;
+    [SerializeField] private AudioClip goToDungeonSFX;
+    [SerializeField] private AudioClip eatingSFX;
+    [SerializeField] private AudioClip sleepingSFX;
     
-    [Header("몬스터 효과음")]
-    [SerializeField] private AudioClip monsterAttackSFX;
-    [SerializeField] private AudioClip monsterDeathSFX;
+    [Header("게임 결과 효과음")]
+    [SerializeField] private AudioClip gameOverSFX;
+    [SerializeField] private AudioClip victorySFX;
     
     // 씬에 따른 배경음 맵핑
     private Dictionary<string, AudioClip> sceneBGMMap = new Dictionary<string, AudioClip>();
@@ -36,17 +46,23 @@ public partial class GameManager
         if (SoundManager.Instance != null)
         {
             // BGM 등록
-            if (housingBGM != null) SoundManager.Instance.LoadAudioClip("HousingBGM", housingBGM);
-            if (dungeonBGM != null) SoundManager.Instance.LoadAudioClip("DungeonBGM", dungeonBGM);
-            if (gameOverBGM != null) SoundManager.Instance.LoadAudioClip("GameOverBGM", gameOverBGM);
-            if (victoryBGM != null) SoundManager.Instance.LoadAudioClip("VictoryBGM", victoryBGM);
+            if (housingBGM != null) SafeSoundManager?.LoadAudioClip("HousingBGM", housingBGM);
+            if (dungeonBGM != null) SafeSoundManager?.LoadAudioClip("DungeonBGM", dungeonBGM);
+            
+            // 게임 결과
+            if (gameOverSFX != null) SafeSoundManager?.LoadAudioClip("GameOverSFX", gameOverSFX);
+            if (victorySFX != null) SafeSoundManager?.LoadAudioClip("VictorySFX", victorySFX);
             
             // SFX 등록
-            if (buttonClickSFX != null) SoundManager.Instance.LoadAudioClip("ButtonClick", buttonClickSFX);
+            if (buttonClickSFX != null) SafeSoundManager?.LoadAudioClip("ButtonClick", buttonClickSFX);
+            if (typingSFX != null) SafeSoundManager?.LoadAudioClip("Typing", typingSFX);
             
-            // 몬스터 SFX 등록
-            if (monsterAttackSFX != null) SoundManager.Instance.LoadAudioClip("MonsterAttack", monsterAttackSFX);
-            if (monsterDeathSFX != null) SoundManager.Instance.LoadAudioClip("MonsterDeath", monsterDeathSFX);
+            // 상호작용 효과음 등록
+            if (houseworkSFX != null) SafeSoundManager?.LoadAudioClip("Housework", houseworkSFX);
+            if (goToWorkSFX != null) SafeSoundManager?.LoadAudioClip("Work", goToWorkSFX);
+            if (goToDungeonSFX != null) SafeSoundManager?.LoadAudioClip("Dungeon", goToDungeonSFX);
+            if (eatingSFX != null) SafeSoundManager?.LoadAudioClip("Eating", eatingSFX);
+            if (sleepingSFX != null) SafeSoundManager?.LoadAudioClip("Sleeping", sleepingSFX);
             
             // 저장된 볼륨 설정 로드
             // LoadVolumeSettings();
@@ -66,10 +82,8 @@ public partial class GameManager
     // BGM 볼륨 설정 (0.0 ~ 1.0)
     public void SetVolumeBGM(float value)
     {
-        if (SoundManager.Instance == null) return;
-        
         value = Mathf.Clamp01(value); // 혹시 모를 범위 제한
-        SoundManager.Instance.SetBGMVolume(value);
+        SafeSoundManager?.SetBGMVolume(value);
         
         // 설정 저장
         // PlayerPrefs.SetFloat("BGMVolume", value);
@@ -79,10 +93,8 @@ public partial class GameManager
     // SFX 볼륨 설정 (0.0 ~ 1.0)
     public void SetVolumeSFX(float value)
     {
-        if (SoundManager.Instance == null) return;
-        
         value = Mathf.Clamp01(value);
-        SoundManager.Instance.SetSFXVolume(value);
+        SafeSoundManager?.SetSFXVolume(value);
         
         // 설정 저장
         // PlayerPrefs.SetFloat("SFXVolume", value);
@@ -95,12 +107,10 @@ public partial class GameManager
     //     float bgmVolume = PlayerPrefs.GetFloat("BGMVolume", 1.0f);
     //     float sfxVolume = PlayerPrefs.GetFloat("SFXVolume", 1.0f);
     //     
-    //     // 저장된 볼륨 설정 적용
-    //     if (SoundManager.Instance != null)
-    //     {
-    //         SoundManager.Instance.SetBGMVolume(bgmVolume);
-    //         SoundManager.Instance.SetSFXVolume(sfxVolume);
-    //     }
+    //     
+    //     SafeSoundManager?.SetBGMVolume(bgmVolume);
+    //     SafeSoundManager?.SetSFXVolume(sfxVolume);
+    //     
     // }
     
     #endregion
@@ -108,8 +118,6 @@ public partial class GameManager
     // 씬에 따른 오디오 처리
     private void HandleSceneAudio(string sceneName)
     {
-        if (SoundManager.Instance == null) return;
-        
         // 이미 같은 트랙이 재생 중이면 중복 재생하지 않음
         if (currentBGMTrack == sceneName) return;
         
@@ -118,67 +126,71 @@ public partial class GameManager
         {
             if (bgmClip != null)
             {
-                SoundManager.Instance.PlayBGM(bgmClip, true, 1.5f);
+                SafeSoundManager?.PlayBGM(bgmClip, true, 1.5f);
                 currentBGMTrack = sceneName;
             }
         }
     }
 
-    #region 배경음 제어 (게임 오버, 승리도 이쪽)
+    #region 배경음 제어
     
-    // 게임 오버 시 호출
-    public void PlayGameOverMusic()
+    public void PlayHousingBackgroundMusic()
     {
-        if (SoundManager.Instance == null) return;
         
-        if (gameOverBGM != null)
-        {
-            SoundManager.Instance.PlayBGM(gameOverBGM, true, 1.0f);
-            currentBGMTrack = "GameOver";
-        }
-    }
-    
-    // 승리 시 호출
-    public void PlayVictoryMusic()
-    {
-        if (SoundManager.Instance == null) return;
-        
-        if (victoryBGM != null)
-        {
-            SoundManager.Instance.PlayBGM(victoryBGM, true, 1.0f);
-            currentBGMTrack = "Victory";
-        }
     }
     
     #endregion
 
     #region 효과음 제어
     
+    // 게임 오버 시 호출
+    public void PlayGameOverMusic()
+    {
+        SafeSoundManager?.PlaySFX("GameOverSFX");
+    }
+    
+    // 승리 시 호출
+    public void PlayVictoryMusic()
+    {
+        SafeSoundManager?.PlaySFX("VictorySFX");
+    }
+    
     // 버튼 클릭 효과음 재생
     public void PlayButtonClickSound()
     {
-        if (SoundManager.Instance == null) return;
-        
-        SoundManager.Instance.PlaySFX("ButtonClick");
+        SafeSoundManager?.PlaySFX("ButtonClick");
+    }
+
+    public void PlayTypingSound()
+    {
+        SafeSoundManager?.PlaySFX("Typing");
     }
     
     #endregion
-    
-    #region 몬스터 오디오
-    
-    public void PlayMonsterAttackSound()
+
+    #region 상호작용 패널 효과음
+
+    public void PlayInteractionSound(ActionType actionType)
     {
-        if (SoundManager.Instance == null) return;
-    
-        SoundManager.Instance.PlaySFX("MonsterAttack");
+        switch (actionType)
+        {
+            case ActionType.Sleep:
+                SafeSoundManager?.PlaySFX("Sleeping");
+                break;
+            case ActionType.Work:
+                SafeSoundManager?.PlaySFX("Work");
+                break;
+            case ActionType.Dungeon:
+                SafeSoundManager?.PlaySFX("Dungeon");
+                break;
+            case ActionType.Eat:
+                SafeSoundManager?.PlaySFX("Eating");
+                break;
+            case ActionType.Housework:
+                SafeSoundManager?.PlaySFX("Housework");
+                break;
+        }
     }
 
-    public void PlayMonsterDeathSound()
-    {
-        if (SoundManager.Instance == null) return;
-    
-        SoundManager.Instance.PlaySFX("MonsterDeath");
-    }
-    
     #endregion
 }
