@@ -13,7 +13,8 @@ public enum LoadingState
     Go2Work,
     LeaveWork,
     Meal,
-    Dungeon
+    Dungeon,
+    Sleep
 }
 //집안일 목록
 public enum HouseworkState
@@ -33,7 +34,7 @@ public class InteractionPanelController : MonoBehaviour
 
     private void Start()
     {
-        Init(LoadingState.Housework);
+        Init(LoadingState.Sleep);
     }
 
     private void Init(LoadingState state)
@@ -46,19 +47,27 @@ public class InteractionPanelController : MonoBehaviour
         {
             case LoadingState.Housework:
                 doingText.text = "세탁하는 중";
-                animator.Play("Laundry");
+                animator.Play("Housework");
                 break;
             case LoadingState.Go2Work:
                 doingText.text = "출근하는 중";
+                animator.Play("Go2Work");
                 break;
             case LoadingState.LeaveWork:
                 doingText.text = "퇴근하는 중";
+                animator.Play("Go2Work");
                 break;
             case LoadingState.Meal:
                 doingText.text = "식사하는 중";
+                animator.Play("Meal");
                 break;
             case LoadingState.Dungeon:
                 doingText.text = "던전 진입하는 중";
+                animator.Play("Dungeon");
+                break;
+            case LoadingState.Sleep:
+                doingText.text = "잠 자는 중";
+                animator.Play("Sleep");
                 break;
         }
         _textAnimCoroutine = StartCoroutine(TextAnimation());
