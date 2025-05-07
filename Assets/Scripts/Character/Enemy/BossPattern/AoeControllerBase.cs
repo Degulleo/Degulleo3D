@@ -24,6 +24,7 @@ public abstract class AoeControllerBase : MonoBehaviour
     protected DamageEffectData _data;
     private Action _slashAction;
     private Action _destroyAction;
+    protected string EffectName;
 
     /// <summary>
     /// 범위 공격 이펙트를 설정하고, 딜레이 후 폭발을 실행합니다.
@@ -33,6 +34,17 @@ public abstract class AoeControllerBase : MonoBehaviour
         _data = data;
         _slashAction = slashAction;
         _destroyAction = destroyAction;
+
+        ShowWarningEffect();
+        StartCoroutine(ExplodeAfterDelay());
+    }
+
+    public void SetEffect(DamageEffectData data, Action slashAction, Action destroyAction, string effectName)
+    {
+        _data = data;
+        _slashAction = slashAction;
+        _destroyAction = destroyAction;
+        EffectName = effectName;
 
         ShowWarningEffect();
         StartCoroutine(ExplodeAfterDelay());
