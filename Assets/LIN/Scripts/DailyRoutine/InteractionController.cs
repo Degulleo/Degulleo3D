@@ -7,7 +7,6 @@ using UnityEngine.Serialization;
 [RequireComponent(typeof(Rigidbody))]
 public class InteractionController : MonoBehaviour
 {
-    [SerializeField] PlayerStats playerStats;
     [SerializeField] LayerMask interactionLayerMask;
     [FormerlySerializedAs("housingCanvasManager")]
     [Header("UI 연동")]
@@ -18,16 +17,20 @@ public class InteractionController : MonoBehaviour
 
     private void Start()
     {
-        playerStats.OnWorked += SuddenAfterWorkEventHappen;
-        if (housingCanvasController == null)
-        {
-            housingCanvasController = FindObjectOfType<HousingCanvasController>();
-        }
+        PlayerStats.Instance.OnWorked += SuddenAfterWorkEventHappen;
     }
 
     // 상호작용 가능한 사물 범위에 들어올 때
     private void OnTriggerEnter(Collider other)
     {
+        if(other.gameObject.layer == LayerMask.NameToLayer("NPC"))
+        {
+            housingCanvasController.ShowNpcInteractionButton(() =>
+            {
+                GameManager.Instance.StartNPCDialogue(GamePhase.Gameplay);
+            });
+        }
+        
         if (interactionLayerMask == (interactionLayerMask | (1 << other.gameObject.layer)))
         {
             ActionType interactionType = other.gameObject.GetComponent<InteractionProp>().RoutineEnter();
@@ -40,6 +43,8 @@ public class InteractionController : MonoBehaviour
     // 사물에서 벗어날 때 UI 정리
     private void OnTriggerExit(Collider other)
     {
+        if(other.gameObject.layer == LayerMask.NameToLayer("NPC")) housingCanvasController.HideInteractionButton();
+        
         if (interactionLayerMask == (interactionLayerMask | (1 << other.gameObject.layer)))
         {
             housingCanvasController.HideInteractionButton();
@@ -54,11 +59,18 @@ public class InteractionController : MonoBehaviour
         
         housingCanvasController.ShowInteractionButton(interactionTexts.ActionText,interactionTexts.DescriptionText,()=>
         {
-            if (playerStats.CanPerformByHealth(interactionType))
+            if (PlayerStats.Instance.CanPerformByHealth(interactionType))
             {
-                playerStats.PerformAction(interactionType);
-                interactionAnimationPanelController.ShowAnimationPanel(interactionType,interactionTexts.AnimationText);
+                PlayerStats.Instance.PerformAction(interactionType);
 
+                if (interactionType == ActionType.Dungeon)
+                {
+                    GameManager.Instance.ChangeToGameScene();
+                }
+                else
+                {
+                    interactionAnimationPanelController.ShowAnimationPanel(interactionType,interactionTexts.AnimationText);
+                }
             }
             else
             {

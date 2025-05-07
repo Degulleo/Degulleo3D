@@ -9,7 +9,7 @@ public class PanelController : MonoBehaviour
 {
     private CanvasGroup _canvasGroup;
     
-    private void Awake()
+    protected void Awake()
     {
         _canvasGroup = GetComponent<CanvasGroup>();
         if (_canvasGroup == null) return;
@@ -26,5 +26,6 @@ public class PanelController : MonoBehaviour
     {
         if (_canvasGroup == null) return;
         _canvasGroup.alpha = 0;
+        Destroy(gameObject);
     }
 }

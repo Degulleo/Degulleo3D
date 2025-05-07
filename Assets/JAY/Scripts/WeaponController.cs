@@ -1,38 +1,25 @@
-﻿using System;
+﻿// Anchor 방식 리팩토링
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class WeaponController : MonoBehaviour, IObservable<GameObject>
 {
-    [Serializable]
-    public class WeaponTriggerZone
-    {
-        public Vector3 position;
-        public float radius;
-    }
-    
-    [SerializeField] private WeaponTriggerZone[] _triggerZones;
+    [SerializeField] private Transform[] triggerAnchors;
+    [SerializeField] private float triggerRadius = 0.5f;
     [SerializeField] private LayerMask targetLayerMask;
-    
+
     private List<IObserver<GameObject>> _observers = new List<IObserver<GameObject>>();
-    
-    // 공격 데미지 처리
+
     private int attackPower = 1;
     private int _comboStep = 1;
-    public int AttackPower // 플레이어 공격 데미지
-    {
-        get
-        {
-            // 마지막 콤보일 경우 공격력 증가
-            return _comboStep == 4 ? attackPower * 4 : attackPower;
-        }
-    }
+    public int AttackPower => _comboStep == 4 ? attackPower * 4 : attackPower;
+
     private PlayerController _playerController;
     private bool _isAttacking = false;
     public bool IsAttacking => _isAttacking;
 
-    // 충돌 처리
     private Vector3[] _previousPositions;
     private HashSet<Collider> _hitColliders;
     private Ray _ray = new Ray();
@@ -40,12 +27,12 @@ public class WeaponController : MonoBehaviour, IObservable<GameObject>
 
     private void Start()
     {
-        if (_triggerZones == null || _triggerZones.Length == 0)
+        if (triggerAnchors == null || triggerAnchors.Length == 0)
         {
-            Debug.LogWarning("Trigger Zones이 설정되지 않았습니다.");
+            Debug.LogWarning("Trigger Anchors가 비어있습니다.");
             return;
         }
-        
+
         _playerController = GetComponent<PlayerController>();
         if (_playerController == null)
         {
@@ -55,103 +42,71 @@ public class WeaponController : MonoBehaviour, IObservable<GameObject>
                 _playerController = player.GetComponent<PlayerController>();
             }
         }
-        
-        _previousPositions = new Vector3[_triggerZones.Length];
+
+        _previousPositions = new Vector3[triggerAnchors.Length];
         _hitColliders = new HashSet<Collider>();
     }
 
     public void AttackStart()
     {
-        if (_hitColliders == null)
-        {
-            Debug.LogError("_hitColliders가 null입니다. 무기를 들고 있는지 확인해 주세요!");
-            return;
-        }
         _isAttacking = true;
         _hitColliders.Clear();
-        
         StopAllCoroutines();
-        StartCoroutine(AutoEndAttack()); // 자동 공격 종료
+        StartCoroutine(AutoEndAttack());
 
-        for (int i = 0; i < _triggerZones.Length; i++)
+        for (int i = 0; i < triggerAnchors.Length; i++)
         {
-            _previousPositions[i] = transform.position + transform.TransformVector(_triggerZones[i].position);
+            _previousPositions[i] = triggerAnchors[i].position;
         }
     }
-    
+
     private IEnumerator AutoEndAttack()
     {
-        yield return new WaitForSeconds(0.6f); // 0.6초 가량 대기
-    
-        if (_isAttacking)  // 아직 공격 중이면
-        {
-            Debug.Log("공격 자동 종료 - 타임아웃");
-            AttackEnd();
-        }
+        yield return new WaitForSeconds(0.6f);
+        if (_isAttacking) AttackEnd();
     }
 
-    public void AttackEnd()
-    {
-        _isAttacking = false;
-    }
+    public void AttackEnd() => _isAttacking = false;
 
     private void FixedUpdate()
     {
-        if (_isAttacking)
+        if (!_isAttacking) return;
+
+        for (int i = 0; i < triggerAnchors.Length; i++)
         {
-            for (int i = 0; i < _triggerZones.Length; i++)
+            var current = triggerAnchors[i].position;
+            var direction = current - _previousPositions[i];
+
+            if (direction.magnitude < 0.01f) continue;
+
+            _ray.origin = _previousPositions[i];
+            _ray.direction = direction;
+
+            int hitCount = Physics.SphereCastNonAlloc(_ray, triggerRadius, _hits, direction.magnitude, targetLayerMask);
+            for (int j = 0; j < hitCount; j++)
             {
-                var worldPosition = transform.position + 
-                                    transform.TransformVector(_triggerZones[i].position);
-                var direction = worldPosition - _previousPositions[i];
-                _ray.origin = _previousPositions[i];
-                _ray.direction = direction;
-
-                if (direction.magnitude < 0.01f) return;
-                    
-                var hitCount = Physics.SphereCastNonAlloc(_ray, 
-                    _triggerZones[i].radius, _hits, 
-                    direction.magnitude, targetLayerMask,
-                    QueryTriggerInteraction.UseGlobal);
-                for (int j = 0; j < hitCount; j++)
+                var hit = _hits[j];
+                if (!_hitColliders.Contains(hit.collider))
                 {
-                    var hit = _hits[j];
-                    if (!_hitColliders.Contains(hit.collider))
-                    {
-                        _hitColliders.Add(hit.collider);
-                        Notify(hit.collider.gameObject);
-                    }
+                    _hitColliders.Add(hit.collider);
+                    Notify(hit.collider.gameObject);
                 }
-                _previousPositions[i] = worldPosition;
             }
-        }
-    }
 
-    private IEnumerator ResumeTimeScale()
-    {
-        yield return new WaitForSecondsRealtime(10f);
-        Time.timeScale = 1f;
+            _previousPositions[i] = current;
+        }
     }
 
     public void Subscribe(IObserver<GameObject> observer)
     {
-        if (!_observers.Contains(observer))
-        {
-            _observers.Add(observer);
-        }
+        if (!_observers.Contains(observer)) _observers.Add(observer);
     }
 
-    public void Unsubscribe(IObserver<GameObject> observer)
-    {
-        _observers.Remove(observer);
-    }
+    public void Unsubscribe(IObserver<GameObject> observer) => _observers.Remove(observer);
 
     public void Notify(GameObject value)
     {
-        foreach (var observer in _observers)
-        {
-            observer.OnNext(value);
-        }
+        foreach (var o in _observers) o.OnNext(value);
     }
 
     private void OnDestroy()
@@ -163,47 +118,19 @@ public class WeaponController : MonoBehaviour, IObservable<GameObject>
         }
         _observers.Clear();
     }
-    
-    public void SetComboStep(int step)
-    {
-        _comboStep = step;
-    }
-    
+
+    public void SetComboStep(int step) => _comboStep = step;
+
 #if UNITY_EDITOR
-    
     private void OnDrawGizmos()
     {
-        if (_triggerZones == null) return;
-
-        if (_isAttacking && _previousPositions != null)
+        if (triggerAnchors == null) return;
+        Gizmos.color = Color.green;
+        foreach (var anchor in triggerAnchors)
         {
-            for (int i = 0; i < _triggerZones.Length; i++)
-            {
-                if (_triggerZones[i] == null) continue;
-
-                var worldPosition = transform.position +
-                                    transform.TransformVector(_triggerZones[i].position);
-                var direction = worldPosition - _previousPositions[i];
-
-                Gizmos.color = Color.green;
-                Gizmos.DrawWireSphere(worldPosition, _triggerZones[i].radius);
-
-                Gizmos.color = Color.red;
-                Gizmos.DrawWireSphere(worldPosition + direction, _triggerZones[i].radius);
-            }
-        }
-        else
-        {
-            foreach (var triggerZone in _triggerZones)
-            {
-                if (triggerZone == null) continue;
-
-                Gizmos.color = Color.green;
-                Gizmos.DrawSphere(triggerZone.position, triggerZone.radius);
-            }
+            if (anchor != null)
+                Gizmos.DrawWireSphere(anchor.position, triggerRadius);
         }
     }
-    
 #endif
-    
 }

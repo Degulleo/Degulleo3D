@@ -6,36 +6,44 @@ using UnityEngine.SceneManagement;
 
 public partial class GameManager : Singleton<GameManager>
 {
-    [SerializeField] private PlayerStats playerStats;
-    
     private Canvas _canvas;
     
     // 게임 진행 상태
-    private int currentDay = 1;
+    private int currentDay = 1; // 날짜
     public int CurrentDay => currentDay;
     private int maxDays = GameConstants.maxDays;
     
+    private int stageLevel = 1; // 스테이지 정보
+    public int StageLevel => stageLevel;
+    
     // 날짜 변경 이벤트, 추후에 UI 상의 날짜를 변경할 때 사용
     public event Action<int> OnDayChanged;
+    
+    private ChatWindowController chatWindowController; // 대화창 컨트롤러
     
     private void Start()
     {
         // 오디오 초기화
         InitializeAudio();
-        
-        // PlayerStats의 하루 종료 이벤트 구독
-        if (playerStats == null)
-        {
-            playerStats = FindObjectOfType<PlayerStats>();
-        }
-
-        if (playerStats == null)
-        {
-            Debug.LogError("PlayerStats 컴포넌트를 찾을 수 없습니다.");
-            return;
-        }
-        playerStats.OnDayEnded += AdvanceDay;
+        PlayerStats.Instance.OnDayEnded += AdvanceDay;
     }
+
+    #region 대화 관련
+    
+    public void StartNPCDialogue(GamePhase phase) // intro, gameplay, end 존재
+    {
+        if(chatWindowController == null)
+            SetChatWindowController();
+        
+        chatWindowController.SetGamePhase(phase);
+    }
+    
+    private void SetChatWindowController()
+    {
+        chatWindowController = FindObjectOfType<ChatWindowController>();
+    }
+
+    #endregion
     
     // 날짜 진행
     public void AdvanceDay()
@@ -44,27 +52,20 @@ public partial class GameManager : Singleton<GameManager>
         OnDayChanged?.Invoke(currentDay);
         
         // 최대 일수 도달 체크
-        if (currentDay > maxDays)
+        if (currentDay > maxDays) // 8일차에 검사
         {
             TriggerTimeEnding();
         }
     }
     
-    // 엔딩 트리거
-    private void TriggerTimeEnding()
-    {
-        // TODO: 엔딩 처리 로직
-        Debug.Log("7일이 지나 게임이 종료됩니다.");
-    }
-    
     public void ChangeToGameScene()
     {
-        SceneManager.LoadScene("Game"); // 던전 Scene
+        SceneManager.LoadScene("DungeonTestScene"); // 던전 Scene
     }
     
     public void ChangeToHomeScene()
     {
-        SceneManager.LoadScene("Housing"); // Home Scene
+        SceneManager.LoadScene("ReHousing"); // Home Scene
     }
     
     // TODO: Open Setting Panel 등 Panel 처리
@@ -79,10 +80,8 @@ public partial class GameManager : Singleton<GameManager>
     
     private void OnDestroy()
     {
-        if (playerStats != null)
-        {
-            playerStats.OnDayEnded -= AdvanceDay; // 이벤트 구독 해제
-        }
+        if(PlayerStats.Instance != null)
+            PlayerStats.Instance.OnDayEnded -= AdvanceDay; // 이벤트 구독 해제
     }
     
     private void OnApplicationQuit()
