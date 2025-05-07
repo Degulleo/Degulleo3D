@@ -2,8 +2,6 @@
 using System.Collections;
 using UnityEngine;
 
-
-
 public class ChariotAoeController : AoeControllerBase
 {
     protected override void ShowDamageEffect()
