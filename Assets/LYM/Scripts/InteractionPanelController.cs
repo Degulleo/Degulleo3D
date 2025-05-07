@@ -47,7 +47,7 @@ public class InteractionPanelController : MonoBehaviour
         {
             case LoadingState.Housework:
                 doingText.text = "세탁하는 중";
-                animator.Play("Laundry");
+                animator.Play("Housework");
                 break;
             case LoadingState.Go2Work:
                 doingText.text = "출근하는 중";
