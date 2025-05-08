@@ -26,7 +26,7 @@ public class EffectManager : Singleton<EffectManager>
             Instantiate(prefab, position, Quaternion.identity);
     }
     
-    public void PlayEffect(Vector3 position, Quaternion rotation, EffectType type)
+    public GameObject PlayEffect(Vector3 pos, Quaternion rot, EffectType type)
     {
         GameObject prefab = null;
 
@@ -38,8 +38,11 @@ public class EffectManager : Singleton<EffectManager>
         }
 
         if (prefab != null)
-            Instantiate(prefab, position, rotation);
+            return Instantiate(prefab, pos, rot);
+
+        return null;
     }
+
 
 
     protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)

@@ -19,6 +19,9 @@ public class PlayerStateHit : IPlayerState
         // 이펙트 및 카메라 흔들림
         _playerController.PlayHitEffect();
         _playerController.ShakeCamera();
+        
+        Vector3 pos = _playerController.CharacterController.transform.position + Vector3.up * 0.5f;
+        EffectManager.Instance.PlayEffect(pos, EffectManager.EffectType.Hit);
 
         // 타이머 초기화
         timer = 0f;

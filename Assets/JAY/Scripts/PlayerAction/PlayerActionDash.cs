@@ -51,7 +51,6 @@ public class PlayerActionDash : IPlayerAction
             float dist = Vector3.Distance(currentEffectAnchorPos, lastEffectPos);
             if (dist >= effectSpacing)
             {
-                Debug.DrawLine(currentEffectAnchorPos, currentEffectAnchorPos + Vector3.up * 1f, Color.green, 1f);
                 EffectManager.Instance.PlayEffect(currentEffectAnchorPos, EffectManager.EffectType.Dash);
                 lastEffectPos = currentEffectAnchorPos;
             }

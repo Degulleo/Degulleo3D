@@ -6,6 +6,8 @@ public class PlayerActionAttack : IPlayerAction {
     private int comboStep = 1;
     private bool comboQueued = false;
     private bool canReceiveCombo = false;
+    
+    public int CurrentComboStep => comboStep;
 
     public bool IsActive { get; private set; }
 

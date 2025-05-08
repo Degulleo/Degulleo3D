@@ -294,6 +294,7 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         if (_weaponController.IsAttacking) return;  // 이미 공격 중이면 실행 안함
 
         if (_currentAction == _attackAction) {
+            Debug.Log("공격 시작!");
             _attackAction.EnableCombo();
             _weaponController.AttackStart();
         }
@@ -302,6 +303,7 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
     public void SetAttackComboFalse()
     {
         if (_currentAction == _attackAction) {
+            Debug.Log("공격 종료@");
             // 이벤트 중복 호출? 공격 종료 시 SetAttackComboFalse가 아니라 ~True로 끝나서 오류 발생. (공격 안하는 상태여도 공격으로 판정됨)
             _attackAction.DisableCombo();
             _weaponController.AttackEnd(); // IsAttacking = false로 변경
@@ -310,12 +312,31 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
     
     public void PlayAttackEffect()
     {
-        if (_weaponController != null && _weaponController.AttackEffectAnchor != null)
-        {
-            Vector3 pos = _weaponController.AttackEffectAnchor.position;
-            Quaternion rot = _weaponController.AttackEffectAnchor.rotation;
+        if (_attackAction == null) return;
 
-            EffectManager.Instance.PlayEffect(pos, rot, EffectManager.EffectType.Attack);
+        // 현재 콤보 단계 (1~4)
+        int comboStep = _attackAction.CurrentComboStep;
+
+        // 홀수면 기본 방향 (오→왼), 짝수면 반전 (왼→오)
+        bool isMirror = comboStep % 2 != 0;
+
+        Vector3 basePos = CharacterController.transform.position;
+        Vector3 forward = CharacterController.transform.forward;
+
+        float forwardPos = CurrentState == PlayerState.Move ? 1f : 0.2f;
+
+        // 이펙트 위치: 위로 0.5 + 앞으로 약간
+        Vector3 pos = basePos + Vector3.up * 0.5f + forward * forwardPos;
+
+        Quaternion rot = Quaternion.LookRotation(forward, Vector3.up) * Quaternion.Euler(0, 90, 0);
+        GameObject effect = EffectManager.Instance.PlayEffect(pos, rot, EffectManager.EffectType.Attack);
+
+        // 반전이 필요한 경우, X축 스케일 -1
+        if (isMirror && effect != null)
+        {
+            Vector3 scale = effect.transform.localScale;
+            scale.z *= -1;
+            effect.transform.localScale = scale;
         }
     }
 

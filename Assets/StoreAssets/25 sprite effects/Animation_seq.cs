@@ -37,7 +37,7 @@ public class Animation_seq : MonoBehaviour
             }
             else
             {
-                Destroy(gameObject); // 애니메이션 끝나면 제거
+                Destroy(transform.root.gameObject); // 최상위 부모 삭제
             }
         }
     }
