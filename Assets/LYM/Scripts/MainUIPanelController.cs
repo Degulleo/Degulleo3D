@@ -8,8 +8,7 @@ public class MainUIPanelController : MonoBehaviour
     
     public void OnClickStartButton()
     {
-        var popupPanel = GameManager.Instance.PanelManager.GetPanel("PopupPanel");
-        popupPanel.GetComponent<PopupPanelController>().Show("This is PopupPanel!!", () => {Debug.Log("Confirmed");}, () => {Debug.Log("Canceled");});
+        GameManager.Instance.ChangeToHomeScene();
     }
 
     public void OnClickSettingsButton()
