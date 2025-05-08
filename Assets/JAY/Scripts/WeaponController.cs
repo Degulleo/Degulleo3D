@@ -9,7 +9,6 @@ public class WeaponController : MonoBehaviour, IObservable<GameObject>
     [SerializeField] private Transform[] triggerAnchors;
     [SerializeField] private float triggerRadius = 0.5f;
     [SerializeField] private LayerMask targetLayerMask;
-    public Transform AttackEffectAnchor;
     
     private List<IObserver<GameObject>> _observers = new List<IObserver<GameObject>>();
 
