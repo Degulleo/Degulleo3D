@@ -24,7 +24,6 @@ public class PlayerControllerEditor : Editor
         EditorGUILayout.LabelField("현재 상태", playerController.CurrentState.ToString(), EditorStyles.boldLabel);
         EditorGUILayout.LabelField("현재 행동", playerController.CurrentAction != null ? playerController.CurrentAction.ToString() : "-", EditorStyles.boldLabel);
         EditorGUILayout.EndVertical();
-
         
         // 지면 접촉 상태
         GUI.backgroundColor = Color.white;
@@ -42,7 +41,7 @@ public class PlayerControllerEditor : Editor
         if (GUILayout.Button("Win"))
             playerController.SetState(PlayerState.Win);
         if (GUILayout.Button("Hit"))
-            playerController.TakeDamage();
+            playerController.HandlePlayerHit();
         if (GUILayout.Button("Dead"))
             playerController.SetState(PlayerState.Dead);
         

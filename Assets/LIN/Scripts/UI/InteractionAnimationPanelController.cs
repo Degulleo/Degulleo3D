@@ -16,6 +16,7 @@ public class InteractionAnimationPanelController : MonoBehaviour
 
     private Coroutine _textAnimCoroutine;
     private Coroutine _autoHideCoroutine;
+    private Canvas _parentCanvas;
 
     public void SetDoingText(string text)
     {
@@ -101,6 +102,14 @@ public class InteractionAnimationPanelController : MonoBehaviour
             StopCoroutine(_autoHideCoroutine);
             _autoHideCoroutine = null;
         }
+    }
+
+    public void TutorialSleepAnimation()
+    {
+        _parentCanvas = FindObjectOfType(typeof(Canvas)) as Canvas;
+        
+        HousingConstants.interactions.TryGetValue(ActionType.Sleep, out var interactionTexts);
+        ShowAnimationPanel(ActionType.Sleep, interactionTexts.AnimationText);
     }
 }
  
