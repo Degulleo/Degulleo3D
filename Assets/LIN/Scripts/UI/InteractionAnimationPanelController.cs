@@ -35,19 +35,23 @@ public class InteractionAnimationPanelController : MonoBehaviour
         switch (actionType)
         {
             case ActionType.Sleep:
+                animator.Play("Sleep");
                 break;
             case ActionType.Work:
+                animator.Play("Go2Work");
                 break;
             case ActionType.Eat:
+                animator.Play("Meal");
                 break;
             case ActionType.Dungeon:
+                animator.Play("Dungeon");
                 break;
             case ActionType.Housework:
                 animator.Play("Laundry");
                 break;
         }
         _textAnimCoroutine = StartCoroutine(TextDotsAnimation());
-        _autoHideCoroutine = StartCoroutine(AutoHidePanel());
+        _autoHideCoroutine = StartCoroutine(AutoHidePanel(actionType));
     }
     
     private IEnumerator TextDotsAnimation()
@@ -69,7 +73,7 @@ public class InteractionAnimationPanelController : MonoBehaviour
     /// 패널이 2초후 자동으로 닫히거나 터치시 닫히도록 합니다.
     /// </summary>
     /// <returns></returns>
-    private IEnumerator AutoHidePanel()
+    private IEnumerator AutoHidePanel(ActionType actionType)
     {
         float startTime = Time.time;
         while (Time.time - startTime < animationDuration)
@@ -80,7 +84,8 @@ public class InteractionAnimationPanelController : MonoBehaviour
             }
             yield return null;
         }
-        
+
+        GameManager.Instance.StopInteractionSound(actionType);
         //패널 닫고 애니메이션 null처리
         HidePanel();
         _autoHideCoroutine = null;

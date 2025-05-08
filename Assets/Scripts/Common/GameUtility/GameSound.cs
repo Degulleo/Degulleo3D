@@ -16,6 +16,9 @@ public partial class GameManager
     [Header("UI 효과음")]
     [SerializeField] private AudioClip typingSFX;
     [SerializeField] private AudioClip buttonClickSFX;
+    [SerializeField] private AudioClip errorSFX;
+    [SerializeField] private AudioClip popupSFX;
+    [SerializeField] private AudioClip levelupSFX; // 강화 레벨업
 
     [Header("상호 작용 효과음")] 
     [SerializeField] private AudioClip houseworkSFX;
@@ -28,11 +31,25 @@ public partial class GameManager
     [SerializeField] private AudioClip gameOverSFX;
     [SerializeField] private AudioClip victorySFX;
     
+    [Header("플레이어 전투 효과음")]
+    [SerializeField] private AudioClip housingFootstepSFX;
+    [SerializeField] private AudioClip dungeonFootstepSFX;
+    [SerializeField] private AudioClip playerAttackSFX;
+    
+    [Header("몬스터 전투 효과음")]
+    [SerializeField] private AudioClip explosionSFX; // 폭발 사운드
+    [SerializeField] private AudioClip cutSFX; // 베는 사운드
+    [SerializeField] private AudioClip beamSFX; // 빔 소리?
+    
     // 씬에 따른 배경음 맵핑
     private Dictionary<string, AudioClip> sceneBGMMap = new Dictionary<string, AudioClip>();
     
     // 현재 재생 중인 BGM 트랙
     private string currentBGMTrack = "";
+    
+    private AudioSource currentInteractionSFX;
+    private bool wasPlayingBGM = false;
+    private AudioClip previousBGMClip = null;
     
     // 오디오 관련 초기화
     private void InitializeAudio()
@@ -48,28 +65,41 @@ public partial class GameManager
             // BGM 등록
             if (housingBGM != null) SafeSoundManager?.LoadAudioClip("HousingBGM", housingBGM);
             if (dungeonBGM != null) SafeSoundManager?.LoadAudioClip("DungeonBGM", dungeonBGM);
-            
+        
             // 게임 결과
             if (gameOverSFX != null) SafeSoundManager?.LoadAudioClip("GameOverSFX", gameOverSFX);
             if (victorySFX != null) SafeSoundManager?.LoadAudioClip("VictorySFX", victorySFX);
-            
-            // SFX 등록
+        
+            // UI 효과음 등록
             if (buttonClickSFX != null) SafeSoundManager?.LoadAudioClip("ButtonClick", buttonClickSFX);
             if (typingSFX != null) SafeSoundManager?.LoadAudioClip("Typing", typingSFX);
-            
+            if (errorSFX != null) SafeSoundManager?.LoadAudioClip("Error", errorSFX);
+            if (popupSFX != null) SafeSoundManager?.LoadAudioClip("Popup", popupSFX);
+            if (levelupSFX != null) SafeSoundManager?.LoadAudioClip("LevelUp", levelupSFX);
+        
             // 상호작용 효과음 등록
             if (houseworkSFX != null) SafeSoundManager?.LoadAudioClip("Housework", houseworkSFX);
             if (goToWorkSFX != null) SafeSoundManager?.LoadAudioClip("Work", goToWorkSFX);
             if (goToDungeonSFX != null) SafeSoundManager?.LoadAudioClip("Dungeon", goToDungeonSFX);
             if (eatingSFX != null) SafeSoundManager?.LoadAudioClip("Eating", eatingSFX);
             if (sleepingSFX != null) SafeSoundManager?.LoadAudioClip("Sleeping", sleepingSFX);
+        
+            // 플레이어 전투 효과음 등록
+            if (housingFootstepSFX != null) SafeSoundManager?.LoadAudioClip("HousingFootstep", housingFootstepSFX);
+            if (dungeonFootstepSFX != null) SafeSoundManager?.LoadAudioClip("DungeonFootstep", dungeonFootstepSFX);
+            if (playerAttackSFX != null) SafeSoundManager?.LoadAudioClip("PlayerAttack", playerAttackSFX);
+        
+            // 몬스터 전투 효과음 등록
+            if (explosionSFX != null) SafeSoundManager?.LoadAudioClip("Explosion", explosionSFX);
+            if (cutSFX != null) SafeSoundManager?.LoadAudioClip("Cut", cutSFX);
+            if (beamSFX != null) SafeSoundManager?.LoadAudioClip("Beam", beamSFX);
             
             // 저장된 볼륨 설정 로드
             // LoadVolumeSettings();
             
             // 현재 씬에 맞는 배경음 재생
-            // string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
-            // HandleSceneAudio(currentSceneName);
+            string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+            HandleSceneAudio(currentSceneName);
         }
         else
         {
@@ -116,30 +146,36 @@ public partial class GameManager
     #endregion
     
     // 씬에 따른 오디오 처리
-    private void HandleSceneAudio(string sceneName)
+    private void HandleSceneAudio(string sceneName) // Housing, Game
     {
+        string targetScene = "";
+    
+        if (sceneName.Contains("Housing"))
+        {
+            targetScene = "Housing";
+        }
+        else if (sceneName.Contains("Game"))
+        {
+            targetScene = "Game";
+        }
+        else
+        {
+            targetScene = "Housing"; // defalut 값은 Housing으로 설정
+        }
+    
         // 이미 같은 트랙이 재생 중이면 중복 재생하지 않음
-        if (currentBGMTrack == sceneName) return;
-        
-        // 씬에 맞는 BGM 재생
-        if (sceneBGMMap.TryGetValue(sceneName, out AudioClip bgmClip))
+        if (currentBGMTrack == targetScene) return;
+    
+        // 타겟 씬에 맞는 BGM 재생
+        if (sceneBGMMap.TryGetValue(targetScene, out AudioClip bgmClip))
         {
             if (bgmClip != null)
             {
                 SafeSoundManager?.PlayBGM(bgmClip, true, 1.5f);
-                currentBGMTrack = sceneName;
+                currentBGMTrack = targetScene;
             }
         }
     }
-
-    #region 배경음 제어
-    
-    public void PlayHousingBackgroundMusic()
-    {
-        
-    }
-    
-    #endregion
 
     #region 효과음 제어
     
@@ -166,12 +202,31 @@ public partial class GameManager
         SafeSoundManager?.PlaySFX("Typing");
     }
     
+    public void PlayErrorSound()
+    {
+        SafeSoundManager?.PlaySFX("Error");
+    }
+
+    public void PlayPopupSound()
+    {
+        SafeSoundManager?.PlaySFX("Popup");
+    }
+
+    public void PlayLevelUpSound()
+    {
+        SafeSoundManager?.PlaySFX("LevelUp");
+    }
+    
     #endregion
 
     #region 상호작용 패널 효과음
 
     public void PlayInteractionSound(ActionType actionType)
     {
+        // 배경음 중지 (페이드아웃)
+        SafeSoundManager?.StopBGM(true, 0.5f);
+    
+        // 효과음 재생
         switch (actionType)
         {
             case ActionType.Sleep:
@@ -191,6 +246,94 @@ public partial class GameManager
                 break;
         }
     }
+    
+    // 상호작용 효과음 종료
+    public void StopInteractionSound(ActionType actionType, float fadeTime = 0.5f)
+    {
+        string sfxName = "";
+    
+        switch (actionType)
+        {
+            case ActionType.Sleep:
+                sfxName = "Sleeping";
+                break;
+            case ActionType.Work:
+                sfxName = "Work";
+                break;
+            case ActionType.Dungeon:
+                sfxName = "Dungeon";
+                break;
+            case ActionType.Eat:
+                sfxName = "Eating";
+                break;
+            case ActionType.Housework:
+                sfxName = "Housework";
+                break;
+        }
+    
+        if (!string.IsNullOrEmpty(sfxName))
+        {
+            SafeSoundManager?.FadeOutSFXByName(sfxName, fadeTime);
+            
+            // 배경음 재개
+            if (wasPlayingBGM && previousBGMClip != null)
+            {
+                StartCoroutine(FadeOutAndPlayBGM(sfxName, fadeTime));
+            }
+        }
+    }
+    
+    // 효과음 페이드아웃 후 배경음 재생 코루틴
+    private IEnumerator FadeOutAndPlayBGM(string sfxName, float fadeTime)
+    {
+        // 효과음 페이드아웃을 위한 시간 대기
+        yield return new WaitForSeconds(fadeTime);
+    
+        // Housing BGM 재생
+        if (housingBGM != null)
+        {
+            SafeSoundManager?.PlayBGM(housingBGM, true, 0.5f);
+            currentBGMTrack = "Housing";
+        }
+    }
 
+    #endregion
+    
+    #region 플레이어 전투 효과음 제어
+
+    public void PlayHousingFootstepSound()
+    {
+        SafeSoundManager?.PlaySFX("HousingFootstep");
+    }
+
+    public void PlayDungeonFootstepSound()
+    {
+        SafeSoundManager?.PlaySFX("DungeonFootstep");
+    }
+
+    public void PlayPlayerAttackSound()
+    {
+        SafeSoundManager?.PlaySFX("PlayerAttack");
+    }
+
+    #endregion
+
+    #region 몬스터 전투 효과음 제어
+
+    public void PlayExplosionSound()
+    {
+        SafeSoundManager?.PlaySFX("Explosion");
+    }
+
+    public void PlayCutSound()
+    {
+        SafeSoundManager?.PlaySFX("Cut");
+    }
+
+    public void PlayBeamSound()
+    {
+        SafeSoundManager?.PlaySFX("Beam");
+    }
+    
     #endregion
 }
