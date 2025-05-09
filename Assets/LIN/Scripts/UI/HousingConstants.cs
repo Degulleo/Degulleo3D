@@ -2,7 +2,8 @@
 
 using System.Collections.Generic;
 
-public enum AfterWorkEvent
+
+public enum AfterWorkEventType
 {
     None,
     TeamGathering,
@@ -12,7 +13,9 @@ public enum AfterWorkEvent
 public static class HousingConstants
 {
     //돌발 이벤트 확률 계산
-    public static int AFTER_WORK_DENOMINATOR = 4;
+    public static int AFTER_WORK_DENOMINATOR = 2;
+    //돌발 이벤트 보여줄 시간
+    public static float SUDDENEVENT_IAMGE_SHOW_TIME = 3.0f;
 
 
     #region 상호작용 멘트
@@ -47,4 +50,11 @@ public static class HousingConstants
             AnimationText = animationText;
         }
     }
+    
+    // 랜덤 값에 일치하는 함수를 리턴하기 위한 딕셔너리
+    // AFTER_WORK_DENOMINATOR 값 확정 후에 키 값 수정
+    public static readonly Dictionary<int, AfterWorkEventType> AfterWorkEvents = new Dictionary<int, AfterWorkEventType> {
+        {0, AfterWorkEventType.OvertimeWork},
+        {1, AfterWorkEventType.TeamGathering}
+    };
 }

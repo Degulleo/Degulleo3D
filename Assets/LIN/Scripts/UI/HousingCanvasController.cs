@@ -14,7 +14,10 @@ public class HousingCanvasController : MonoBehaviour
     [Header("돌발 이벤트")] 
     [SerializeField] private GameObject suddenPanel;
     [SerializeField] private TMP_Text suddenText;
+    [SerializeField] private GameObject[] suddenEventImages;
 
+    private Coroutine _autoHideCoroutine;
+    
     public Action OnInteractionButtonPressed;
     public Action OnSuddenButtonPressed;
     
@@ -72,6 +75,7 @@ public class HousingCanvasController : MonoBehaviour
     #region 돌발 이벤트
     public void ShowSuddenEventPanel(string actText, Action onSuddenButtonPressed)
     {
+        Debug.Log("call evenet panel show");
         suddenPanel.SetActive(true);
         suddenText.text = actText;
         OnSuddenButtonPressed += onSuddenButtonPressed;
@@ -84,7 +88,45 @@ public class HousingCanvasController : MonoBehaviour
     }
     public void OnSuddenConfirmButton()
     {
+        suddenText.text = "";
         OnSuddenButtonPressed?.Invoke();
+    }
+
+    public void ShowSuddenEventImage(int index)
+    {
+        if (_autoHideCoroutine != null)    StopCoroutine(_autoHideCoroutine);
+        
+        suddenEventImages[index].SetActive(true);
+        //사운드 재생
+
+        _autoHideCoroutine = StartCoroutine(AutoHideSuddenImage());
+
+    }
+
+    public void HideSuddenEventImage()
+    {
+        foreach (var image in suddenEventImages)
+        {
+            image.SetActive(false);
+        }
+    }
+    private IEnumerator AutoHideSuddenImage()
+    {
+        float startTime = Time.time;
+        while (Time.time - startTime < 2.0f)
+        {
+            if (Input.touchCount > 0 || Input.GetMouseButtonDown(0))
+            {
+                break;
+            }
+            yield return null;
+        }
+
+        //패널 닫고 애니메이션 null처리
+        HideSuddenEventImage();
+        HideSuddenEventPanel();
+        
+        _autoHideCoroutine = null;
     }
     #endregion
     
