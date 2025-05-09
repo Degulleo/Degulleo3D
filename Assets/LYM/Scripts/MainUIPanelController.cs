@@ -5,18 +5,15 @@ using UnityEngine.UI;
 
 public class MainUIPanelController : MonoBehaviour
 {
-    [SerializeField] private GameObject settingsPanelPrefab;
-    [SerializeField] private GameObject popupPanelPrefab;
     
     public void OnClickStartButton()
     {
-        var popupPanel = Instantiate(popupPanelPrefab, transform);
-        popupPanel.GetComponent<PopupPanelController>().Show("This is PopupPanel!!", () => {Debug.Log("Confirmed");});
+        GameManager.Instance.ChangeToHomeScene();
     }
 
     public void OnClickSettingsButton()
     {
-        var settingsPanel = Instantiate(settingsPanelPrefab, transform);
+        var settingsPanel = GameManager.Instance.PanelManager.GetPanel("SettingsPanel");
         settingsPanel.GetComponent<SettingsPanelController>().Show();
     }
 }

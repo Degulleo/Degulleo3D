@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 [RequireComponent(typeof(CanvasGroup))]
 public class PanelController : MonoBehaviour
@@ -19,13 +20,13 @@ public class PanelController : MonoBehaviour
     public void Show()
     {
         if (_canvasGroup == null) return;
-        _canvasGroup.alpha = 1;
+        _canvasGroup.DOFade(1, 0.5f);
     }
-
-    public void Hide()
+    
+    public void Hide(bool doDestroy = true)
     {
         if (_canvasGroup == null) return;
         _canvasGroup.alpha = 0;
-        Destroy(gameObject);
+        if (doDestroy) Destroy(gameObject);
     }
 }

@@ -21,11 +21,17 @@ public partial class GameManager : Singleton<GameManager>
     
     private ChatWindowController chatWindowController; // 대화창 컨트롤러
     
+    //패널 관련
+    private PanelManager panelManager;
+    public PanelManager PanelManager => panelManager;
+    
     private void Start()
     {
         // 오디오 초기화
         InitializeAudio();
         PlayerStats.Instance.OnDayEnded += AdvanceDay;
+        //패널 매니저 생성
+        panelManager = Instantiate(Resources.Load<GameObject>("Prefabs/PanelManager")).GetComponent<PanelManager>();
     }
 
     #region 대화 관련

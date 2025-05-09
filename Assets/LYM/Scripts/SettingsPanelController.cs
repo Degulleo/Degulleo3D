@@ -49,13 +49,11 @@ public class SettingsPanelController : PanelController
     public void OnSFXSliderValueChanged(float value)
     {
         //todo: 소리 볼륨 조절
-        Debug.Log("sfx changed value" + value);
     }
     
     public void OnBGMSliderValueChanged(float value)
     {
         //todo: 소리 볼륨 조절
-        Debug.Log("bgm changed value" + value);
     }
 
     public void OnCloseButtonClicked()
