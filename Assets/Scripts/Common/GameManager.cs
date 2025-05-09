@@ -6,8 +6,6 @@ using UnityEngine.SceneManagement;
 
 public partial class GameManager : Singleton<GameManager>
 {
-    private Canvas _canvas;
-    
     // 게임 진행 상태
     private int currentDay = 1; // 날짜
     public int CurrentDay => currentDay;
@@ -66,12 +64,14 @@ public partial class GameManager : Singleton<GameManager>
     
     public void ChangeToGameScene()
     {
-        SceneManager.LoadScene("DungeonTestScene"); // 던전 Scene
+        SceneManager.LoadScene("ReDungeon"); // 던전 Scene
+        HandleSceneAudio("Dungeon");
     }
     
     public void ChangeToHomeScene()
     {
         SceneManager.LoadScene("ReHousing"); // Home Scene
+        HandleSceneAudio("Housing");
     }
     
     // TODO: Open Setting Panel 등 Panel 처리

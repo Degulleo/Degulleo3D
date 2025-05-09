@@ -56,6 +56,10 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
             Joystick = FindObjectOfType<FixedJoystick>();
         }
 
+        // isBattle 초기화 (임시)
+        bool isHousingScene = SceneManager.GetActiveScene().name.Contains("Housing");
+        _isBattle = !isHousingScene;
+
         AssignCharacterController();
         AssignAnimator();
     }
@@ -67,13 +71,6 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         hitEffectController = GetComponentInChildren<PlayerHitEffectController>();
         
         PlayerInit();
-        
-        // isBattle 초기화 (임시)
-        /*bool isHousingScene = SceneManager.GetActiveScene().name.Contains("Housing");
-        _isBattle = !isHousingScene;
-        Debug.Log("_isBattle: " + _isBattle);*/
-
-        SwitchBattleMode();
     }
     
     private void Update()
@@ -96,7 +93,9 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         
         // 공격 입력 처리
         if (Input.GetKeyDown(KeyCode.X) && (_currentAction == null || !_currentAction.IsActive)
-            && (CurrentState != PlayerState.Win && CurrentState != PlayerState.Dead)) {
+            && (CurrentState != PlayerState.Win && CurrentState != PlayerState.Dead)) 
+        {
+            GameManager.Instance.PlayPlayerAttackSound();
             StartAttackAction();
         }
         
@@ -400,6 +399,7 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         if (character != this) return;
         if (CurrentState == PlayerState.Dead) return;
 
+        GameManager.Instance.PlayPlayerHitSound();
         SetState(PlayerState.Hit);
     }
     

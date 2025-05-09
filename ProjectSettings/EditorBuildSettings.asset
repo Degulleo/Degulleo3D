@@ -9,6 +9,6 @@ EditorBuildSettings:
     path: Assets/KSH/ReHousing.unity
     guid: b748e35b920bde64cbd6ffe5fdb43e23
   - enabled: 1
-    path: Assets/KSH/DungeonTestScene.unity
-    guid: 4563b107911b0e54cbdf659694a6f17a
+    path: Assets/KSH/ReDungeon.unity
+    guid: b7412a4a2ee433447afcb28700cb50a9
   m_configObjects: {}

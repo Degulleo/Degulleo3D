@@ -10,6 +10,9 @@ public class DungeonLogic : MonoBehaviour
     [NonSerialized] public bool isCompleted = false;               // 던전 클리어 여부
     [NonSerialized] public bool isFailed = false;                  // 던전 실패 여부
     
+    [SerializeField] private List<GameObject> bossPrefabs;
+    [SerializeField] private Transform spawnPosition; // 보스가 스폰될 위치
+    
     private PlayerController _player;
     private EnemyController _enemy;
     
@@ -17,11 +20,15 @@ public class DungeonLogic : MonoBehaviour
     public event Action OnDungeonSuccess;
     public event Action OnDungeonFailure;
 
+    private void Awake()
+    {
+        SpawnBossForCurrentStage();
+    }
+
     private void Start()
     {
         // tag를 통해 할당 / 추후 플레이어와 에너미 태그 추가 필요
         _player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
-        _enemy = GameObject.FindGameObjectWithTag("Enemy").GetComponent<EnemyController>();
         
         // 죽음 이벤트 구독
         if (_player != null)
@@ -29,11 +36,23 @@ public class DungeonLogic : MonoBehaviour
             _player.OnGetHit += OnPlayerGetHit;
             _player.OnDeath += OnPlayerDeath;
         }
+    }
+    
+    private void SpawnBossForCurrentStage()
+    {
+        int currentStage = GameManager.Instance.StageLevel;
         
-        if (_enemy != null)
+        if (currentStage <= bossPrefabs.Count && currentStage > 0)
         {
-            _enemy.OnGetHit += OnEnemyGetHit;
-            _enemy.OnDeath += OnEnemyDeath;
+            GameObject bossPrefab = bossPrefabs[currentStage - 1];
+            GameObject bossObj = Instantiate(bossPrefab, spawnPosition.position, Quaternion.identity);
+            _enemy = bossObj.GetComponent<EnemyController>();
+            
+            if (_enemy != null)
+            {
+                _enemy.OnGetHit += OnEnemyGetHit;
+                _enemy.OnDeath += OnEnemyDeath;
+            }
         }
     }
 
@@ -52,6 +71,8 @@ public class DungeonLogic : MonoBehaviour
 
     private void OnEnemyGetHit(CharacterBase enemy)
     {
+        Debug.Log("enemyGETHIT");
+        
         if (isFailed || isCompleted) return;
         
         // TODO: 에너미 피격 효과음
@@ -92,8 +113,9 @@ public class DungeonLogic : MonoBehaviour
             _player.SetState(PlayerState.Win);
             
             // TODO: 강화 시스템으로 넘어가고 일상 맵으로 이동
+            GameManager.Instance.PanelManager.GetPanel("ClearPanelBG");
             
-            StartCoroutine(DelayedSceneChange()); // 3초 대기 후 전환
+            StartCoroutine(DelayedSceneChange()); // 5초 대기 후 전환
         }
     }
     
@@ -112,13 +134,15 @@ public class DungeonLogic : MonoBehaviour
             _player.gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
             _enemy.SetState(EnemyState.Idle);
             
-            StartCoroutine(DelayedSceneChange()); // 3초 대기 후 전환
+            GameManager.Instance.PanelManager.GetPanel("FailedPanelBG");
+            
+            StartCoroutine(DelayedSceneChange()); // 5초 대기 후 전환
         }
     }
     
     private IEnumerator DelayedSceneChange()
     {
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(5f);
         GameManager.Instance.ChangeToHomeScene();
     }
     
