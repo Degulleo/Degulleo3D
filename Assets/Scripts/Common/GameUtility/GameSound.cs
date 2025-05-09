@@ -32,7 +32,7 @@ public partial class GameManager
     [SerializeField] private AudioClip victorySFX;
     
     [Header("플레이어 전투 효과음")]
-    [SerializeField] private AudioClip housingFootstepSFX;
+    [SerializeField] private AudioClip playerHitSFX;
     [SerializeField] private AudioClip dungeonFootstepSFX;
     [SerializeField] private AudioClip playerAttackSFX;
     
@@ -85,7 +85,7 @@ public partial class GameManager
             if (sleepingSFX != null) SafeSoundManager?.LoadAudioClip("Sleeping", sleepingSFX);
         
             // 플레이어 전투 효과음 등록
-            if (housingFootstepSFX != null) SafeSoundManager?.LoadAudioClip("HousingFootstep", housingFootstepSFX);
+            if (playerHitSFX != null) SafeSoundManager?.LoadAudioClip("PlayerHit", playerHitSFX);
             if (dungeonFootstepSFX != null) SafeSoundManager?.LoadAudioClip("DungeonFootstep", dungeonFootstepSFX);
             if (playerAttackSFX != null) SafeSoundManager?.LoadAudioClip("PlayerAttack", playerAttackSFX);
         
@@ -173,6 +173,7 @@ public partial class GameManager
             {
                 SafeSoundManager?.PlayBGM(bgmClip, true, 1.5f);
                 currentBGMTrack = targetScene;
+                wasPlayingBGM = true;
             }
         }
     }
@@ -223,6 +224,12 @@ public partial class GameManager
 
     public void PlayInteractionSound(ActionType actionType)
     {
+        if (sceneBGMMap.TryGetValue(currentBGMTrack, out AudioClip bgmClip))
+        {
+            previousBGMClip = bgmClip;
+            wasPlayingBGM = true;
+        }
+        
         // 배경음 중지 (페이드아웃)
         SafeSoundManager?.StopBGM(true, 0.5f);
     
@@ -301,9 +308,9 @@ public partial class GameManager
     
     #region 플레이어 전투 효과음 제어
 
-    public void PlayHousingFootstepSound()
+    public void PlayPlayerHitSound()
     {
-        SafeSoundManager?.PlaySFX("HousingFootstep");
+        SafeSoundManager?.PlaySFX("PlayerHit");
     }
 
     public void PlayDungeonFootstepSound()

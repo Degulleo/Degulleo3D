@@ -6,8 +6,6 @@ using UnityEngine.SceneManagement;
 
 public partial class GameManager : Singleton<GameManager>
 {
-    private Canvas _canvas;
-    
     // 게임 진행 상태
     private int currentDay = 1; // 날짜
     public int CurrentDay => currentDay;

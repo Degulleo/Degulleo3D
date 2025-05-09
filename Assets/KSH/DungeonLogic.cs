@@ -113,8 +113,9 @@ public class DungeonLogic : MonoBehaviour
             _player.SetState(PlayerState.Win);
             
             // TODO: 강화 시스템으로 넘어가고 일상 맵으로 이동
+            GameManager.Instance.PanelManager.GetPanel("ClearPanelBG");
             
-            StartCoroutine(DelayedSceneChange()); // 3초 대기 후 전환
+            StartCoroutine(DelayedSceneChange()); // 5초 대기 후 전환
         }
     }
     
@@ -133,13 +134,15 @@ public class DungeonLogic : MonoBehaviour
             _player.gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
             _enemy.SetState(EnemyState.Idle);
             
-            StartCoroutine(DelayedSceneChange()); // 3초 대기 후 전환
+            GameManager.Instance.PanelManager.GetPanel("FailedPanelBG");
+            
+            StartCoroutine(DelayedSceneChange()); // 5초 대기 후 전환
         }
     }
     
     private IEnumerator DelayedSceneChange()
     {
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(5f);
         GameManager.Instance.ChangeToHomeScene();
     }
     

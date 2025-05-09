@@ -36,24 +36,38 @@ public class SettingsPanelController : PanelController
     public void SFXSliderButtonClicked()
     {
         sfxSliderButton.OnClicked();
-        //todo: sfxSliderButton.IsActive를 기준으로 뮤트 여부 확인 및 뮤트 적용
+        ApplySFXSettings(sfxSliderButton.IsActive, sfxSlider.value);
     }
     
     public void BGMSliderButtonClicked()
     {
         bgmSliderButton.OnClicked();
-        //todo: sfxSliderButton.IsActive를 기준으로 뮤트 여부 확인 및 뮤트 적용
+        ApplyBGMSettings(bgmSliderButton.IsActive, bgmSlider.value);
     }
 
     //슬라이더 변경 시 마다 호출
     public void OnSFXSliderValueChanged(float value)
     {
-        //todo: 소리 볼륨 조절
+        ApplySFXSettings(sfxSliderButton.IsActive, value);
     }
     
     public void OnBGMSliderValueChanged(float value)
     {
-        //todo: 소리 볼륨 조절
+        ApplyBGMSettings(bgmSliderButton.IsActive, value);
+    }
+    
+    // 효과음 설정 적용 메서드
+    private void ApplySFXSettings(bool isActive, float volume)
+    {
+        float actualVolume = isActive ? volume : 0f;
+        SoundManager.Instance.SetSFXVolume(actualVolume);
+    }
+
+    // 배경음 설정 적용 메서드
+    private void ApplyBGMSettings(bool isActive, float volume)
+    {
+        float actualVolume = isActive ? volume : 0f;
+        SoundManager.Instance.SetBGMVolume(actualVolume);
     }
 
     public void OnCloseButtonClicked()
