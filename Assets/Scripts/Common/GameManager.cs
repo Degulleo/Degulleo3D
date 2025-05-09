@@ -66,12 +66,14 @@ public partial class GameManager : Singleton<GameManager>
     
     public void ChangeToGameScene()
     {
-        SceneManager.LoadScene("DungeonTestScene"); // 던전 Scene
+        SceneManager.LoadScene("ReDungeon"); // 던전 Scene
+        HandleSceneAudio("Dungeon");
     }
     
     public void ChangeToHomeScene()
     {
         SceneManager.LoadScene("ReHousing"); // Home Scene
+        HandleSceneAudio("Housing");
     }
     
     // TODO: Open Setting Panel 등 Panel 처리

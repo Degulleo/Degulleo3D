@@ -23,7 +23,7 @@ public class SoundManager : Singleton<SoundManager>
     // 페이드 효과 진행 여부
     private bool isFading = false;
 
-    private void Awake()
+    private void Start()
     {
         InitializeAudioSources();
     }

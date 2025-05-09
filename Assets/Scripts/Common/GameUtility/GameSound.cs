@@ -154,7 +154,7 @@ public partial class GameManager
         {
             targetScene = "Housing";
         }
-        else if (sceneName.Contains("Game"))
+        else if (sceneName.Contains("Dungeon"))
         {
             targetScene = "Game";
         }

@@ -56,6 +56,11 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
             Joystick = FindObjectOfType<FixedJoystick>();
         }
 
+        // isBattle 초기화 (임시)
+        bool isHousingScene = SceneManager.GetActiveScene().name.Contains("Housing");
+        _isBattle = !isHousingScene;
+        Debug.Log("_isBattle: " + _isBattle);
+
         AssignCharacterController();
         AssignAnimator();
     }
@@ -67,13 +72,6 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         hitEffectController = GetComponentInChildren<PlayerHitEffectController>();
         
         PlayerInit();
-        
-        // isBattle 초기화 (임시)
-        /*bool isHousingScene = SceneManager.GetActiveScene().name.Contains("Housing");
-        _isBattle = !isHousingScene;
-        Debug.Log("_isBattle: " + _isBattle);*/
-
-        SwitchBattleMode();
     }
     
     private void Update()
@@ -263,6 +261,7 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
     /// </summary>
     private void AssignCharacterController()
     {
+        Debug.Log("AssignCharacterController: " + _isBattle);
         _characterController = _isBattle
             ? battleModel.GetComponent<CharacterController>()
             : normalModel.GetComponent<CharacterController>();
