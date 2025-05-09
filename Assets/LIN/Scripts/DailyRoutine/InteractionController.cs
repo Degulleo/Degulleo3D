@@ -69,6 +69,7 @@ public class InteractionController : MonoBehaviour
                 }
                 else
                 {
+                    GameManager.Instance.PlayInteractionSound(interactionType);
                     interactionAnimationPanelController.ShowAnimationPanel(interactionType,interactionTexts.AnimationText);
                 }
             }

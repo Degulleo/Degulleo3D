@@ -176,6 +176,38 @@ public class SoundManager : Singleton<SoundManager>
         return sfxSource;
     }
     
+    // 특정 이름의 효과음을 모두 페이드아웃
+    public void FadeOutSFXByName(string clipName, float fadeTime = 0.5f)
+    {
+        if (string.IsNullOrEmpty(clipName)) return;
+    
+        foreach (var source in sfxSources)
+        {
+            if (source.isPlaying && source.clip != null && 
+                source.clip == audioClips.GetValueOrDefault(clipName))
+            {
+                StartCoroutine(FadeOutSFXCoroutine(source, fadeTime));
+            }
+        }
+    }
+    
+    // 효과음 페이드아웃 코루틴
+    private IEnumerator FadeOutSFXCoroutine(AudioSource sfxSource, float fadeTime)
+    {
+        float startVolume = sfxSource.volume;
+        float time = 0;
+    
+        while (time < fadeTime)
+        {
+            sfxSource.volume = Mathf.Lerp(startVolume, 0, time / fadeTime);
+            time += Time.deltaTime;
+            yield return null;
+        }
+    
+        sfxSource.Stop();
+        sfxSource.volume = sfxVolume; // 원래 볼륨으로 복원
+    }
+    
     // 모든 효과음을 정지
     public void StopAllSFX()
     {
