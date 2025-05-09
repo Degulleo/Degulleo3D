@@ -27,6 +27,10 @@ public partial class GameManager
     [SerializeField] private AudioClip eatingSFX;
     [SerializeField] private AudioClip sleepingSFX;
     
+    [Header("돌발 이벤트 효과음")]
+    [SerializeField] private AudioClip overtimeWorkSFX;
+    [SerializeField] private AudioClip teamGatheringSFX;
+    
     [Header("게임 결과 효과음")]
     [SerializeField] private AudioClip gameOverSFX;
     [SerializeField] private AudioClip victorySFX;
@@ -83,6 +87,10 @@ public partial class GameManager
             if (goToDungeonSFX != null) SafeSoundManager?.LoadAudioClip("Dungeon", goToDungeonSFX);
             if (eatingSFX != null) SafeSoundManager?.LoadAudioClip("Eating", eatingSFX);
             if (sleepingSFX != null) SafeSoundManager?.LoadAudioClip("Sleeping", sleepingSFX);
+            
+            // 돌발 이벤트 효과음 등록
+            if(overtimeWorkSFX != null) SafeSoundManager?.LoadAudioClip("OvertimeWork", overtimeWorkSFX);
+            if(teamGatheringSFX != null) SafeSoundManager?.LoadAudioClip("TeamGathering", teamGatheringSFX);
         
             // 플레이어 전투 효과음 등록
             if (housingFootstepSFX != null) SafeSoundManager?.LoadAudioClip("HousingFootstep", housingFootstepSFX);
@@ -294,6 +302,53 @@ public partial class GameManager
         {
             SafeSoundManager?.PlayBGM(housingBGM, true, 0.5f);
             currentBGMTrack = "Housing";
+        }
+    }
+
+    #endregion
+
+    #region 돌발 이벤트
+    public void PlaySuddenEventSound(AfterWorkEventType afterWorkEventType)
+    {
+        // 배경음 중지 (페이드아웃)
+        SafeSoundManager?.StopBGM(true, 0.5f);
+    
+        // 효과음 재생
+        switch (afterWorkEventType)
+        {
+            case AfterWorkEventType.TeamGathering:
+                SafeSoundManager?.PlaySFX("TeamGathering");
+                break;
+            case AfterWorkEventType.OvertimeWork:
+                SafeSoundManager?.PlaySFX("OvertimeWork");
+                break;
+        }
+    }
+    
+    // 상호작용 효과음 종료
+    public void StopSuddenEventSound(AfterWorkEventType afterWorkEventType, float fadeTime = 0.5f)
+    {
+        string sfxName = "";
+        
+        switch (afterWorkEventType)
+        {
+            case AfterWorkEventType.TeamGathering:
+                sfxName = "TeamGathering";
+                break;
+            case AfterWorkEventType.OvertimeWork:
+                sfxName = "OvertimeWork";
+                break;
+        }
+    
+        if (!string.IsNullOrEmpty(sfxName))
+        {
+            SafeSoundManager?.FadeOutSFXByName(sfxName, fadeTime);
+            
+            // 배경음 재개
+            if (wasPlayingBGM && previousBGMClip != null)
+            {
+                StartCoroutine(FadeOutAndPlayBGM(sfxName, fadeTime));
+            }
         }
     }
 

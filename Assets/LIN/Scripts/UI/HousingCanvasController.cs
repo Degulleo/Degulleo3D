@@ -92,15 +92,22 @@ public class HousingCanvasController : MonoBehaviour
         OnSuddenButtonPressed?.Invoke();
     }
 
-    public void ShowSuddenEventImage(int index)
+    public void ShowSuddenEventImage(AfterWorkEventType afterWorkEventType)
     {
         if (_autoHideCoroutine != null)    StopCoroutine(_autoHideCoroutine);
-        
-        suddenEventImages[index].SetActive(true);
+
+        switch (afterWorkEventType)
+        {
+            case AfterWorkEventType.OvertimeWork:
+                suddenEventImages[0].SetActive(true);
+                break;
+            case AfterWorkEventType.TeamGathering:
+                suddenEventImages[1].SetActive(true);
+                break;
+        }
         //사운드 재생
 
-        _autoHideCoroutine = StartCoroutine(AutoHideSuddenImage());
-
+        _autoHideCoroutine = StartCoroutine(AutoHideSuddenImage(afterWorkEventType));
     }
 
     public void HideSuddenEventImage()
@@ -110,10 +117,10 @@ public class HousingCanvasController : MonoBehaviour
             image.SetActive(false);
         }
     }
-    private IEnumerator AutoHideSuddenImage()
+    private IEnumerator AutoHideSuddenImage(AfterWorkEventType afterWorkEventType)
     {
         float startTime = Time.time;
-        while (Time.time - startTime < 2.0f)
+        while (Time.time - startTime < HousingConstants.SUDDENEVENT_IAMGE_SHOW_TIME)
         {
             if (Input.touchCount > 0 || Input.GetMouseButtonDown(0))
             {
@@ -122,9 +129,10 @@ public class HousingCanvasController : MonoBehaviour
             yield return null;
         }
 
-        //패널 닫고 애니메이션 null처리
+        //패널 닫고 효과음 끄기
         HideSuddenEventImage();
         HideSuddenEventPanel();
+        GameManager.Instance.StopSuddenEventSound(afterWorkEventType);
         
         _autoHideCoroutine = null;
     }

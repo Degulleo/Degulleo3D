@@ -88,33 +88,30 @@ public class InteractionController : MonoBehaviour
         return null;
     }
 
-    //퇴근 후 돌발 이벤트
+    #region 퇴근 후 돌발 이벤트
+    
+    //이벤트 발생 확률 계산기
     private AfterWorkEventType SuddenEventCalculator()
     {
         var index = Random.Range(0, HousingConstants.AFTER_WORK_DENOMINATOR);
         return HousingConstants.AfterWorkEvents.GetValueOrDefault(index, AfterWorkEventType.None);
     }
 
+    // Interaction Controller와 같은 방식으로 작동됩니다.
     private void SuddenAfterWorkEventHappen()
     {
         AfterWorkEventType afterWorkEventType = SuddenEventCalculator();
-        Debug.Log(afterWorkEventType);
-
         if (afterWorkEventType == AfterWorkEventType.None) return;
-        switch (afterWorkEventType)
-        {
-            case AfterWorkEventType.OvertimeWork:
-                housingCanvasController.ShowSuddenEventPanel("부장님이 퇴근을 안하셔.. 야근할까?", () =>
-                {
-                    housingCanvasController.ShowSuddenEventImage(0);
-                    //Todo: 스테이터스 변경
-                });
-                break;
-            case AfterWorkEventType.TeamGathering:
-                housingCanvasController.ShowSuddenEventPanel("갑자기 팀 회식이 잡혔다. 참석 하러 가자",
-                    () => { housingCanvasController.ShowSuddenEventImage(1); });
-                break;
-        }
 
+        HousingConstants.SuddenEventTexts.TryGetValue(afterWorkEventType, out string suddenEventText);
+        
+        housingCanvasController.ShowSuddenEventPanel(suddenEventText, () =>
+        {
+            housingCanvasController.ShowSuddenEventImage(afterWorkEventType);
+            GameManager.Instance.PlaySuddenEventSound(afterWorkEventType);
+        });
     }
+
+    #endregion
+
 }

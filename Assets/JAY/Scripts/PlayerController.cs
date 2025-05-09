@@ -73,7 +73,7 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         _isBattle = !isHousingScene;
         Debug.Log("_isBattle: " + _isBattle);*/
 
-        SwitchBattleMode();
+        // SwitchBattleMode();
     }
     
     private void Update()
