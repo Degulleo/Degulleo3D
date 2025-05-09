@@ -16,6 +16,7 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
     [SerializeField] private CameraShake cameraShake;
     [SerializeField] private GameObject normalModel; // char_body : 일상복
     [SerializeField] private GameObject battleModel; // warrior_1 : 전투복
+    [SerializeField] private Transform dashEffectAnchor; // 대시 이펙트 위치
 
     // 내부에서만 사용하는 변수
     private PlayerHitEffectController hitEffectController;
@@ -46,6 +47,7 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
     public Animator PlayerAnimator { get; private set; }
     public CharacterController CharacterController => _characterController;
     public bool IsBattle => _isBattle;
+    public Transform DashEffectAnchor => dashEffectAnchor;
 
     private void Awake()
     {
@@ -70,6 +72,8 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         /*bool isHousingScene = SceneManager.GetActiveScene().name.Contains("Housing");
         _isBattle = !isHousingScene;
         Debug.Log("_isBattle: " + _isBattle);*/
+
+        SwitchBattleMode();
     }
     
     private void Update()
@@ -301,6 +305,36 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
             // 이벤트 중복 호출? 공격 종료 시 SetAttackComboFalse가 아니라 ~True로 끝나서 오류 발생. (공격 안하는 상태여도 공격으로 판정됨)
             _attackAction.DisableCombo();
             _weaponController.AttackEnd(); // IsAttacking = false로 변경
+        }
+    }
+    
+    public void PlayAttackEffect()
+    {
+        if (_attackAction == null) return;
+
+        // 현재 콤보 단계 (1~4)
+        int comboStep = _attackAction.CurrentComboStep;
+
+        // 홀수면 기본 방향 (오→왼), 짝수면 반전 (왼→오)
+        bool isMirror = comboStep % 2 != 0;
+
+        Vector3 basePos = CharacterController.transform.position;
+        Vector3 forward = CharacterController.transform.forward;
+
+        float forwardPos = CurrentState == PlayerState.Move ? 1f : 0.2f;
+
+        // 이펙트 위치: 위로 0.5 + 앞으로 약간
+        Vector3 pos = basePos + Vector3.up * 0.5f + forward * forwardPos;
+
+        Quaternion rot = Quaternion.LookRotation(forward, Vector3.up) * Quaternion.Euler(0, 90, 0);
+        GameObject effect = EffectManager.Instance.PlayEffect(pos, rot, EffectManager.EffectType.Attack);
+
+        // 반전이 필요한 경우, X축 스케일 -1
+        if (isMirror && effect != null)
+        {
+            Vector3 scale = effect.transform.localScale;
+            scale.z *= -1;
+            effect.transform.localScale = scale;
         }
     }
 

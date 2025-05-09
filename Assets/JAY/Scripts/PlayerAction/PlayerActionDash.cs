@@ -3,14 +3,17 @@
 public class PlayerActionDash : IPlayerAction
 {
     private PlayerController player;
-    private float duration = 0.25f; // 대시 유지 시간
-    private float timer; // 대시 경과 시간
-    private Vector3 direction; // 대시 방향
+    private float duration = 0.25f;
+    private float timer;
+    private Vector3 direction;
 
-    private float dashSpeedMultiplier = 3f; // 기본 이동 속도의 n배
-    private float dashSpeed; // 실제 대시 속도(계산한 값)
+    private float dashSpeedMultiplier = 3f;
+    private float dashSpeed;
 
-    public bool IsActive { get; private set; } // 현재 대시 중인지 여부
+    private Vector3 lastEffectPos;
+    private float effectSpacing = 0.8f;
+
+    public bool IsActive { get; private set; }
 
     public void StartAction(PlayerController player)
     {
@@ -20,18 +23,18 @@ public class PlayerActionDash : IPlayerAction
 
         // 조이스틱 입력값 있으면 그 방향, 없으면 캐릭터가 바라보는 방향
         direction = player.GetMoveDirectionOrForward().normalized;
-
         // 대시 속도 = 이동 속도 x 배수
         dashSpeed = player.moveSpeed * dashSpeedMultiplier;
 
-        // TODO: 필요 시 애니메이션 재생
-        // player.PlayerAnimator.SetTrigger("Roll");
+        lastEffectPos = player.DashEffectAnchor.position;
+
+        if (EffectManager.Instance == null)
+            Debug.LogError("이펙트 매니저 인스턴스가 null입니다!");
     }
 
     public void UpdateAction()
     {
         if (!IsActive) return;
-
         DoDash();
     }
 
@@ -40,7 +43,17 @@ public class PlayerActionDash : IPlayerAction
         timer += Time.deltaTime;
         if (timer < duration)
         {
-            player.CharacterController.Move(direction * dashSpeed * Time.deltaTime);
+            var moveVector = direction * dashSpeed * Time.deltaTime;
+            player.CharacterController.Move(moveVector);
+
+            // 일정 거리 이상 이동 시 이펙트 생성
+            Vector3 currentEffectAnchorPos = player.DashEffectAnchor.position;
+            float dist = Vector3.Distance(currentEffectAnchorPos, lastEffectPos);
+            if (dist >= effectSpacing)
+            {
+                EffectManager.Instance.PlayEffect(currentEffectAnchorPos, EffectManager.EffectType.Dash);
+                lastEffectPos = currentEffectAnchorPos;
+            }
         }
         else
         {
@@ -51,7 +64,7 @@ public class PlayerActionDash : IPlayerAction
     public void EndAction()
     {
         IsActive = false;
-        player.OnActionEnded(this); // player 에서도 action 초기화
+        player.OnActionEnded(this);
         player = null;
     }
 }

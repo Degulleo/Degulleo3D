@@ -18,4 +18,9 @@ public class AnimatorEventRelay : MonoBehaviour
     {
         _playerController?.SetAttackComboFalse();
     }
+    
+    public void PlayAttackEffect()
+    {
+        _playerController?.PlayAttackEffect();
+    }
 }
