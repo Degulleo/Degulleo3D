@@ -12,7 +12,6 @@ public class CasterDemonController : EnemyController
     public static readonly int Telepo = Animator.StringToHash("Telepo");
     public static readonly int Spin = Animator.StringToHash("Spin");
 
-    [SerializeField] private Transform teleportTransform;
     [SerializeField] private Transform bulletShotPosition;
     [SerializeField] private GameObject magicMissilePrefab;
     [SerializeField] private GameObject teleportEffectPrefab;
@@ -244,7 +243,7 @@ public class CasterDemonController : EnemyController
 
         // 텔레포트와 함께 시전하는 범위 공격
         var aoe = Instantiate(chariotWarning, startPos, Quaternion.identity).GetComponent<ChariotAoeController>();
-        
+
         aoe.SetEffect(TeleportEffectData, null, null);
 
         // 텔레포트 타겟 위치로 이동
