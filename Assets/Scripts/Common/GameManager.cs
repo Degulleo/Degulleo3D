@@ -62,6 +62,17 @@ public partial class GameManager : Singleton<GameManager>
         }
     }
     
+    //일시 정지
+    public void PauseGame()
+    {
+        Time.timeScale = 0;
+    }
+
+    public void ResumeGame()
+    {
+        Time.timeScale = 1;
+    }
+    
     public void ChangeToGameScene()
     {
         SceneManager.LoadScene("ReDungeon"); // 던전 Scene

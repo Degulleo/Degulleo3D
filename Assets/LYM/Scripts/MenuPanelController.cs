@@ -13,11 +13,21 @@ public class MenuPanelController : PanelController
         popupPanel.GetComponent<PopupPanelController>().Show("정말 나가시겠습니까?",
             () =>
             {
-                //todo: 메인으로 가거나 하우징 으로 감
+                GameManager.Instance.ResumeGame();
+                if (SceneManager.GetActiveScene().name == "ReDungeon")
+                {
+                    GameManager.Instance.ChangeToHomeScene();
+                }
+
+                if (SceneManager.GetActiveScene().name == "ReHousing")
+                {
+                    //todo: 메인화면
+                    
+                }
             },
             () =>
             {
-                //todo: 게임재개
+                GameManager.Instance.ResumeGame();
             });
     }
 
@@ -29,6 +39,7 @@ public class MenuPanelController : PanelController
 
     public void OnClickBackButton()
     {
+        GameManager.Instance.ResumeGame();
         Hide();
     }
 }
