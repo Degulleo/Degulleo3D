@@ -341,6 +341,16 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
             effect.transform.localScale = scale;
         }
     }
+    
+    public void OnAttackButtonPressed()
+    {
+        if ((_currentAction == null || !_currentAction.IsActive) &&
+            CurrentState != PlayerState.Win && CurrentState != PlayerState.Dead)
+        {
+            GameManager.Instance.PlayPlayerAttackSound();
+            StartAttackAction();
+        }
+    }
 
     #endregion
 
@@ -352,9 +362,9 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         return dir.sqrMagnitude > 0.01f ? dir.normalized : transform.forward;
     }
     
-    public void DashButtonPressed()
+    public void OnDashButtonPressed()
     {
-        if (!_actionDash.IsActive)
+        if (!_actionDash.IsActive && CurrentState != PlayerState.Win && CurrentState != PlayerState.Dead)
         {
             StartDashAction();
         }
