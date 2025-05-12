@@ -74,11 +74,6 @@ public class InteractionController : MonoBehaviour
                 
                 if (interactionType == ActionType.Dungeon)
                 {
-                    if (PlayerStats.Instance.CanWork()) // 출근 시간인데 던전에 가려하는 경우
-                    {
-                        PlayerStats.Instance.ShowAndHideBubble("출근 시간해야 해");
-                        return;
-                    }
                     GameManager.Instance.ChangeToGameScene();
                 }
                 else
