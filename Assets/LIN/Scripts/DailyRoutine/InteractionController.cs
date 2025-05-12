@@ -17,6 +17,7 @@ public class InteractionController : MonoBehaviour
 
     private void Start()
     {
+        PlayerStats.Instance.OnStatsChanged += UpdateStat;
         PlayerStats.Instance.OnWorked += SuddenAfterWorkEventHappen;
     }
 
@@ -114,4 +115,8 @@ public class InteractionController : MonoBehaviour
 
     #endregion
 
+    private void UpdateStat(PlayerStats.StatsChangeData statData)
+    {
+        Debug.Log(statData.Health);
+    }
 }

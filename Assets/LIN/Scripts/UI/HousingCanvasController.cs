@@ -75,7 +75,6 @@ public class HousingCanvasController : MonoBehaviour
     #region 돌발 이벤트
     public void ShowSuddenEventPanel(string actText, Action onSuddenButtonPressed)
     {
-        Debug.Log("call evenet panel show");
         suddenPanel.SetActive(true);
         suddenText.text = actText;
         OnSuddenButtonPressed += onSuddenButtonPressed;
