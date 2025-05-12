@@ -27,7 +27,7 @@ public class MenuPanelController : PanelController
             },
             () =>
             {
-                GameManager.Instance.ResumeGame();
+                
             });
     }
 
