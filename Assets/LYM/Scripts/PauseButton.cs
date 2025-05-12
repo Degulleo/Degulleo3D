@@ -6,7 +6,7 @@ public class PauseButton : MonoBehaviour
 {
     public void OnClicked()
     {
-        //todo: 게임 일시정지 필요
+        GameManager.Instance.PauseGame();
         var menuPanel = GameManager.Instance.PanelManager.GetPanel("MenuPanel");
         menuPanel.GetComponent<MenuPanelController>().Show();
     }

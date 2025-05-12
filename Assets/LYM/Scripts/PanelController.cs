@@ -20,7 +20,7 @@ public class PanelController : MonoBehaviour
     public void Show()
     {
         if (_canvasGroup == null) return;
-        _canvasGroup.DOFade(1, 0.5f);
+        _canvasGroup.DOFade(1, 0.5f).SetUpdate(true);
     }
     
     public void Hide(bool doDestroy = true)
