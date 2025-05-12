@@ -12,7 +12,6 @@ public class CasterDemonController : EnemyController
     public static readonly int Telepo = Animator.StringToHash("Telepo");
     public static readonly int Spin = Animator.StringToHash("Spin");
 
-    [SerializeField] private Transform teleportTransform;
     [SerializeField] private Transform bulletShotPosition;
     [SerializeField] private GameObject magicMissilePrefab;
     [SerializeField] private GameObject teleportEffectPrefab;
@@ -239,13 +238,11 @@ public class CasterDemonController : EnemyController
     private void Teleport()
     {
         Vector3 startPos = transform.position;
-        if (teleportEffectPrefab != null)
-            Instantiate(teleportEffectPrefab, startPos, Quaternion.identity);
+
+        var startTelepoEffect = Instantiate(teleportEffectPrefab, startPos, Quaternion.identity);
 
         // 텔레포트와 함께 시전하는 범위 공격
         var aoe = Instantiate(chariotWarning, startPos, Quaternion.identity).GetComponent<ChariotAoeController>();
-
-
 
         aoe.SetEffect(TeleportEffectData, null, null);
 
@@ -253,8 +250,18 @@ public class CasterDemonController : EnemyController
         Agent.Warp(teleportTargetPosition);
         SetAnimation(Telepo);
 
-        if (teleportEffectPrefab != null)
-            Instantiate(teleportEffectPrefab, teleportTargetPosition, Quaternion.identity);
+        var endTelepoEffect = Instantiate(teleportEffectPrefab, teleportTargetPosition, Quaternion.identity);
+
+        StartCoroutine(DelayedEffectDestroyer(startTelepoEffect, endTelepoEffect));
+    }
+
+    private IEnumerator DelayedEffectDestroyer(GameObject effect, GameObject effect2)
+    {
+        yield return Wait.For(1f);
+        Destroy(effect);
+
+        yield return Wait.For(0.4f);
+        Destroy(effect2);
     }
 
     private IEnumerator SlowFieldSpell()
