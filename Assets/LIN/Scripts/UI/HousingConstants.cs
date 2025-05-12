@@ -2,7 +2,8 @@
 
 using System.Collections.Generic;
 
-public enum AfterWorkEvent
+
+public enum AfterWorkEventType
 {
     None,
     TeamGathering,
@@ -12,7 +13,9 @@ public enum AfterWorkEvent
 public static class HousingConstants
 {
     //돌발 이벤트 확률 계산
-    public static int AFTER_WORK_DENOMINATOR = 4;
+    public static int AFTER_WORK_DENOMINATOR = 2;
+    //돌발 이벤트 보여줄 시간
+    public static float SUDDENEVENT_IAMGE_SHOW_TIME = 4.0f;
 
 
     #region 상호작용 멘트
@@ -30,7 +33,6 @@ public static class HousingConstants
                 "도저히 출근할 체력이 안되는걸..?","출근하는 중")},
             { ActionType.Eat, new InteractionTexts("식사를 하자","1시간 동안 체력 1을 회복한다.","밥 먹는 중") }
         };
-    #endregion
 
     public struct InteractionTexts
     {
@@ -47,4 +49,35 @@ public static class HousingConstants
             AnimationText = animationText;
         }
     }
+    #endregion
+
+    #region 돌발 이벤트
+
+    public static readonly Dictionary<AfterWorkEventType, string> SuddenEventTexts =
+        new Dictionary<AfterWorkEventType, string>
+        {
+            { AfterWorkEventType.OvertimeWork, "부장님이 퇴근을 안하셔.. 야근할까?" },
+            { AfterWorkEventType.TeamGathering, "갑자기 팀 회식이 잡혔다. 참석 하러 가자"}
+        };
+    
+    public struct SuddenEventTypes
+    {
+        public AfterWorkEventType AfterWorkEvent { get; private set; }
+        public string AfterWorkEventText { get; private set; }
+
+        public SuddenEventTypes(AfterWorkEventType afterWorkEvent, string afterWorkEventText)
+        {
+            AfterWorkEvent = afterWorkEvent;
+            AfterWorkEventText = afterWorkEventText;
+        }
+    }
+
+    #endregion
+    
+    // 랜덤 값에 일치하는 함수를 리턴하기 위한 딕셔너리
+    // TODO: AFTER_WORK_DENOMINATOR 값 확정 후에 키 값 수정
+    public static readonly Dictionary<int, AfterWorkEventType> AfterWorkEvents = new Dictionary<int, AfterWorkEventType> {
+        {0, AfterWorkEventType.OvertimeWork},
+        {1, AfterWorkEventType.TeamGathering}
+    };
 }

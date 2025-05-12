@@ -14,7 +14,10 @@ public class HousingCanvasController : MonoBehaviour
     [Header("돌발 이벤트")] 
     [SerializeField] private GameObject suddenPanel;
     [SerializeField] private TMP_Text suddenText;
+    [SerializeField] private GameObject[] suddenEventImages;
 
+    private Coroutine _autoHideCoroutine;
+    
     public Action OnInteractionButtonPressed;
     public Action OnSuddenButtonPressed;
     
@@ -72,6 +75,7 @@ public class HousingCanvasController : MonoBehaviour
     #region 돌발 이벤트
     public void ShowSuddenEventPanel(string actText, Action onSuddenButtonPressed)
     {
+        Debug.Log("call evenet panel show");
         suddenPanel.SetActive(true);
         suddenText.text = actText;
         OnSuddenButtonPressed += onSuddenButtonPressed;
@@ -84,7 +88,53 @@ public class HousingCanvasController : MonoBehaviour
     }
     public void OnSuddenConfirmButton()
     {
+        suddenText.text = "";
         OnSuddenButtonPressed?.Invoke();
+    }
+
+    public void ShowSuddenEventImage(AfterWorkEventType afterWorkEventType)
+    {
+        if (_autoHideCoroutine != null)    StopCoroutine(_autoHideCoroutine);
+
+        switch (afterWorkEventType)
+        {
+            case AfterWorkEventType.OvertimeWork:
+                suddenEventImages[0].SetActive(true);
+                break;
+            case AfterWorkEventType.TeamGathering:
+                suddenEventImages[1].SetActive(true);
+                break;
+        }
+        //사운드 재생
+
+        _autoHideCoroutine = StartCoroutine(AutoHideSuddenImage(afterWorkEventType));
+    }
+
+    public void HideSuddenEventImage()
+    {
+        foreach (var image in suddenEventImages)
+        {
+            image.SetActive(false);
+        }
+    }
+    private IEnumerator AutoHideSuddenImage(AfterWorkEventType afterWorkEventType)
+    {
+        float startTime = Time.time;
+        while (Time.time - startTime < HousingConstants.SUDDENEVENT_IAMGE_SHOW_TIME)
+        {
+            if (Input.touchCount > 0 || Input.GetMouseButtonDown(0))
+            {
+                break;
+            }
+            yield return null;
+        }
+
+        //패널 닫고 효과음 끄기
+        HideSuddenEventImage();
+        HideSuddenEventPanel();
+        GameManager.Instance.StopSuddenEventSound(afterWorkEventType);
+        
+        _autoHideCoroutine = null;
     }
     #endregion
     
