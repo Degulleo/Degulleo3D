@@ -16,7 +16,7 @@ public class HousingCanvasController : MonoBehaviour
     [SerializeField] private TMP_Text suddenText;
     [SerializeField] private GameObject[] suddenEventImages;
     
-    [Header("로딩 스위칭 패널")]
+    [Header("로딩(스위칭) 패널")]
     [SerializeField] private GameObject switchingPanel;
     private SwitchingPanelController switchingPanelController;
 
@@ -32,15 +32,15 @@ public class HousingCanvasController : MonoBehaviour
         suddenPanel.SetActive(false);
     }
         
+    /// <summary>
+    /// 씬전환 로딩 패널 테스트용 코드.던전에서도 씬전환 할 때 해당 코드 사용하시면 됩니다.
+    /// </summary>
     private void Update()
     {
-        // 오른쪽 화살표 키 누르면 Fade 효과 테스트 가능.
-        // Sumulation 에서는 작동 안 함.
         if (Input.GetKeyDown(KeyCode.A))
         {
             var _switchingPanel = Instantiate(switchingPanel,this.transform);
             switchingPanelController = _switchingPanel.GetComponent<SwitchingPanelController>();
-            switchingPanel.GetComponent<CanvasGroup>().alpha = 0.0f;
             switchingPanelController.FadeAndSceneLoad("ReDungeon");
         }
     }
