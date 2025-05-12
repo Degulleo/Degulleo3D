@@ -61,6 +61,17 @@ public class InteractionController : MonoBehaviour
         {
             if (PlayerStats.Instance.CanPerformByHealth(interactionType))
             {
+                if (interactionType == ActionType.Work)
+                {
+                    if (!PlayerStats.Instance.CanWork()) // 출근 가능한 시간이 아닐 경우
+                    {
+                        // 텍스트 출력 X ?? 
+                        Debug.Log("Can't work");
+                        housingCanvasController.interactionTextsController.ActiveTexts( "출근 가능한 시간이 아닙니다!");
+                        return;
+                    }
+                }
+                
                 PlayerStats.Instance.PerformAction(interactionType);
 
                 if (interactionType == ActionType.Dungeon)
@@ -96,6 +107,8 @@ public class InteractionController : MonoBehaviour
                 housingCanvasController.ShowSuddenEventPanel("부장님이 퇴근을 안하셔.. 야근할까?", () =>
                 {
                     //Todo: 컷씬과 스테이터스 변경
+                    // 체력상 가능한지 확인 이후 행동 수행
+                    
                     housingCanvasController.HideSuddenEventPanel();
                 });
                 break;

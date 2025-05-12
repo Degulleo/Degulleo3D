@@ -107,6 +107,9 @@ public class InteractionAnimationPanelController : MonoBehaviour
             StopCoroutine(_autoHideCoroutine);
             _autoHideCoroutine = null;
         }
+        
+        // 패널 닫히고 결근 체크, 상호작용 패널과 결근 엔딩 채팅창이 겹치지 않기 위함
+        PlayerStats.Instance.CheckAbsent();
     }
 
     public void TutorialSleepAnimation()

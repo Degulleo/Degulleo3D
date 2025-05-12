@@ -29,7 +29,7 @@ public class PlayerStats : MonoBehaviour
     
     public event Action OnDayEnded;
     public event Action Exhaustion; // 탈진
-    public event Action Overslept; // 결근(늦잠)
+    public event Action Overslept; // 늦잠
     public event Action ZeroReputation; // 평판 0 이벤트
     public event Action<StatsChangeData> OnStatsChanged; // 스탯 변경 이벤트
     public event Action OnWorked; // 퇴근 이벤트 (출근 이후 집에 돌아올 시간에 발생)
@@ -37,6 +37,18 @@ public class PlayerStats : MonoBehaviour
     private float previousAddHealth = 0f;
     
     public static PlayerStats Instance;
+    
+    // 결근 이벤트 관련 변수
+    private bool _hasWorkedToday = false;
+    private bool _hasCheckedAbsenceToday = false; // 결근 체크, 하루에 결근 여러 번 체크 안하기 위함
+    public event Action OnAbsent; // 결근 
+    
+    // 말풍선
+    private GameObject messagePanelInstance;
+    private SpeechBubbleFollower speechBubbleFollower;
+    private bool isActiveBubble;
+    private bool hasShownBubbleToday; // 하루에 말풍선 하나만 표시하기
+    
     private void Awake()
     {
         if (Instance == null)
@@ -59,7 +71,62 @@ public class PlayerStats : MonoBehaviour
     {
         _valueByAction = new ValueByAction();
         _valueByAction.Initialize(); // 값 초기화
+        
+        LoadMessagePanel();
+        CheckBubble();
     }
+
+    #region 말풍선(Bubble) 관련
+
+    private void LoadMessagePanel()
+    {
+        GameObject messagePanelPrefab = Resources.Load<GameObject>("Prefabs/MessagePanel");
+    
+        if (messagePanelPrefab != null)
+        {
+            Canvas canvas = FindObjectOfType<Canvas>();
+            
+            messagePanelInstance = Instantiate(messagePanelPrefab, canvas.transform);
+            speechBubbleFollower = messagePanelInstance.GetComponent<SpeechBubbleFollower>();
+        
+            if (speechBubbleFollower != null)
+            {
+                isActiveBubble = false;
+                hasShownBubbleToday = false;
+                speechBubbleFollower.HideMessage();
+            }
+        }
+    }
+    
+    private void CheckBubble()
+    {
+        if (isActiveBubble)
+        {
+            isActiveBubble = false;
+            HideBubble();
+        }
+        
+        if (TimeStat >= 8.0f && TimeStat < 9.0f && !isActiveBubble && !hasShownBubbleToday)
+        {
+            hasShownBubbleToday = true;
+            isActiveBubble = true;
+            ShowBubble();
+        }
+    }
+
+    public void ShowBubble()
+    {
+        if(isActiveBubble)
+            speechBubbleFollower.ShowMessage();
+    }
+
+    public void HideBubble()
+    {
+        if(!isActiveBubble)
+            speechBubbleFollower.HideMessage();
+    }
+
+    #endregion
 
     // 현재 체력으로 해당 행동이 가능한 지 확인
     public bool CanPerformByHealth(ActionType actionType)
@@ -67,6 +134,23 @@ public class PlayerStats : MonoBehaviour
         ActionEffect effect = _valueByAction.GetActionEffect(actionType);
 
         return (HealthStat >= (effect.healthChange * -1));
+    }
+    
+    // 결근 체크
+    public void CheckAbsent()
+    {
+        if (_hasWorkedToday || _hasCheckedAbsenceToday)
+            return;
+            
+        // 9시가 지났는데 출근하지 않은 경우
+        if (TimeStat >= 9.0f && !_hasWorkedToday)
+        {
+            _hasCheckedAbsenceToday = true; // 결근 체크 완료 표시
+            OnAbsent?.Invoke();
+
+            PerformAction(ActionType.Absence); // 평판 -3
+            Debug.Log("결근 처리: 평판 감소" + ReputationStat);
+        }
     }
     
     // 행동 처리 메서드
@@ -86,6 +170,7 @@ public class PlayerStats : MonoBehaviour
         // 스탯 - 시간이 변경된 이후 퇴근 이벤트 발생
         if (actionType == ActionType.Work)
         {
+            _hasWorkedToday = true;
             OnWorked?.Invoke();
         }
     }
@@ -156,6 +241,11 @@ public class PlayerStats : MonoBehaviour
         // 하루가 실제로 종료된 경우에만 이벤트 발생
         if (isDayEnded)
         {
+            // 결근 관련 변수 초기화
+            _hasWorkedToday = false;
+            _hasCheckedAbsenceToday = false;
+            hasShownBubbleToday = false;
+            
             OnDayEnded?.Invoke();
         }
     }
@@ -178,11 +268,13 @@ public class PlayerStats : MonoBehaviour
     public void ModifyTime(float time, ActionType actionType)
     {
         TimeStat += time;
-
+        
         if (TimeStat >= _gameConstants.maxTime)
         {
             EndDay(time, actionType);
         }
+
+        CheckBubble();
     }
     
     public void ModifyHealth(float health)
@@ -211,11 +303,17 @@ public class PlayerStats : MonoBehaviour
     public void ModifyReputation(float reputation)
     {
         // float 연산 시 계산 오차가 발생할 수도 있기에 소수점 두 번째에서 반올림하도록 처리
-        ReputationStat = Mathf.Round((ReputationStat + reputation) * 100f) / 100f;
+        if(ReputationStat > 0)
+        {
+            ReputationStat = Mathf.Round((ReputationStat + reputation) * 100f) / 100f;
+        }
+        else
+        {
+            ReputationStat = 0f;
+        }
 
         if (ReputationStat <= 0)
         {
-            Debug.Log("당신의 평판은 0입니다..;");
             ZeroReputation?.Invoke();
             ReputationStat = 0.0f;
         }

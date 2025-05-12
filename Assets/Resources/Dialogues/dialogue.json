@@ -146,6 +146,55 @@
       "text": "... GameManager.Instance.ShowCredit(GamePhase.End);",
       "nextId": "",
       "phase": "end"
+    }, 
+    {
+      "id": "fairy_zero_1",
+      "name": "냉장고 요정",
+      "text": "...",
+      "nextId": "player_zero_1",
+      "phase": "zero"
+    },
+    {
+      "id": "player_zero_1",
+      "name": "주인공",
+      "text": "...",
+      "nextId": "fairy_zero_2",
+      "phase": "zero"
+    },
+    {
+      "id": "fairy_zero_2",
+      "name": "냉장고 요정",
+      "text": "평판이... 0?",
+      "nextId": "player_zero_2",
+      "phase": "zero"
+    },
+    {
+      "id": "player_zero_2",
+      "name": "주인공",
+      "text": "...! (회사에서 연락이 온다.)",
+      "nextId": "fairy_zero_3",
+      "phase": "zero"
+    },
+    {
+      "id": "fairy_zero_3",
+      "name": "회사",
+      "text": "당신은 해고되었습니다.",
+      "nextId": "player_zero_3",
+      "phase": "zero"
+    },
+    {
+      "id": "player_zero_3",
+      "name": "주인공",
+      "text": "내가... 해고? 내가? \n 이럴.. 이럴리가 없어!!",
+      "nextId": "fairy_zero_4",
+      "phase": "zero"
+    },
+    {
+      "id": "fairy_zero_4",
+      "name": " ",
+      "text": "그 날 서울시 어느 동네에서, 한 34세의 남성의 절규 소리가 울려퍼졌다.",
+      "nextId": "",
+      "phase": "zero"
     }
   ]
 }

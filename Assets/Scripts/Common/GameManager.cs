@@ -27,7 +27,11 @@ public partial class GameManager : Singleton<GameManager>
     {
         // 오디오 초기화
         InitializeAudio();
-        PlayerStats.Instance.OnDayEnded += AdvanceDay;
+        
+        // 이벤트 할당
+        PlayerStats.Instance.OnDayEnded += AdvanceDay; // 날짜 변경
+        PlayerStats.Instance.ZeroReputation += ZeroReputationEnd; // 평판 0 엔딩
+        
         //패널 매니저 생성
         panelManager = Instantiate(Resources.Load<GameObject>("Prefabs/PanelManager")).GetComponent<PanelManager>();
     }

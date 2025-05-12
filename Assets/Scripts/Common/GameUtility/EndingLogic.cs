@@ -16,8 +16,13 @@ public partial class GameManager
     
     public void ClearStage()
     {
-        Debug.Log($"스테이지 레벨 {stageLevel}을 클리어 하셨습니다!");
         stageLevel++;
+    }
+
+    private void ZeroReputationEnd()
+    {
+        // npc와의 대화 출력, Phase = zero
+        StartNPCDialogue(GamePhase.ZeroEnd);
     }
     
     // 엔딩 관련 메서드. 7일차에 실행
@@ -27,10 +32,10 @@ public partial class GameManager
         StartNPCDialogue(GamePhase.End);
         
         // 플레이어 상태에 따라 엔딩 판별
-        EndingType endingType = DetermineEnding();
+        // EndingType endingType = DetermineEnding();
         
         // 엔딩 타입에 따라 다른 씬이나 UI 표시
-        switch (endingType)
+        /*switch (endingType)
         {
             case EndingType.Normal:
                 Debug.Log("던전 공략 성공");
@@ -44,7 +49,7 @@ public partial class GameManager
                 Debug.Log("던전 공략 성공과 훌륭한 평판 작");
                 
                 break;
-        }
+        }*/
     }
     
     // 던전 스테이지와 평판 수치로 엔딩 판별

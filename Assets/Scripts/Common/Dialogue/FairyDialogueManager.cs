@@ -86,6 +86,10 @@ public class FairyDialogueManager
         else if (phase == GamePhase.End)
         {
             StartPhaseDialogue("end");
+        } 
+        else if (phase == GamePhase.ZeroEnd)
+        {
+            StartPhaseDialogue("zero");
         }
     }
     
