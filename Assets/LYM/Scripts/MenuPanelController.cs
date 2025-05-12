@@ -27,7 +27,7 @@ public class MenuPanelController : PanelController
             },
             () =>
             {
-                
+                //todo: 게임재개
             });
     }
 
