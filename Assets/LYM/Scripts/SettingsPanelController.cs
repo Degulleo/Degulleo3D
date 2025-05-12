@@ -19,16 +19,11 @@ public class SettingsPanelController : PanelController
 
     private void InitSettings()
     {
-        //todo:저장된 데이터를 가져오게 해야함
-        var sfxIsActive = true;
-        var bgmIsActive = true;
+        var (sfxVolume, bgmVolume, sfxIsActive, bgmIsActive) = PlayerPrefsManager.LoadSettings();
         sfxSliderButton.Init(sfxIsActive);
         bgmSliderButton.Init(bgmIsActive);
-        //todo:저장된 데이터를 가져오게 해야함
-        var sfxSliderValue = 1f;
-        var bgmSliderValue = 1f;
-        sfxSlider.value = sfxSliderValue;
-        bgmSlider.value = bgmSliderValue;
+        sfxSlider.value = sfxVolume;
+        bgmSlider.value = bgmVolume;
         Show();
     }
     
@@ -73,6 +68,7 @@ public class SettingsPanelController : PanelController
     public void OnCloseButtonClicked()
     {
         //todo: 설정 저장 필요
+        PlayerPrefsManager.SaveSettings(sfxSlider.value, bgmSlider.value, sfxSliderButton.IsActive, bgmSliderButton.IsActive);
         Hide();
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -95,7 +96,7 @@ public partial class GameManager
             if (beamSFX != null) SafeSoundManager?.LoadAudioClip("Beam", beamSFX);
             
             // 저장된 볼륨 설정 로드
-            // LoadVolumeSettings();
+            LoadVolumeSettings();
             
             // 현재 씬에 맞는 배경음 재생
             string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
@@ -132,16 +133,18 @@ public partial class GameManager
     }
     
     // PlayerPrefs에 저장된 볼륨 설정 불러오기
-    // private void LoadVolumeSettings()
-    // {
-    //     float bgmVolume = PlayerPrefs.GetFloat("BGMVolume", 1.0f);
-    //     float sfxVolume = PlayerPrefs.GetFloat("SFXVolume", 1.0f);
-    //     
-    //     
-    //     SafeSoundManager?.SetBGMVolume(bgmVolume);
-    //     SafeSoundManager?.SetSFXVolume(sfxVolume);
-    //     
-    // }
+    private void LoadVolumeSettings()
+    {
+        // float bgmVolume = PlayerPrefs.GetFloat("BGMVolume", 1.0f);
+        // float sfxVolume = PlayerPrefs.GetFloat("SFXVolume", 1.0f);
+        //
+        //
+        // SafeSoundManager?.SetBGMVolume(bgmVolume);
+        // SafeSoundManager?.SetSFXVolume(sfxVolume);
+        var (sfxVolume, bgmVolume, sfxIsActive, bgmIsActive) = PlayerPrefsManager.LoadSettings();
+        SafeSoundManager?.SetSFXVolume(sfxIsActive? sfxVolume : 0);
+        SafeSoundManager?.SetBGMVolume(bgmIsActive? bgmVolume : 0);
+    }
     
     #endregion
     
