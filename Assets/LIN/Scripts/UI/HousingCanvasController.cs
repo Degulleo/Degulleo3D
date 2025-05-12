@@ -15,6 +15,10 @@ public class HousingCanvasController : MonoBehaviour
     [SerializeField] private GameObject suddenPanel;
     [SerializeField] private TMP_Text suddenText;
     [SerializeField] private GameObject[] suddenEventImages;
+    
+    [Header("로딩(스위칭) 패널")]
+    [SerializeField] private GameObject switchingPanel;
+    private SwitchingPanelController switchingPanelController;
 
     private Coroutine _autoHideCoroutine;
     
@@ -26,6 +30,19 @@ public class HousingCanvasController : MonoBehaviour
         interactionTextsController.InitInteractionTexts();
         interactionButton.SetActive(false);
         suddenPanel.SetActive(false);
+    }
+        
+    /// <summary>
+    /// 씬전환 로딩 패널 테스트용 코드.던전에서도 씬전환 할 때 해당 코드 사용하시면 됩니다.
+    /// </summary>
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            var _switchingPanel = Instantiate(switchingPanel,this.transform);
+            switchingPanelController = _switchingPanel.GetComponent<SwitchingPanelController>();
+            switchingPanelController.FadeAndSceneLoad("ReDungeon");
+        }
     }
 
     #region NPC 상호 작용
@@ -75,7 +92,6 @@ public class HousingCanvasController : MonoBehaviour
     #region 돌발 이벤트
     public void ShowSuddenEventPanel(string actText, Action onSuddenButtonPressed)
     {
-        Debug.Log("call evenet panel show");
         suddenPanel.SetActive(true);
         suddenText.text = actText;
         OnSuddenButtonPressed += onSuddenButtonPressed;
