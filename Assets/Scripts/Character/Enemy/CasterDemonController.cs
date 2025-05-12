@@ -5,6 +5,8 @@ using Random = UnityEngine.Random;
 
 public class CasterDemonController : EnemyController
 {
+
+
     // Animation
     public static readonly int Cast = Animator.StringToHash("Cast");
     public static readonly int Flee = Animator.StringToHash("Flee");
@@ -25,6 +27,15 @@ public class CasterDemonController : EnemyController
     [SerializeField] private GameObject slowFieldWarning;
     [SerializeField] private GameObject slowFieldEffect;
     [SerializeField] private GameObject knockbackEffect;
+
+    // SFX
+    [Space(10)]
+    [Header("SFX")]
+    [SerializeField] private AudioClip magicMissileShotSound;
+    [SerializeField] private AudioClip teleportSound;
+    [SerializeField] private AudioClip spinSound;
+    [SerializeField] private AudioClip circleMagicSound;
+
     private float _knockbackTimer = 10f;
     private const float KnockBackThresholdTime = 10f;
 
@@ -272,7 +283,7 @@ public class CasterDemonController : EnemyController
         SetAnimation(Cast);
 
         // 2. 장판 생성과 세팅
-        var fixedPos = new Vector3(aimPosition.x, 0, aimPosition.z);
+        var fixedPos = new Vector3(aimPosition.x, aimPosition.y, aimPosition.z);
         var warning = Instantiate(chariotWarning, fixedPos, Quaternion.identity).GetComponent<MagicAoEField>();
 
         warning.SetEffect(SlowFieldEffectData, null, null);
