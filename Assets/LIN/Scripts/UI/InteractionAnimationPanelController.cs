@@ -33,6 +33,7 @@ public class InteractionAnimationPanelController : MonoBehaviour
 
         // 3) 텍스트 및 애니메이션 세팅
         doingText.text = animationText;
+        
         switch (actionType)
         {
             case ActionType.Sleep:
