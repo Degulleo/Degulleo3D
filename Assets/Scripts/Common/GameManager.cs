@@ -49,6 +49,17 @@ public partial class GameManager : Singleton<GameManager>
 
     #endregion
     
+    //일시 정지
+    public void PauseGame()
+    {
+        Time.timeScale = 0;
+    }
+
+    public void ResumeGame()
+    {
+        Time.timeScale = 1;
+    }
+
     // 날짜 진행
     public void AdvanceDay()
     {
