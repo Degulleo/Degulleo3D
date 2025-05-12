@@ -218,13 +218,18 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
     }
     
         
-    public void StartAttackAction() {
+    public void StartAttackAction()
+    {
+        if (!_isBattle) return;
+        
         _currentAction = _attackAction;
         _currentAction.StartAction(this);
     }
 
     public void StartDashAction()
     {
+        if (!_isBattle) return;
+        
         // 만약 공격 중이면 강제로 공격 종료
         if (_currentAction == _attackAction && _attackAction.IsActive)
         {
