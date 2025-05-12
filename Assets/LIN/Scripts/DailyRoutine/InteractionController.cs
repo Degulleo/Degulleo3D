@@ -10,7 +10,7 @@ public class InteractionController : MonoBehaviour
 {
     [SerializeField] LayerMask interactionLayerMask;
 
-    [FormerlySerializedAs("housingCanvasManager")] [Header("UI 연동")] [SerializeField]
+    [Header("UI 연동")] [SerializeField]
     HousingCanvasController housingCanvasController;
 
     [SerializeField] private InteractionAnimationPanelController interactionAnimationPanelController;
