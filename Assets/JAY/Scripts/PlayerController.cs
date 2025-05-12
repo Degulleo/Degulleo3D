@@ -67,13 +67,13 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         hitEffectController = GetComponentInChildren<PlayerHitEffectController>();
         
         PlayerInit();
-        
+
         // isBattle 초기화 (임시)
         /*bool isHousingScene = SceneManager.GetActiveScene().name.Contains("Housing");
         _isBattle = !isHousingScene;
         Debug.Log("_isBattle: " + _isBattle);*/
 
-        // SwitchBattleMode();
+        SwitchBattleMode();
     }
     
     private void Update()
