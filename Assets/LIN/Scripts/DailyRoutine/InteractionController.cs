@@ -23,6 +23,7 @@ public class InteractionController : MonoBehaviour
     // 상호작용 가능한 사물 범위에 들어올 때
     private void OnTriggerEnter(Collider other)
     {
+        PlayerStats.Instance.HideBubble();
         if(other.gameObject.layer == LayerMask.NameToLayer("NPC"))
         {
             housingCanvasController.ShowNpcInteractionButton(() =>
@@ -47,6 +48,7 @@ public class InteractionController : MonoBehaviour
         
         if (interactionLayerMask == (interactionLayerMask | (1 << other.gameObject.layer)))
         {
+            PlayerStats.Instance.ShowBubble();
             housingCanvasController.HideInteractionButton();
             housingCanvasController.interactionTextsController.InitInteractionTexts();
         }
@@ -65,17 +67,18 @@ public class InteractionController : MonoBehaviour
                 {
                     if (!PlayerStats.Instance.CanWork()) // 출근 가능한 시간이 아닐 경우
                     {
-                        // 텍스트 출력 X ?? 
-                        Debug.Log("Can't work");
-                        housingCanvasController.interactionTextsController.ActiveTexts( "출근 가능한 시간이 아닙니다!");
+                        PlayerStats.Instance.ShowAndHideBubble("출근 시간이 아냐");
                         return;
                     }
                 }
                 
-                PlayerStats.Instance.PerformAction(interactionType);
-
                 if (interactionType == ActionType.Dungeon)
                 {
+                    if (PlayerStats.Instance.CanWork()) // 출근 시간인데 던전에 가려하는 경우
+                    {
+                        PlayerStats.Instance.ShowAndHideBubble("출근 시간해야 해");
+                        return;
+                    }
                     GameManager.Instance.ChangeToGameScene();
                 }
                 else
@@ -83,9 +86,12 @@ public class InteractionController : MonoBehaviour
                     GameManager.Instance.PlayInteractionSound(interactionType);
                     interactionAnimationPanelController.ShowAnimationPanel(interactionType,interactionTexts.AnimationText);
                 }
+                
+                PlayerStats.Instance.PerformAction(interactionType);
             }
             else
             {
+                PlayerStats.Instance.ShowAndHideBubble("체력이 없어...");
                 housingCanvasController.interactionTextsController.ActiveTexts(interactionTexts.LackOfHealth);
             }
         });

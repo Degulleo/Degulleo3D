@@ -25,6 +25,8 @@ public class InteractionAnimationPanelController : MonoBehaviour
 
     public void ShowAnimationPanel(ActionType actionType, string animationText)
     {
+        PlayerStats.Instance.HideBubble();
+        
         // 1) 패널 활성화
         panel.SetActive(true);
         // 2) 기존 코루틴 정리
@@ -110,6 +112,7 @@ public class InteractionAnimationPanelController : MonoBehaviour
         
         // 패널 닫히고 결근 체크, 상호작용 패널과 결근 엔딩 채팅창이 겹치지 않기 위함
         PlayerStats.Instance.CheckAbsent();
+        PlayerStats.Instance.ShowBubble();
     }
 
     public void TutorialSleepAnimation()

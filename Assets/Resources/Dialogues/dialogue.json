@@ -185,7 +185,7 @@
     {
       "id": "player_zero_3",
       "name": "주인공",
-      "text": "내가... 해고? 내가? \n 이럴.. 이럴리가 없어!!",
+      "text": "내가... 해고? 내가?",
       "nextId": "fairy_zero_4",
       "phase": "zero"
     },

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 public class PlayerStats : MonoBehaviour
@@ -74,12 +75,33 @@ public class PlayerStats : MonoBehaviour
         
         LoadMessagePanel();
         CheckBubble();
+        
+        SceneManager.sceneLoaded += OnSceneLoaded; // 씬 전환 이벤트
     }
-
+    
     #region 말풍선(Bubble) 관련
-
+     
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // 새 씬에서 메시지 패널 다시 로드
+        LoadMessagePanel();
+        CheckBubble();
+    }
+    
+    // OnDestroy에서 이벤트 구독 해제
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+    
     private void LoadMessagePanel()
     {
+        if (messagePanelInstance != null) // 기존 패널 파괴
+        {
+            Destroy(messagePanelInstance);
+            messagePanelInstance = null;
+        }
+        
         GameObject messagePanelPrefab = Resources.Load<GameObject>("Prefabs/MessagePanel");
     
         if (messagePanelPrefab != null)
@@ -88,6 +110,7 @@ public class PlayerStats : MonoBehaviour
             
             messagePanelInstance = Instantiate(messagePanelPrefab, canvas.transform);
             speechBubbleFollower = messagePanelInstance.GetComponent<SpeechBubbleFollower>();
+            speechBubbleFollower.SetPlayerTransform();
         
             if (speechBubbleFollower != null)
             {
@@ -122,8 +145,12 @@ public class PlayerStats : MonoBehaviour
 
     public void HideBubble()
     {
-        if(!isActiveBubble)
-            speechBubbleFollower.HideMessage();
+        speechBubbleFollower.HideMessage();
+    }
+
+    public void ShowAndHideBubble(string text)
+    {
+        speechBubbleFollower.ShowAndHide(text);
     }
 
     #endregion
@@ -263,6 +290,8 @@ public class PlayerStats : MonoBehaviour
             return ( wakeUpTime + 24f ) - timeStat; // 다음 날 오전 8시까지 남은 시간
         }
     }
+
+    #region Modify Stats
     
     // 행동에 따른 내부 스탯 변경 메서드
     public void ModifyTime(float time, ActionType actionType)
@@ -323,4 +352,6 @@ public class PlayerStats : MonoBehaviour
             ReputationStat = _gameConstants.maxReputation;
         }
     }
+    
+    #endregion
 }
