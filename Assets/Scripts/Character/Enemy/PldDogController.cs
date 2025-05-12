@@ -37,6 +37,12 @@ public class PldDogController : EnemyController
     [SerializeField] private GameObject horizontalWarning;
     [SerializeField] private GameObject horizontalSlash;
 
+    // SFX
+    [Space(10)]
+    [Header("SFX")]
+    [SerializeField] private AudioClip slashSound;
+    [SerializeField] private AudioClip boomSound;
+
     private float _patternTimer = 0f;
     private int _lastPatternIndex = -1;
     private bool _isPatternRunning = false;
@@ -110,13 +116,14 @@ public class PldDogController : EnemyController
     {
         Debug.Log("BombThrowPattern: 보스가 폭탄을 던집니다.");
         SetAnimation(BoomShot);
+        SoundManager.Instance.PlaySFX(boomSound);
         _isPatternRunning = true;
         Agent.isStopped = true;
 
         for (int i = 0; i < bombCount; i++)
         {
             Vector3 targetPos = TraceTargetTransform.position;
-            targetPos.y = 0.1f; // 지면에 맞춤
+            targetPos.y += 0.1f; // 지면에 맞춤
 
             var warning = Instantiate(chariotSlashWarning, targetPos, Quaternion.identity);
             warning.transform.localScale = bombScale;
@@ -203,6 +210,7 @@ public class PldDogController : EnemyController
     private void SlashAnimationPlay()
     {
         SetAnimation(Slash);
+        SoundManager.Instance.PlaySFX(slashSound);
     }
 
     private void PatternClear()
