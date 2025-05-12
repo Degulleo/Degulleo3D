@@ -16,6 +16,8 @@ public static class HousingConstants
     public static int AFTER_WORK_DENOMINATOR = 2;
     //돌발 이벤트 보여줄 시간
     public static float SUDDENEVENT_IAMGE_SHOW_TIME = 4.0f;
+    //전환효과(Switching) 패널 애니메이션 시간
+    public static float SWITCH_PANEL_AINIM_DURATION = 2.0f;
 
 
     #region 상호작용 멘트
