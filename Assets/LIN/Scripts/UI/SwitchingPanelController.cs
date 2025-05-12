@@ -11,7 +11,6 @@ public class SwitchingPanelController : MonoBehaviour
     [SerializeField] private GameObject Loading_UI;
     [SerializeField] TMP_Text Loading_text;
     
-    static Sequence loadingSequence;
     private CanvasGroup canvasGroup;
 
     private void Awake()
