@@ -28,7 +28,7 @@ public class VerticalAoeController : AoeControllerBase
     protected override void HitCheck()
     {
         // 박스 판정 (사각형 직선)
-        Vector3 halfExtents = new Vector3(_data.radius, 1f, _data.radius * 2f);
+        Vector3 halfExtents = new Vector3(_data.radius, 1f, _data.radius * 2f) * 0.5f;
         Collider[] hits = Physics.OverlapBox(transform.position, halfExtents, transform.rotation, _data.targetLayer);
 
         foreach (var hit in hits)
@@ -47,7 +47,7 @@ public class VerticalAoeController : AoeControllerBase
 
     private void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.red;
+        Gizmos.color = Color.yellow;
         Vector3 center = transform.position;
         Vector3 size = new Vector3(_data.radius, 1f, _data.radius * 2f);
         Gizmos.matrix = Matrix4x4.TRS(center, transform.rotation, Vector3.one);

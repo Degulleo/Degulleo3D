@@ -5,8 +5,6 @@ using Random = UnityEngine.Random;
 
 public class CasterDemonController : EnemyController
 {
-
-
     // Animation
     public static readonly int Cast = Animator.StringToHash("Cast");
     public static readonly int Flee = Animator.StringToHash("Flee");
