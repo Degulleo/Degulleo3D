@@ -35,7 +35,8 @@ public enum GamePhase // 단계별로 출력되는 대화가 달라짐
 {
     Intro, // 인트로 설명문
     Gameplay, // 게임 진행 팁? 등
-    End // 엔딩 대화
+    End, // 엔딩 대화
+    ZeroEnd
 }
 
 public class ChatWindowController : MonoBehaviour, IPointerClickHandler
@@ -90,6 +91,7 @@ public class ChatWindowController : MonoBehaviour, IPointerClickHandler
         if (_inputQueue.Count > 0)
         {
             ShowNextDialogue();
+            PlayerStats.Instance.HideBubble();
         }
     }
     
@@ -111,6 +113,8 @@ public class ChatWindowController : MonoBehaviour, IPointerClickHandler
             StopCoroutine(_clickCoroutine);
             _clickCoroutine = null;
         }
+        
+        PlayerStats.Instance.ShowBubble();
     }
 
     #endregion

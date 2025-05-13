@@ -10,8 +10,8 @@ public class InteractionController : MonoBehaviour
 {
     [SerializeField] LayerMask interactionLayerMask;
 
-    [Header("UI 연동")] [SerializeField]
-    HousingCanvasController housingCanvasController;
+    [Header("UI 연동")] 
+    [SerializeField] private HousingCanvasController housingCanvasController;
 
     [SerializeField] private InteractionAnimationPanelController interactionAnimationPanelController;
 
@@ -23,6 +23,7 @@ public class InteractionController : MonoBehaviour
     // 상호작용 가능한 사물 범위에 들어올 때
     private void OnTriggerEnter(Collider other)
     {
+        PlayerStats.Instance.HideBubble();
         if (other.gameObject.layer == LayerMask.NameToLayer("NPC"))
         {
             housingCanvasController.ShowNpcInteractionButton(() =>
@@ -30,7 +31,7 @@ public class InteractionController : MonoBehaviour
                 GameManager.Instance.StartNPCDialogue(GamePhase.Gameplay);
             });
         }
-
+        
         if (interactionLayerMask == (interactionLayerMask | (1 << other.gameObject.layer)))
         {
             ActionType interactionType = other.gameObject.GetComponent<InteractionProp>().RoutineEnter();
@@ -48,39 +49,48 @@ public class InteractionController : MonoBehaviour
 
         if (interactionLayerMask == (interactionLayerMask | (1 << other.gameObject.layer)))
         {
+            PlayerStats.Instance.ShowBubble();
             housingCanvasController.HideInteractionButton();
             housingCanvasController.interactionTextsController.InitInteractionTexts();
         }
     }
-
+    
     // ActionType 별로 화면에 상호작용 내용 표시, 상호작용 버튼에 이벤트 작성
     private void PopActionOnScreen(ActionType interactionType)
     {
         HousingConstants.interactions.TryGetValue(interactionType, out var interactionTexts);
-
-        housingCanvasController.ShowInteractionButton(interactionTexts.ActionText, interactionTexts.DescriptionText,
-            () =>
+        
+        housingCanvasController.ShowInteractionButton(interactionTexts.ActionText,interactionTexts.DescriptionText,()=>
+        {
+            if (PlayerStats.Instance.CanPerformByHealth(interactionType))
             {
-                if (PlayerStats.Instance.CanPerformByHealth(interactionType))
+                if (interactionType == ActionType.Work)
                 {
-                    PlayerStats.Instance.PerformAction(interactionType);
-
-                    if (interactionType == ActionType.Dungeon)
+                    if (!PlayerStats.Instance.CanWork()) // 출근 가능한 시간이 아닐 경우
                     {
-                        GameManager.Instance.ChangeToGameScene();
+                        PlayerStats.Instance.ShowAndHideBubble("출근 시간이 아냐");
+                        return;
                     }
-                    else
-                    {
-                        GameManager.Instance.PlayInteractionSound(interactionType);
-                        interactionAnimationPanelController.ShowAnimationPanel(interactionType,
-                            interactionTexts.AnimationText);
-                    }
+                }
+                
+                if (interactionType == ActionType.Dungeon)
+                {
+                    GameManager.Instance.ChangeToGameScene();
                 }
                 else
                 {
-                    housingCanvasController.interactionTextsController.ActiveTexts(interactionTexts.LackOfHealth);
+                    GameManager.Instance.PlayInteractionSound(interactionType);
+                    interactionAnimationPanelController.ShowAnimationPanel(interactionType,interactionTexts.AnimationText);
                 }
-            });
+                
+                PlayerStats.Instance.PerformAction(interactionType);
+            }
+            else
+            {
+                PlayerStats.Instance.ShowAndHideBubble("체력이 없어...");
+                housingCanvasController.interactionTextsController.ActiveTexts(interactionTexts.LackOfHealth);
+            }
+        });
     }
 
     public Action SuddenEventHappen()
