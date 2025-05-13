@@ -51,9 +51,15 @@ public class BulletBase : MonoBehaviour
         float moveDist = _speed * Time.deltaTime;
 
         // 1) Raycast 충돌 검사
-        if (Physics.Raycast(_prevPosition, _direction, out RaycastHit hit, moveDist, _targetLayer))
+        if (Physics.SphereCast(
+                _prevPosition,
+                1,
+                _direction,
+                out RaycastHit hit,
+                moveDist,
+                _targetLayer
+            ))
         {
-            // 닿은 지점으로 이동
             transform.position = hit.point;
             OnBulletHit(hit);
             return;
@@ -84,5 +90,12 @@ public class BulletBase : MonoBehaviour
     {
         Debug.Log("## Bullet destroyed");
         Destroy(gameObject);
+    }
+
+    // 기즈모로 반지름 시각화
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, 1);
     }
 }
