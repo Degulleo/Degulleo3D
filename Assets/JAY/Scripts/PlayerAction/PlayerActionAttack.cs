@@ -57,6 +57,8 @@ public class PlayerActionAttack : IPlayerAction {
     public void EndAction() {
         if (player == null) return;
 
+        player.WeaponController.AttackEnd();
+        
         player.SafeSetBool("Attack", false);
         IsActive = false;
         player.OnActionEnded(this);
@@ -70,6 +72,8 @@ public class PlayerActionAttack : IPlayerAction {
 
         var weapon = player.GetComponentInChildren<WeaponController>();
         weapon?.SetComboStep(step);
+
+        player.WeaponController.AttackStart();
     }
 
     public void OnComboInput() {

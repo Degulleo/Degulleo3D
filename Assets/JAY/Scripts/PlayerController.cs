@@ -24,7 +24,8 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
     private bool _isBattle;
     private GameObject weapon;
     private WeaponController _weaponController;
-
+    public WeaponController WeaponController => _weaponController;
+    
     private IPlayerState _currentStateClass { get; set; }
     private IPlayerAction _currentAction;
     public IPlayerAction CurrentAction => _currentAction;
