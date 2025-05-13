@@ -277,18 +277,20 @@ public class CasterDemonController : EnemyController
     private IEnumerator SlowFieldSpell()
     {
         var aimPosition = TargetPosOracle(out var basePos, out var rb);
-        // 1. 시전 애니메이션
+
         transform.LookAt(aimPosition);
-        SetAnimation(Cast);
 
-
-        // 2. 장판 생성과 세팅
+        // 장판 생성과 세팅
         var fixedPos = new Vector3(aimPosition.x, aimPosition.y, aimPosition.z);
         var warning = Instantiate(chariotWarning, fixedPos, Quaternion.identity).GetComponent<MagicAoEField>();
 
-        warning.SetEffect(SlowFieldEffectData, () => { SFXPlayer(slowFieldSound);}, null);
+        warning.SetEffect(SlowFieldEffectData, () =>
+        {
+            SetAnimation(Cast);
+            SFXPlayer(slowFieldSound);
+        }, null);
 
-        // 3. 짧은 텀 후 끝내기
+        // 짧은 텀 후 끝내기
         yield return Wait.For(1f);
     }
 
