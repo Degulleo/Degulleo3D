@@ -18,7 +18,6 @@ public enum StatType
 
 public class UpgradeManager : Singleton<UpgradeManager>
 {
-    //캔버스 프리팹 사용..?
     Canvas canvas;
     
     public GameObject backgroundPanel;
@@ -157,6 +156,18 @@ public class UpgradeManager : Singleton<UpgradeManager>
         
         //배경 패널 비활성화
         StartCoroutine(CoFade(backgroundRectTransform.gameObject, 0.7f,0f,0.2f));
+        
+        if (SceneManager.GetActiveScene().name == "ReDungeon")
+        {
+            StartCoroutine(DelayedSceneChange()); // n초 대기 후 전환
+        }
+    }
+    
+    //씬 전환 대기 코루틴
+    private IEnumerator DelayedSceneChange()
+    {
+        yield return new WaitForSeconds(2f);
+        GameManager.Instance.ChangeToHomeScene();
     }
     
     
@@ -232,7 +243,8 @@ public class UpgradeManager : Singleton<UpgradeManager>
     
     protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        
+        if(canvas == null)
+            canvas = FindObjectOfType<Canvas>();
     }
     
 }

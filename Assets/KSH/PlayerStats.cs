@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
-public class PlayerStats : MonoBehaviour
+public class PlayerStats : MonoBehaviour,ISaveable
 {
     public class StatsChangeData // 변경된 스탯 데이터
     {
@@ -385,4 +385,31 @@ public class PlayerStats : MonoBehaviour
     }
     
     #endregion
+
+    public void ApplySaveData(Save save)
+    {
+        if (save?.homeSave != null)
+        {
+            TimeStat = save.homeSave.time;
+            HealthStat = save.homeSave.health;
+            ReputationStat = save.homeSave.reputation;
+            //mealCount = save.homeSave.mealCount;
+            //houseworkCount = save.homeSave.houseworkCount;
+        }
+    }
+
+    public Save ExtractSaveData()
+    {
+        return new Save
+        {
+            homeSave = new HomeSave
+            {
+                time = this.TimeStat,
+                health = this.HealthStat,
+                reputation = this.ReputationStat,
+                //mealCount = this.mealCount,
+                //houseworkCount = this.houseworkCount
+            }
+        };
+    }
 }

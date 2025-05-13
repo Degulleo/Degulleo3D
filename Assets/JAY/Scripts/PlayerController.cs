@@ -30,12 +30,24 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
     private IPlayerAction _currentAction;
     public IPlayerAction CurrentAction => _currentAction;
     
+    // 강화 관련
+    private float attackPowerLevel;
+    private float moveSpeedLevel;
+    private float dashCoolLevel;
+    public float attackSpeedLevel;
+    
     // 상태 관련
     private PlayerStateIdle _playerStateIdle;
     private PlayerStateMove _playerStateMove;
     private PlayerStateWin _playerStateWin;
     private PlayerStateHit _playerStateHit;
     private PlayerStateDead _playerStateDead;
+    
+    //대시 쿨타임 관련
+    [SerializeField] private float dashCooldownDuration = 1.5f;
+    private float dashCooldownTimer = 0f;
+    public bool IsDashOnCooldown => dashCooldownTimer > 0f;
+    public float DashCooldownRatio => dashCooldownTimer / dashCooldownDuration;
     
     // 행동 관련
     private PlayerActionAttack _attackAction;
@@ -72,6 +84,20 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         hitEffectController = GetComponentInChildren<PlayerHitEffectController>();
         
         PlayerInit();
+        
+        //강화 수치 적용
+        //attackPowerLevel = 1 + (float)UpgradeManager.Instance.upgradeStat.CurrentUpgradeLevel(StatType.AttackPower) / 2;
+        attackPowerLevel = 1.1f;
+        //moveSpeedLevel = 1 + (float)UpgradeManager.Instance.upgradeStat.CurrentUpgradeLevel(StatType.MoveSpeed) / 2;
+        moveSpeedLevel = 1.1f;
+        //dashCoolLevel = (float)UpgradeManager.Instance.upgradeStat.CurrentUpgradeLevel(StatType.DashCoolDown)/5;
+        dashCoolLevel = 0.2f;
+        //attackSpeedLevel = (float)UpgradeManager.Instance.upgradeStat.CurrentUpgradeLevel(StatType.AttackSpeed)/10;
+        attackSpeedLevel = 0.1f;
+
+        attackPower *= attackPowerLevel;
+        moveSpeed *= moveSpeedLevel;
+        dashCooldownDuration -= dashCoolLevel;
     }
     
     private void Update()
@@ -80,6 +106,10 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         {
             _playerStates[CurrentState].Update();
         }
+        
+        //대시 쿨타임 진행
+        if (dashCooldownTimer > 0f)
+            dashCooldownTimer -= Time.deltaTime;
         
         // Hit 상태거나 게임 끝났을 땐 땐 입력 무시
         if (CurrentState == PlayerState.Hit || CurrentState == PlayerState.Dead || CurrentState == PlayerState.Win)
@@ -223,6 +253,13 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
     {
         if (!_isBattle) return;
         
+        // 쿨타임 중이면 무시
+        if (IsDashOnCooldown)
+        {
+            Debug.Log("대시 쿨타임 중");
+            return;
+        }
+        
         _currentAction = _attackAction;
         _currentAction.StartAction(this);
     }
@@ -244,6 +281,9 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
 
         _currentAction = _actionDash;
         _actionDash.StartAction(this);
+        
+        // 쿨타임 시작
+        dashCooldownTimer = dashCooldownDuration;
     }
     
     public void OnActionEnded(IPlayerAction action)

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public partial class GameManager : Singleton<GameManager>
+public partial class GameManager : Singleton<GameManager>,ISaveable
 {
     // 게임 진행 상태
     private int currentDay = 1; // 날짜
@@ -108,5 +108,34 @@ public partial class GameManager : Singleton<GameManager>
     private void OnApplicationQuit()
     {
         // TODO: 게임 종료 시 로직 추가
+    }
+
+    public void ApplySaveData(Save save)
+    {
+        if (save?.dungeonSave != null)
+        {
+            stageLevel = save.dungeonSave.stageLevel;
+        }
+         
+        if (save?.homeSave != null)
+        {
+            currentDay = save.homeSave.currentDay;
+        }
+    }
+
+    public Save ExtractSaveData()
+    {
+        return new Save
+        {
+            dungeonSave = new DungeonSave()
+            {
+                stageLevel = this.stageLevel,
+            },
+             
+            homeSave = new HomeSave
+            {
+                currentDay = this.currentDay,
+            }
+        };
     }
 }

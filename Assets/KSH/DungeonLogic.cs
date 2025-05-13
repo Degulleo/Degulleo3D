@@ -114,8 +114,6 @@ public class DungeonLogic : MonoBehaviour
             
             // TODO: 강화 시스템으로 넘어가고 일상 맵으로 이동
             GameManager.Instance.PanelManager.GetPanel("ClearPanelBG");
-            
-            StartCoroutine(DelayedSceneChange()); // 5초 대기 후 전환
         }
     }
     
