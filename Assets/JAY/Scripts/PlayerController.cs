@@ -291,27 +291,7 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         // 무기도 전투모드에만
         weapon.SetActive(_isBattle);
     }
-    
-    // Animation Event에서 호출될 메서드
-    public void SetAttackComboTrue()
-    {
-        if (_weaponController.IsAttacking) return;  // 이미 공격 중이면 실행 안함
 
-        if (_currentAction == _attackAction) {
-            _attackAction.EnableCombo();
-            _weaponController.AttackStart();
-        }
-    }
-
-    public void SetAttackComboFalse()
-    {
-        if (_currentAction == _attackAction) {
-            // 이벤트 중복 호출? 공격 종료 시 SetAttackComboFalse가 아니라 ~True로 끝나서 오류 발생. (공격 안하는 상태여도 공격으로 판정됨)
-            _attackAction.DisableCombo();
-            _weaponController.AttackEnd(); // IsAttacking = false로 변경
-        }
-    }
-    
     public void PlayAttackEffect()
     {
         if (_attackAction == null) return;
@@ -349,6 +329,10 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         {
             GameManager.Instance.PlayPlayerAttackSound();
             StartAttackAction();
+        }
+        else if (_currentAction is PlayerActionAttack attackAction)
+        {
+            attackAction.OnComboInput();
         }
     }
 

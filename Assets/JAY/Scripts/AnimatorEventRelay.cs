@@ -8,16 +8,6 @@ public class AnimatorEventRelay : MonoBehaviour
     {
         _playerController = GetComponentInParent<PlayerController>();
     }
-
-    public void SetAttackComboTrue()
-    {
-        _playerController?.SetAttackComboTrue();
-    }
-
-    public void SetAttackComboFalse()
-    {
-        _playerController?.SetAttackComboFalse();
-    }
     
     public void PlayAttackEffect()
     {
