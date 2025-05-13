@@ -8,7 +8,7 @@ public class SpeechBubbleFollower : MonoBehaviour
     [SerializeField] private Transform playerTransform; 
     [SerializeField] private TMP_Text bubbleText;
     
-    private Vector3 offset = new Vector3(200f, 250f, 0); 
+    private Vector3 offset = new Vector3(150f, 200f, 0); 
     
     private Camera mainCamera;
     private RectTransform rectTransform;
