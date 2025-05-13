@@ -7,7 +7,7 @@ public abstract class CharacterBase : MonoBehaviour
 {
     [Header("기본 능력치")]
     public string characterName;        // 이름
-    public int maxHP = 100;             // 최대 체력
+    private int maxHP = 300;             // 최대 체력
     public int currentHP;               // 현재 체력
     public float attackPower = 10f;     // 공격력
     public float defensePower = 5f;     // 방어력

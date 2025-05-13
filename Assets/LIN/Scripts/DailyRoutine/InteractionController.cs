@@ -12,14 +12,14 @@ public class InteractionController : MonoBehaviour
 
     [Header("UI 연동")] 
     [SerializeField] private HousingCanvasController housingCanvasController;
-
     [SerializeField] private InteractionAnimationPanelController interactionAnimationPanelController;
-
+    
     private void Start()
     {
         PlayerStats.Instance.OnWorked += SuddenAfterWorkEventHappen;
+        PlayerStats.Instance.SetInteractionPanelController(interactionAnimationPanelController);
     }
-
+    
     // 상호작용 가능한 사물 범위에 들어올 때
     private void OnTriggerEnter(Collider other)
     {
@@ -72,6 +72,12 @@ public class InteractionController : MonoBehaviour
                         return;
                     }
                 }
+
+                if (interactionType == ActionType.Eat && !PlayerStats.Instance.CanEat()) // 식사 횟수 제한 체크
+                {
+                    PlayerStats.Instance.ShowAndHideBubble("배불러서 못 먹어");
+                    return;
+                }
                 
                 if (interactionType == ActionType.Dungeon)
                 {
@@ -117,6 +123,20 @@ public class InteractionController : MonoBehaviour
         
         housingCanvasController.ShowSuddenEventPanel(suddenEventText, () =>
         {
+            if (afterWorkEventType == AfterWorkEventType.OvertimeWork)
+            {
+                if (!PlayerStats.Instance.CanPerformByHealth(ActionType.OvertimeWork))
+                {
+                    PlayerStats.Instance.ShowAndHideBubble("체력이 없어...");
+                    return;
+                }
+                PlayerStats.Instance.PerformAction(ActionType.OvertimeWork);
+            }
+            else 
+            {
+                PlayerStats.Instance.PerformAction(ActionType.TeamDinner);
+            }
+            
             housingCanvasController.ShowSuddenEventImage(afterWorkEventType);
             GameManager.Instance.PlaySuddenEventSound(afterWorkEventType);
         });
