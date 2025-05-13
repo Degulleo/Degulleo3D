@@ -2,72 +2,79 @@
 
 public class PlayerActionAttack : IPlayerAction {
     private static readonly int ComboStep = Animator.StringToHash("ComboStep");
+
     private PlayerController player;
     private int comboStep = 1;
     private bool comboQueued = false;
     private bool canReceiveCombo = false;
-    
-    public int CurrentComboStep => comboStep;
+    private float comboTimer = 0f;
+
+    [SerializeField] private float comboDuration = 0.7f;
+    private int maxComboStep = 4;
 
     public bool IsActive { get; private set; }
+    public int CurrentComboStep => comboStep;
 
     public void StartAction(PlayerController player) {
         this.player = player;
         IsActive = true;
+
         comboStep = 1;
         comboQueued = false;
-        PlayComboAnimation(comboStep);
+        canReceiveCombo = true;
+        comboTimer = 0f;
+
         player.SafeSetBool("Attack", true);
+        PlayComboAnimation(comboStep);
     }
 
     public void UpdateAction() {
-        if (Input.GetKeyDown(KeyCode.X) && canReceiveCombo) {
+        comboTimer += Time.deltaTime;
+
+        if (canReceiveCombo && Input.GetKeyDown(KeyCode.X)) {
             comboQueued = true;
+        }
+
+        if (comboTimer >= comboDuration) {
+            ProceedComboOrEnd();
+        }
+    }
+
+    private void ProceedComboOrEnd() {
+        canReceiveCombo = false;
+
+        if (comboQueued && comboStep < maxComboStep) {
+            comboStep++;
+            comboQueued = false;
+            comboTimer = 0f;
+            canReceiveCombo = true;
+            PlayComboAnimation(comboStep);
+        } else {
+            EndAction();
         }
     }
 
     public void EndAction() {
+        if (player == null) return;
+
         player.SafeSetBool("Attack", false);
         IsActive = false;
-        player.OnActionEnded(this); // player 에서도 action 초기화
+        player.OnActionEnded(this);
         player = null;
     }
 
-    public void EnableCombo() {
-        canReceiveCombo = true;
-    }
+    private void PlayComboAnimation(int step) {
+        if (player?.PlayerAnimator == null) return;
 
-    public void DisableCombo() {
-        canReceiveCombo = false;
+        player.PlayerAnimator.SetInteger(ComboStep, step);
 
-        if (comboQueued && comboStep < 4) {
-            comboStep++;
-            PlayComboAnimation(comboStep);
-            comboQueued = false;
-        } else {
-            EndAction();  // 행동 종료
-        }
-    }
-
-    private void PlayComboAnimation(int step)
-    {
-        if (player.PlayerAnimator == null) return;
-
-        // 안전하게 파라미터 체크
-        foreach (var param in player.PlayerAnimator.parameters)
-        {
-            if (param.nameHash == ComboStep && param.type == AnimatorControllerParameterType.Int)
-            {
-                player.PlayerAnimator.SetInteger(ComboStep, step);
-                break;
-            }
-        }
-
-        // 무기에 콤보 단계 전달
         var weapon = player.GetComponentInChildren<WeaponController>();
-        if (weapon != null)
-        {
-            weapon.SetComboStep(step);
+        weapon?.SetComboStep(step);
+    }
+
+    public void OnComboInput() {
+        if (canReceiveCombo) {
+            comboQueued = true;
         }
     }
 }
