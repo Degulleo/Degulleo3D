@@ -73,8 +73,8 @@ public class TestScript : MonoBehaviour,ISaveable
              // currentDay = save.homeSave.currentDay;
              // health = save.homeSave.health;
              // reputation = save.homeSave.reputation;
-             mealCount = save.homeSave.mealCount;
-             houseworkCount = save.homeSave.houseworkCount;
+             //mealCount = save.homeSave.mealCount;
+             //houseworkCount = save.homeSave.houseworkCount;
              
              Debug.Log("ApplySaveData : " + reputation);
          }
@@ -105,8 +105,8 @@ public class TestScript : MonoBehaviour,ISaveable
                  // currentDay = this.currentDay,
                  // health = this.health,
                  // reputation = this.reputation,
-                 mealCount = this.mealCount,
-                 houseworkCount = this.houseworkCount
+                 //mealCount = this.mealCount,
+                 //houseworkCount = this.houseworkCount
              }
          };
      }

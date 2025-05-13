@@ -86,14 +86,10 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         PlayerInit();
         
         //강화 수치 적용
-        //attackPowerLevel = 1 + (float)UpgradeManager.Instance.upgradeStat.CurrentUpgradeLevel(StatType.AttackPower) / 2;
-        attackPowerLevel = 1.1f;
-        //moveSpeedLevel = 1 + (float)UpgradeManager.Instance.upgradeStat.CurrentUpgradeLevel(StatType.MoveSpeed) / 2;
-        moveSpeedLevel = 1.1f;
-        //dashCoolLevel = (float)UpgradeManager.Instance.upgradeStat.CurrentUpgradeLevel(StatType.DashCoolDown)/5;
-        dashCoolLevel = 0.2f;
-        //attackSpeedLevel = (float)UpgradeManager.Instance.upgradeStat.CurrentUpgradeLevel(StatType.AttackSpeed)/10;
-        attackSpeedLevel = 0.1f;
+        attackPowerLevel = 1 + (float)UpgradeManager.Instance.upgradeStat.CurrentUpgradeLevel(StatType.AttackPower) / 2;
+        moveSpeedLevel = 1 + (float)UpgradeManager.Instance.upgradeStat.CurrentUpgradeLevel(StatType.MoveSpeed) / 2;
+        dashCoolLevel = (float)UpgradeManager.Instance.upgradeStat.CurrentUpgradeLevel(StatType.DashCoolDown)/5;
+        attackSpeedLevel = (float)UpgradeManager.Instance.upgradeStat.CurrentUpgradeLevel(StatType.AttackSpeed)/10;
 
         attackPower *= attackPowerLevel;
         moveSpeed *= moveSpeedLevel;
@@ -253,13 +249,6 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
     {
         if (!_isBattle) return;
         
-        // 쿨타임 중이면 무시
-        if (IsDashOnCooldown)
-        {
-            Debug.Log("대시 쿨타임 중");
-            return;
-        }
-        
         _currentAction = _attackAction;
         _currentAction.StartAction(this);
     }
@@ -267,6 +256,13 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
     public void StartDashAction()
     {
         if (!_isBattle) return;
+        
+        // 쿨타임 중이면 무시
+        if (IsDashOnCooldown)
+        {
+            Debug.Log("대시 쿨타임 중");
+            return;
+        }
         
         // 만약 공격 중이면 강제로 공격 종료
         if (_currentAction == _attackAction && _attackAction.IsActive)

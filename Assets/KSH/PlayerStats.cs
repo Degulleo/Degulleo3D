@@ -390,11 +390,10 @@ public class PlayerStats : MonoBehaviour,ISaveable
     {
         if (save?.homeSave != null)
         {
-            TimeStat = save.homeSave.time;
-            HealthStat = save.homeSave.health;
-            ReputationStat = save.homeSave.reputation;
-            //mealCount = save.homeSave.mealCount;
-            //houseworkCount = save.homeSave.houseworkCount;
+            TimeStat = Mathf.Clamp(save.homeSave.time, 0, _gameConstants.maxTime);
+            HealthStat = Mathf.Clamp(save.homeSave.health, 0, _gameConstants.maxHealth);
+            ReputationStat = Mathf.Clamp(save.homeSave.reputation, 0, _gameConstants.maxReputation);
+            _mealCount = Mathf.Clamp(save.homeSave.mealCount, 0, 2);
         }
     }
 
@@ -404,11 +403,10 @@ public class PlayerStats : MonoBehaviour,ISaveable
         {
             homeSave = new HomeSave
             {
-                time = this.TimeStat,
-                health = this.HealthStat,
-                reputation = this.ReputationStat,
-                //mealCount = this.mealCount,
-                //houseworkCount = this.houseworkCount
+                time = Mathf.Clamp(this.TimeStat,0,_gameConstants.maxTime),
+                health = Mathf.Clamp(this.HealthStat,0,_gameConstants.maxHealth),
+                reputation = Mathf.Clamp(this.ReputationStat,0,_gameConstants.maxReputation),
+                mealCount = Mathf.Clamp(this._mealCount,0,2)
             }
         };
     }

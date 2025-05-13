@@ -44,7 +44,6 @@ public class HomeSave
 
     //이벤트
     public int mealCount = 999;
-    public int houseworkCount = 999;
     
     //병합을 위한 메서드
     public void MergeWith(HomeSave other)
@@ -56,7 +55,6 @@ public class HomeSave
         if (other.health < 999) health = other.health;
         if (other.reputation < 999) reputation = other.reputation;
         if (other.mealCount < 999) mealCount = other.mealCount;
-        if (other.houseworkCount < 999) houseworkCount = other.houseworkCount;
     }
 }
 
@@ -66,4 +64,28 @@ public class Save
 {
     public HomeSave homeSave;
     public DungeonSave dungeonSave;
+
+    public Save InitSave()
+    {
+        return new Save
+        {
+            homeSave = new HomeSave
+            {
+                currentDay = 1,
+                time = 8.0f,
+                health = 8.0f,
+                reputation = 2.0f,
+                mealCount = 0
+            },
+            dungeonSave = new DungeonSave
+            {
+                attackPowerLevel = 1,
+                attackSpeedLevel = 1,
+                heartLevel = 1,
+                moveSpeedLevel = 1,
+                dashCoolDownLevel = 1,
+                stageLevel = 1
+            }
+        };
+    }
 }

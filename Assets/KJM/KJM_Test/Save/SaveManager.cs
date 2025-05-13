@@ -103,14 +103,7 @@ public class SaveManager : Singleton<SaveManager>
         {
             Debug.LogWarning("Backup 세이브 로드 실패: " + e.Message);
             
-            // 백업 시도
-            if (QuickSaveRaw.Exists(MainSaveFilePath))
-            {
-                Debug.LogWarning("메인 세이브로 복구 시도");
-                return LoadMain();
-            }
-
-            // 메인도 없을 경우 새 세이브 생성
+            // 새 세이브 생성
             Debug.LogError("세이브 전체 손상 → 새 세이브 생성");
             return CreateNewSave();
         }
@@ -182,6 +175,16 @@ public class SaveManager : Singleton<SaveManager>
         yield return null;
         Save();
         Debug.Log("자동저장 되었습니다.");
+    }
+
+    public void ResetSave()
+    {
+        Save fresh = new Save();
+        mainSave = fresh.InitSave();
+        backupSave = fresh.InitSave();
+        SaveMain();
+        SaveBackup();
+        saveDataController.ApplySaveData(fresh);
     }
 
     

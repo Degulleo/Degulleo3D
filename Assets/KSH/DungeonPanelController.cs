@@ -13,8 +13,7 @@ public class DungeonPanelController : MonoBehaviour
 
     private void Start()
     {
-        //int level = UpgradeManager.Instance.upgradeStat.CurrentUpgradeLevel(StatType.Heart); // 1~3
-        int level = 2;
+        int level = UpgradeManager.Instance.upgradeStat.CurrentUpgradeLevel(StatType.Heart); // 1~3
 
         visibleHeartCount = 3 + (level - 1); // level 1=3개, 2=4개, 3=5개
 

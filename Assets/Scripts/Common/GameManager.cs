@@ -114,12 +114,12 @@ public partial class GameManager : Singleton<GameManager>,ISaveable
     {
         if (save?.dungeonSave != null)
         {
-            stageLevel = save.dungeonSave.stageLevel;
+            stageLevel = Mathf.Clamp(save.dungeonSave.stageLevel,1,2);
         }
          
         if (save?.homeSave != null)
         {
-            currentDay = save.homeSave.currentDay;
+            currentDay = Mathf.Clamp(save.homeSave.currentDay,1,maxDays);
         }
     }
 
@@ -129,12 +129,12 @@ public partial class GameManager : Singleton<GameManager>,ISaveable
         {
             dungeonSave = new DungeonSave()
             {
-                stageLevel = this.stageLevel,
+                stageLevel = Mathf.Clamp(this.stageLevel,1,2),
             },
              
             homeSave = new HomeSave
             {
-                currentDay = this.currentDay,
+                currentDay =  Mathf.Clamp(this.currentDay,1,maxDays),
             }
         };
     }

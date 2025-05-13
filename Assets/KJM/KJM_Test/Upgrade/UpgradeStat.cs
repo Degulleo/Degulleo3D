@@ -92,11 +92,11 @@ public class UpgradeStat : MonoBehaviour, ISaveable
         {
             dungeonSave = new DungeonSave
             {
-                attackPowerLevel = levels[StatType.AttackPower],
-                attackSpeedLevel = levels[StatType.AttackSpeed],
-                moveSpeedLevel = levels[StatType.MoveSpeed],
-                dashCoolDownLevel = levels[StatType.DashCoolDown],
-                heartLevel = levels[StatType.Heart]
+                attackPowerLevel = Mathf.Clamp(levels[StatType.AttackPower],1, DEFAULT_MAX),
+                attackSpeedLevel = Mathf.Clamp(levels[StatType.AttackSpeed],1, DEFAULT_MAX),
+                moveSpeedLevel = Mathf.Clamp(levels[StatType.MoveSpeed],1, DEFAULT_MAX),
+                dashCoolDownLevel = Mathf.Clamp(levels[StatType.DashCoolDown],1, DEFAULT_MAX),
+                heartLevel = Mathf.Clamp(levels[StatType.Heart],1, MAX_HEART)
             }
         };
     }
@@ -109,11 +109,12 @@ public class UpgradeStat : MonoBehaviour, ISaveable
     {
         if (save?.dungeonSave == null) return;
 
-        levels[StatType.AttackPower] = save.dungeonSave.attackPowerLevel;
-        levels[StatType.AttackSpeed] = save.dungeonSave.attackSpeedLevel;
-        levels[StatType.MoveSpeed] = save.dungeonSave.moveSpeedLevel;
-        levels[StatType.DashCoolDown] = save.dungeonSave.dashCoolDownLevel;
-        levels[StatType.Heart] = save.dungeonSave.heartLevel;
+        levels[StatType.AttackPower] = Mathf.Clamp(save.dungeonSave.attackPowerLevel,1, DEFAULT_MAX);
+        levels[StatType.AttackSpeed] = Mathf.Clamp(save.dungeonSave.attackSpeedLevel,1, DEFAULT_MAX);
+        levels[StatType.MoveSpeed] = Mathf.Clamp(save.dungeonSave.moveSpeedLevel,1, DEFAULT_MAX);
+        levels[StatType.DashCoolDown] = Mathf.Clamp(save.dungeonSave.dashCoolDownLevel,1, DEFAULT_MAX);
+        levels[StatType.Heart] = Mathf.Clamp(save.dungeonSave.heartLevel,1, MAX_HEART);
+
     }
 }
 
