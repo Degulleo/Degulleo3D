@@ -17,15 +17,27 @@ public class InteractionAnimationPanelController : MonoBehaviour
     private Coroutine _textAnimCoroutine;
     private Coroutine _autoHideCoroutine;
     private Canvas _parentCanvas;
+    
+    private bool _isAbsenceToday = false;
 
     public void SetDoingText(string text)
     {
         doingText.text = text;
     }
 
+    public bool IsPanelActive()
+    {
+        return panel.activeSelf;
+    }
+
     public void ShowAnimationPanel(ActionType actionType, string animationText)
     {
         PlayerStats.Instance.HideBubble();
+
+        if (actionType == ActionType.Sleep && !PlayerStats.Instance.HasWorkedToday) // 결근
+        {
+            _isAbsenceToday = true;
+        }
         
         // 1) 패널 활성화
         panel.SetActive(true);
@@ -111,6 +123,12 @@ public class InteractionAnimationPanelController : MonoBehaviour
         {
             StopCoroutine(_autoHideCoroutine);
             _autoHideCoroutine = null;
+        }
+
+        if (_isAbsenceToday) // 결근한 경우
+        {
+            PlayerStats.Instance.PerformAbsent();
+            return;
         }
         
         // 패널 닫히고 결근 체크, 상호작용 패널과 결근 엔딩 채팅창이 겹치지 않기 위함

@@ -10,9 +10,9 @@ public class DungeonPanelController : MonoBehaviour
     [SerializeField] private Image[] _playerHealthImages; // color 값 white / black 로 조정
     private int _countHealth = 0;
 
-    public void SetBossHealthBar(float hp) // hp: 0~100
+    public void SetBossHealthBar(float hp) // hp: 0~300
     {
-        float normalizedHp = hp / 100f; // 0~1 사이 값으로 조정
+        float normalizedHp = hp / 300f; // 0~1 사이 값으로 조정
         _bossHealthBar.value = normalizedHp;
     }
 

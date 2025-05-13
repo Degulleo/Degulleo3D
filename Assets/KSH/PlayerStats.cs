@@ -41,14 +41,19 @@ public class PlayerStats : MonoBehaviour
     
     // 결근 이벤트 관련 변수
     private bool _hasWorkedToday = false;
+    public bool HasWorkedToday => _hasWorkedToday;
     private bool _hasCheckedAbsenceToday = false; // 결근 체크, 하루에 결근 여러 번 체크 안하기 위함
     public event Action OnAbsent; // 결근 
     
     // 말풍선
-    private GameObject messagePanelInstance;
-    private SpeechBubbleFollower speechBubbleFollower;
-    private bool isActiveBubble;
-    private bool hasShownBubbleToday; // 하루에 말풍선 하나만 표시하기
+    private GameObject _messagePanelInstance;
+    private SpeechBubbleFollower _speechBubbleFollower;
+    private bool _isActiveBubble;
+    private bool _hasShownBubbleToday; // 하루에 말풍선 하나만 표시하기
+
+    private int _mealCount;
+    public int MealCount => _mealCount;
+    private const int MAX_MEAL_COUNT = 2; // 하루 2회 제한
     
     private void Awake()
     {
@@ -77,6 +82,7 @@ public class PlayerStats : MonoBehaviour
         CheckBubble();
         
         SceneManager.sceneLoaded += OnSceneLoaded; // 씬 전환 이벤트
+        _mealCount = 0; // 식사 횟수 0회
     }
     
     #region 말풍선(Bubble) 관련
@@ -96,10 +102,10 @@ public class PlayerStats : MonoBehaviour
     
     private void LoadMessagePanel()
     {
-        if (messagePanelInstance != null) // 기존 패널 파괴
+        if (_messagePanelInstance != null) // 기존 패널 파괴
         {
-            Destroy(messagePanelInstance);
-            messagePanelInstance = null;
+            Destroy(_messagePanelInstance);
+            _messagePanelInstance = null;
         }
         
         GameObject messagePanelPrefab = Resources.Load<GameObject>("Prefabs/MessagePanel");
@@ -108,49 +114,57 @@ public class PlayerStats : MonoBehaviour
         {
             Canvas canvas = FindObjectOfType<Canvas>();
             
-            messagePanelInstance = Instantiate(messagePanelPrefab, canvas.transform);
-            speechBubbleFollower = messagePanelInstance.GetComponent<SpeechBubbleFollower>();
-            speechBubbleFollower.SetPlayerTransform();
+            _messagePanelInstance = Instantiate(messagePanelPrefab, canvas.transform);
+            _speechBubbleFollower = _messagePanelInstance.GetComponent<SpeechBubbleFollower>();
+            _speechBubbleFollower.SetPlayerTransform();
         
-            if (speechBubbleFollower != null)
+            if (_speechBubbleFollower != null)
             {
-                isActiveBubble = false;
-                hasShownBubbleToday = false;
-                speechBubbleFollower.HideMessage();
+                _isActiveBubble = false;
+                _hasShownBubbleToday = false;
+                _speechBubbleFollower.HideMessage();
             }
         }
     }
     
     private void CheckBubble()
     {
-        if (isActiveBubble)
+        if (_isActiveBubble)
         {
-            isActiveBubble = false;
+            _isActiveBubble = false;
             HideBubble();
         }
         
-        if (TimeStat >= 8.0f && TimeStat < 9.0f && !isActiveBubble && !hasShownBubbleToday)
+        if (TimeStat >= 8.0f && TimeStat < 9.0f && !_isActiveBubble && !_hasShownBubbleToday)
         {
-            hasShownBubbleToday = true;
-            isActiveBubble = true;
+            _hasShownBubbleToday = true;
+            _isActiveBubble = true;
             ShowBubble();
         }
     }
 
+    private InteractionAnimationPanelController _interactionAnimation;
+    public void SetInteractionPanelController(InteractionAnimationPanelController panelController)
+    {
+        _interactionAnimation = panelController;
+    }
+
     public void ShowBubble()
     {
-        if(isActiveBubble)
-            speechBubbleFollower.ShowMessage();
+        if (_interactionAnimation.IsPanelActive()) return;
+        
+        if(_isActiveBubble)
+            _speechBubbleFollower.ShowMessage();
     }
 
     public void HideBubble()
     {
-        speechBubbleFollower.HideMessage();
+        _speechBubbleFollower.HideMessage();
     }
 
     public void ShowAndHideBubble(string text)
     {
-        speechBubbleFollower.ShowAndHide(text);
+        _speechBubbleFollower.ShowAndHide(text);
     }
 
     #endregion
@@ -172,12 +186,16 @@ public class PlayerStats : MonoBehaviour
         // 9시가 지났는데 출근하지 않은 경우
         if (TimeStat >= 9.0f && !_hasWorkedToday)
         {
-            _hasCheckedAbsenceToday = true; // 결근 체크 완료 표시
-            OnAbsent?.Invoke();
-
-            PerformAction(ActionType.Absence); // 평판 -3
-            Debug.Log("결근 처리: 평판 감소" + ReputationStat);
+            PerformAbsent();
         }
+    }
+
+    public void PerformAbsent() // 강제 결근 이벤트
+    {
+        _hasCheckedAbsenceToday = true; // 결근 체크 완료 표시
+        OnAbsent?.Invoke();
+
+        PerformAction(ActionType.Absence); // 평판 -3
     }
     
     // 행동 처리 메서드
@@ -200,6 +218,16 @@ public class PlayerStats : MonoBehaviour
             _hasWorkedToday = true;
             OnWorked?.Invoke();
         }
+
+        if (actionType == ActionType.Eat)
+        {
+            _mealCount++;
+        }
+    }
+
+    public bool CanEat()
+    {
+        return _mealCount < MAX_MEAL_COUNT; // 식사 횟수 0,1 일 때만 true
     }
 
     // 출근 가능 여부 확인 메서드
@@ -271,7 +299,10 @@ public class PlayerStats : MonoBehaviour
             // 결근 관련 변수 초기화
             _hasWorkedToday = false;
             _hasCheckedAbsenceToday = false;
-            hasShownBubbleToday = false;
+            _hasShownBubbleToday = false;
+
+            // 식사 횟수 초기화
+            _mealCount = 0;
             
             OnDayEnded?.Invoke();
         }
@@ -302,7 +333,7 @@ public class PlayerStats : MonoBehaviour
         {
             EndDay(time, actionType);
         }
-
+        
         CheckBubble();
     }
     
