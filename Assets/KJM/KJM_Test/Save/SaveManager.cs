@@ -112,7 +112,10 @@ public class SaveManager : Singleton<SaveManager>
     //더미 세이브 파일 생성
     private Save CreateNewSave()
     {
-        var fresh = saveDataController.GetSaveData();
+        Save fresh = new Save();
+        mainSave = fresh.InitSave();
+        backupSave = fresh.InitSave();
+
         SaveMain();
         SaveBackup();
         return fresh;
