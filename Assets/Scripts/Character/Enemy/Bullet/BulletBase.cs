@@ -26,6 +26,9 @@ public class BulletBase : MonoBehaviour
     // 내부용
     private Vector3 _direction = Vector3.forward;
     private float _timer;
+    private Vector3 _prevPosition;
+
+    [SerializeField] private LayerMask _targetLayer;
 
     public virtual void Initialize(BulletData bulletData)
     {
@@ -40,31 +43,41 @@ public class BulletBase : MonoBehaviour
         transform.rotation = Quaternion.LookRotation(_direction);
 
         _timer = 0f;
+        _prevPosition = transform.position;
     }
 
     private void Update()
     {
-        // 1) 이동
-        transform.position += _direction * (_speed * Time.deltaTime);
+        float moveDist = _speed * Time.deltaTime;
 
-        // 2) 수명 카운트
+        // 1) Raycast 충돌 검사
+        if (Physics.Raycast(_prevPosition, _direction, out RaycastHit hit, moveDist, _targetLayer))
+        {
+            // 닿은 지점으로 이동
+            transform.position = hit.point;
+            OnBulletHit(hit);
+            return;
+        }
+
+        // 2) 실제 이동
+        transform.position += _direction * moveDist;
+        _prevPosition = transform.position;
+
+        // 3) 수명 검사
         _timer += Time.deltaTime;
         if (_timer >= _lifeTime)
-        {
             DestroyBullet();
-        }
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnBulletHit(RaycastHit hit)
     {
-        // TODO: 주인공 캐릭터를 찾는 로직 추가 필요
-        // 주인공 스크립트를 찾아 처리할 것.
-        var character = other.GetComponent<CharacterBase>();
-        if (character != null)
+        PlayerController playerController = hit.transform.GetComponent<PlayerController>();
+        Debug.Log(hit.transform.name);
+        if (playerController != null)
         {
-            character.TakeDamage(_damage);
-            DestroyBullet();
+            playerController.TakeDamage(_damage);
         }
+        DestroyBullet();
     }
 
     protected virtual void DestroyBullet()
