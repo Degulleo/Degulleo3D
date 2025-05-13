@@ -11,6 +11,11 @@ public class SwitchingPanelController : MonoBehaviour
     [SerializeField] private GameObject Loading_UI;
     [SerializeField] TMP_Text Loading_text;
     
+    [Header("애니메이션")]
+    [SerializeField] private Image fillImage;
+    [SerializeField] private Image headCapImage;
+    [SerializeField] private Image tailCapImage;
+        
     private CanvasGroup canvasGroup;
 
     private void Awake()
@@ -44,6 +49,11 @@ public class SwitchingPanelController : MonoBehaviour
                 percentage = Mathf.Lerp(percentage, async.progress * 100f, past_time);
                 if(percentage >= 90) past_time = 0;
             }
+
+            fillImage.fillAmount = percentage * 0.01f;
+            headCapImage.transform.localRotation = 
+                Quaternion.Euler(new Vector3(0, 0, fillImage.fillAmount * -360));
+            
             Loading_text.text = percentage.ToString("0") + "%"; //로딩 퍼센트 표기
         }
     }
