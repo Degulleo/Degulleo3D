@@ -88,6 +88,8 @@ public class InteractionAnimationPanelController : MonoBehaviour
             }
             yield return null;
         }
+        //로테이션 초기화
+        doingImage.rectTransform.localRotation = Quaternion.identity;
 
         GameManager.Instance.StopInteractionSound(actionType);
         //패널 닫고 애니메이션 null처리
