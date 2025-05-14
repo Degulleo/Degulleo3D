@@ -13,6 +13,9 @@ public partial class GameManager : Singleton<GameManager>,ISaveable
     
     private int stageLevel = 1; // 스테이지 정보
     public int StageLevel => stageLevel;
+
+    private int tryStageCount = 0;
+    public int TryStageCount => tryStageCount;
     
     // 날짜 변경 이벤트, 추후에 UI 상의 날짜를 변경할 때 사용
     public event Action<int> OnDayChanged;
@@ -40,15 +43,24 @@ public partial class GameManager : Singleton<GameManager>,ISaveable
     
     public void StartNPCDialogue(GamePhase phase) // intro, gameplay, end 존재
     {
-        if(chatWindowController == null)
-            SetChatWindowController();
-        
-        chatWindowController.SetGamePhase(phase);
+        StartCoroutine(StartNPCDialogueCoroutine(phase));
     }
     
-    private void SetChatWindowController()
+    private IEnumerator StartNPCDialogueCoroutine(GamePhase phase)
     {
-        chatWindowController = FindObjectOfType<ChatWindowController>();
+        if (chatWindowController == null)
+        {
+            yield return new WaitForSeconds(0.5f); // 씬 전환 대기
+            chatWindowController = FindObjectOfType<ChatWindowController>();
+        }
+    
+        chatWindowController.SetGamePhase(phase);
+    }
+
+    public void DirectStartDialogue()
+    {
+        if (chatWindowController == null) chatWindowController = FindObjectOfType<ChatWindowController>();
+        chatWindowController.SetGamePhase(GamePhase.Gameplay);
     }
 
     #endregion
@@ -79,6 +91,7 @@ public partial class GameManager : Singleton<GameManager>,ISaveable
     
     public void ChangeToGameScene()
     {
+        tryStageCount++; // 던전 시도 횟수 증가
         SceneManager.LoadScene("ReDungeon"); // 던전 Scene
         HandleSceneAudio("Dungeon");
     }
@@ -87,6 +100,8 @@ public partial class GameManager : Singleton<GameManager>,ISaveable
     {
         SceneManager.LoadScene("ReHousing"); // Home Scene
         HandleSceneAudio("Housing");
+        
+        if (tryStageCount >= 3) FailEnd(); // 엔딩
     }
     
     // TODO: Open Setting Panel 등 Panel 처리

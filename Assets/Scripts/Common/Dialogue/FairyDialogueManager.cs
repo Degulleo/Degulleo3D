@@ -90,7 +90,11 @@ public class FairyDialogueManager
         else if (phase == GamePhase.ZeroEnd)
         {
             StartPhaseDialogue("zero");
-        }
+        } 
+        else if (phase == GamePhase.FailEnd)
+        {
+            StartPhaseDialogue("fail");
+        } 
     }
     
     // 단계별 시작 대화 찾기 및 시작

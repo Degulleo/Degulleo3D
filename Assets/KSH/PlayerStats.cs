@@ -50,6 +50,7 @@ public class PlayerStats : MonoBehaviour,ISaveable
     private SpeechBubbleFollower _speechBubbleFollower;
     private bool _isActiveBubble;
     private bool _hasShownBubbleToday; // 하루에 말풍선 하나만 표시하기
+    private InteractionAnimationPanelController _interactionAnimation; // 상호작용 패널 Active 여부 확인
 
     private int _mealCount;
     public int MealCount => _mealCount;
@@ -142,8 +143,7 @@ public class PlayerStats : MonoBehaviour,ISaveable
             ShowBubble();
         }
     }
-
-    private InteractionAnimationPanelController _interactionAnimation;
+    
     public void SetInteractionPanelController(InteractionAnimationPanelController panelController)
     {
         _interactionAnimation = panelController;
@@ -151,7 +151,7 @@ public class PlayerStats : MonoBehaviour,ISaveable
 
     public void ShowBubble()
     {
-        if (_interactionAnimation.IsPanelActive()) return;
+        if (_interactionAnimation != null && _interactionAnimation.IsPanelActive()) return;
         
         if(_isActiveBubble)
             _speechBubbleFollower.ShowMessage();
@@ -296,11 +296,6 @@ public class PlayerStats : MonoBehaviour,ISaveable
         // 하루가 실제로 종료된 경우에만 이벤트 발생
         if (isDayEnded)
         {
-            // 결근 관련 변수 초기화
-            _hasWorkedToday = false;
-            _hasCheckedAbsenceToday = false;
-            _hasShownBubbleToday = false;
-
             // 식사 횟수 초기화
             _mealCount = 0;
             
@@ -332,6 +327,13 @@ public class PlayerStats : MonoBehaviour,ISaveable
         if (TimeStat >= _gameConstants.maxTime)
         {
             EndDay(time, actionType);
+        }
+
+        if (TimeStat >= 8.0f && TimeStat < 9.0f)
+        {
+            _hasWorkedToday = false;
+            _hasCheckedAbsenceToday = false;
+            _hasShownBubbleToday = false;
         }
         
         CheckBubble();

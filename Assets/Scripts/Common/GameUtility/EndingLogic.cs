@@ -16,51 +16,24 @@ public partial class GameManager
     
     public void ClearStage()
     {
+        tryStageCount = 0; // 시도 횟수 초기화
         stageLevel++;
     }
 
-    private void ZeroReputationEnd()
+    private void ZeroReputationEnd() // 평판 0 엔딩
     {
-        // npc와의 대화 출력, Phase = zero
         StartNPCDialogue(GamePhase.ZeroEnd);
     }
+
+    private void FailEnd() // 같은 스테이지 3회 도전 실패 엔딩
+    {
+        StartNPCDialogue(GamePhase.FailEnd);
+    }
     
-    // 엔딩 관련 메서드. 7일차에 실행
+    // 회고 엔딩. 7일차에 실행
     private void TriggerTimeEnding()
     {
         // npc와의 마지막 대화 출력
         StartNPCDialogue(GamePhase.End);
-        
-        // 플레이어 상태에 따라 엔딩 판별
-        // EndingType endingType = DetermineEnding();
-        
-        // 엔딩 타입에 따라 다른 씬이나 UI 표시
-        /*switch (endingType)
-        {
-            case EndingType.Normal:
-                Debug.Log("던전 공략 성공");
-                // TODO: 엔딩 관련 패널 띄우기
-                break;
-            case EndingType.Bad:
-                Debug.Log("던전 공략 실패");
-                
-                break;
-            case EndingType.Happy:
-                Debug.Log("던전 공략 성공과 훌륭한 평판 작");
-                
-                break;
-        }*/
-    }
-    
-    // 던전 스테이지와 평판 수치로 엔딩 판별
-    private EndingType DetermineEnding()
-    {
-        if (stageLevel < GameConstants.maxStage) // 현재 스테이지 1 혹은 2
-            return EndingType.Bad;
-
-        if (PlayerStats.Instance.ReputationStat >= happyEndReputation) // 평판이 일정 수치 이상
-            return EndingType.Happy;
-        
-        return EndingType.Normal;
     }
 }
