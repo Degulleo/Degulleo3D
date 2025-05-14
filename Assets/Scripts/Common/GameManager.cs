@@ -43,15 +43,18 @@ public partial class GameManager : Singleton<GameManager>
     
     public void StartNPCDialogue(GamePhase phase) // intro, gameplay, end 존재
     {
-        if(chatWindowController == null)
-            SetChatWindowController();
-        
-        chatWindowController.SetGamePhase(phase);
+        StartCoroutine(StartNPCDialogueCoroutine(phase));
     }
     
-    private void SetChatWindowController()
+    private IEnumerator StartNPCDialogueCoroutine(GamePhase phase)
     {
-        chatWindowController = FindObjectOfType<ChatWindowController>();
+        if (chatWindowController == null)
+        {
+            yield return new WaitForSeconds(0.5f); // 씬 전환 대기
+            chatWindowController = FindObjectOfType<ChatWindowController>();
+        }
+    
+        chatWindowController.SetGamePhase(phase);
     }
 
     #endregion
@@ -90,13 +93,9 @@ public partial class GameManager : Singleton<GameManager>
     public void ChangeToHomeScene()
     {
         SceneManager.LoadScene("ReHousing"); // Home Scene
-
-        if (tryStageCount >= 3) // 엔딩
-        {
-            FailEnd();
-        }
-        
         HandleSceneAudio("Housing");
+        
+        if (tryStageCount >= 3) FailEnd(); // 엔딩
     }
     
     // TODO: Open Setting Panel 등 Panel 처리

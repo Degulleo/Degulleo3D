@@ -296,11 +296,6 @@ public class PlayerStats : MonoBehaviour
         // 하루가 실제로 종료된 경우에만 이벤트 발생
         if (isDayEnded)
         {
-            // 결근 관련 변수 초기화
-            _hasWorkedToday = false;
-            _hasCheckedAbsenceToday = false;
-            _hasShownBubbleToday = false;
-
             // 식사 횟수 초기화
             _mealCount = 0;
             
@@ -332,6 +327,13 @@ public class PlayerStats : MonoBehaviour
         if (TimeStat >= _gameConstants.maxTime)
         {
             EndDay(time, actionType);
+        }
+
+        if (TimeStat >= 8.0f && TimeStat < 9.0f)
+        {
+            _hasWorkedToday = false;
+            _hasCheckedAbsenceToday = false;
+            _hasShownBubbleToday = false;
         }
         
         CheckBubble();
