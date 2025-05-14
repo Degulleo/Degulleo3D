@@ -39,6 +39,11 @@ public class PlayerStats : MonoBehaviour,ISaveable
     
     public static PlayerStats Instance;
     
+    private float additionalMaxHealth = 0f;
+    public float MaxHealth => _gameConstants.maxHealth + additionalMaxHealth;
+    
+    public ActionType LastAction { get; private set; }
+    
     // 결근 이벤트 관련 변수
     private bool _hasWorkedToday = false;
     public bool HasWorkedToday => _hasWorkedToday;
@@ -203,16 +208,29 @@ public class PlayerStats : MonoBehaviour,ISaveable
     {
         // 액션에 따른 스탯 소모 값 가져오기
         ActionEffect effect = _valueByAction.GetActionEffect(actionType);
-    
-        // 스탯 변경 적용
+        LastAction = actionType;
+        // 선 처리: 특수 보상 먼저 (야근, 회식)
+        if (actionType == ActionType.OvertimeWork)
+        {
+            additionalMaxHealth += 1f;
+        }
+        else if (actionType == ActionType.TeamDinner)
+        {
+            ModifyReputation(1f);
+        }
+
+        // 순수 스탯 변경 적용
         ModifyTime(effect.timeChange, actionType);
         ModifyHealth(effect.healthChange);
-        ModifyReputation(effect.reputationChange);
-        
-        // 스탯 변경 이벤트 (UI 업데이트용)
+        if (Mathf.Abs(effect.reputationChange) > 0.01f)
+        {
+            ModifyReputation(effect.reputationChange);
+        }
+
+        // UI 업데이트용
         OnStatsChanged?.Invoke(new StatsChangeData(TimeStat, HealthStat, ReputationStat));
 
-        // 스탯 - 시간이 변경된 이후 퇴근 이벤트 발생
+        // 출근 후 퇴근 이벤트 발생
         if (actionType == ActionType.Work)
         {
             _hasWorkedToday = true;
@@ -223,7 +241,15 @@ public class PlayerStats : MonoBehaviour,ISaveable
         {
             _mealCount++;
         }
+
+        // 다음 날로 넘기기 처리
+        bool shouldForceEndDay = actionType == ActionType.OvertimeWork || actionType == ActionType.TeamDinner;
+        if (shouldForceEndDay || TimeStat >= _gameConstants.maxTime)
+        {
+            EndDay(effect.timeChange, actionType);
+        }
     }
+
 
     public bool CanEat()
     {
@@ -245,7 +271,7 @@ public class PlayerStats : MonoBehaviour,ISaveable
         bool isDayEnded = false;
 
         // 수면 행동 처리
-        if (actionType == ActionType.Sleep || actionType == ActionType.TeamDinner) // 다음 날 오전 8시 기상
+        if (actionType == ActionType.Sleep || actionType == ActionType.TeamDinner || actionType == ActionType.OvertimeWork) // 다음 날 오전 8시 기상
         {
             // 다음 날 오전 8시 - 현재 시간 값
             float nowTime = TimeStat - time;
@@ -356,9 +382,9 @@ public class PlayerStats : MonoBehaviour,ISaveable
             Exhaustion?.Invoke();
         }
 
-        if (HealthStat > _gameConstants.maxHealth)
+        if (HealthStat > MaxHealth)
         {
-            HealthStat = _gameConstants.maxHealth;
+            HealthStat = MaxHealth;
         }
     }
 

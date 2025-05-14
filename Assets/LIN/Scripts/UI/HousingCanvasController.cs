@@ -125,6 +125,43 @@ public class HousingCanvasController : MonoBehaviour
 
         _autoHideCoroutine = StartCoroutine(AutoHideSuddenImage(afterWorkEventType));
     }
+    
+    public void ShowSuddenEventImageWithCallback(AfterWorkEventType afterWorkEventType, Action onComplete)
+    {
+        if (_autoHideCoroutine != null)
+            StopCoroutine(_autoHideCoroutine);
+
+        switch (afterWorkEventType)
+        {
+            case AfterWorkEventType.OvertimeWork:
+                suddenEventImages[0].SetActive(true);
+                break;
+            case AfterWorkEventType.TeamGathering:
+                suddenEventImages[1].SetActive(true);
+                break;
+        }
+
+        _autoHideCoroutine = StartCoroutine(AutoHideSuddenImageWithCallback(afterWorkEventType, onComplete));
+    }
+    
+    private IEnumerator AutoHideSuddenImageWithCallback(AfterWorkEventType type, Action onComplete)
+    {
+        float startTime = Time.time;
+        while (Time.time - startTime < HousingConstants.SUDDENEVENT_IAMGE_SHOW_TIME)
+        {
+            if (Input.touchCount > 0 || Input.GetMouseButtonDown(0))
+                break;
+
+            yield return null;
+        }
+
+        HideSuddenEventImage();
+        HideSuddenEventPanel();
+        GameManager.Instance.StopSuddenEventSound(type);
+
+        _autoHideCoroutine = null;
+        onComplete?.Invoke();
+    }
 
     public void HideSuddenEventImage()
     {

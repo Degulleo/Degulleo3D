@@ -137,11 +137,19 @@ public class InteractionController : MonoBehaviour
                 PlayerStats.Instance.PerformAction(ActionType.TeamDinner);
             }
             
-            housingCanvasController.ShowSuddenEventImage(afterWorkEventType);
             GameManager.Instance.PlaySuddenEventSound(afterWorkEventType);
+            // 야근 or 회식 돌발 이벤트 실행 시
+            housingCanvasController.ShowSuddenEventImageWithCallback(afterWorkEventType, () =>
+            {
+                // 이미지 다 보여진 후 실행
+                interactionAnimationPanelController.ShowAnimationPanel(
+                    ActionType.Sleep,
+                    "너무 피곤해서 그대로 잠들어 버렸다..."
+                );
+            });
         });
     }
-
+    
     #endregion
 
 }
