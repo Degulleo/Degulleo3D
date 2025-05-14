@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using UnityEditor.TextCore.Text;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public enum PlayerState { None, Idle, Move, Win, Hit, Dead }
 
@@ -17,6 +18,7 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
     [SerializeField] private GameObject normalModel; // char_body : 일상복
     [SerializeField] private GameObject battleModel; // warrior_1 : 전투복
     [SerializeField] private Transform dashEffectAnchor; // 대시 이펙트 위치
+    [SerializeField] private Image dashCooldownFillImage;   //대시 쿨다운 이미지
 
     // 내부에서만 사용하는 변수
     private PlayerHitEffectController hitEffectController;
@@ -108,7 +110,16 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         
         //대시 쿨타임 진행
         if (dashCooldownTimer > 0f)
+        {
             dashCooldownTimer -= Time.deltaTime;
+            if(dashCooldownFillImage != null)
+                dashCooldownFillImage.fillAmount = DashCooldownRatio;
+        }
+        else
+        {
+            if(dashCooldownFillImage != null)
+                dashCooldownFillImage.fillAmount = 0f;
+        }
         
         // Hit 상태거나 게임 끝났을 땐 땐 입력 무시
         if (CurrentState == PlayerState.Hit || CurrentState == PlayerState.Dead || CurrentState == PlayerState.Win)

@@ -87,7 +87,6 @@ public class UpgradeStat : MonoBehaviour, ISaveable
     /// <returns></returns>
     public Save ExtractSaveData()
     {
-        Debug.Log("UpgradeStat extracting save data");
         return new Save
         {
             dungeonSave = new DungeonSave

@@ -5,6 +5,7 @@ using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class InteractionAnimationPanelController : MonoBehaviour
 {
@@ -108,6 +109,16 @@ public class InteractionAnimationPanelController : MonoBehaviour
         //패널 닫고 애니메이션 null처리
         HidePanel();
         _autoHideCoroutine = null;
+        
+        if (actionType == ActionType.Housework)
+        {
+            var chance = 0.7f;
+
+            if (Random.value < chance)
+            {
+                UpgradeManager.Instance.StartUpgradeInHome();
+            }
+        }
     }
     
     private void HidePanel()

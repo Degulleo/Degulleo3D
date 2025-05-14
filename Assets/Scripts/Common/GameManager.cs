@@ -133,6 +133,7 @@ public partial class GameManager : Singleton<GameManager>,ISaveable
         if (save?.dungeonSave != null)
         {
             stageLevel = Mathf.Clamp(save.dungeonSave.stageLevel,1,2);
+            tryStageCount = Mathf.Clamp(save.dungeonSave.tryStageCount,0,3);
         }
          
         if (save?.homeSave != null)
@@ -148,6 +149,7 @@ public partial class GameManager : Singleton<GameManager>,ISaveable
             dungeonSave = new DungeonSave()
             {
                 stageLevel = Mathf.Clamp(this.stageLevel,1,2),
+                tryStageCount = Mathf.Clamp(this.tryStageCount,0,3),
             },
              
             homeSave = new HomeSave

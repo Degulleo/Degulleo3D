@@ -46,7 +46,7 @@ public class DungeonPanelController : MonoBehaviour
         // out of index error 방지
         if (_countHealth >= visibleHeartCount) return false;
         
-        _playerHealthImages[_countHealth].color = Color.black;
+        _playerHealthImages[visibleHeartCount-(_countHealth+1)].color = Color.black;
         _countHealth++;
         return _countHealth < visibleHeartCount;
     }
