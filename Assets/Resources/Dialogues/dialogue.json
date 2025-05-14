@@ -46,6 +46,97 @@
       "id": "player_intro_3",
       "name": "주인공",
       "text": "할 수 밖에 없잖아...!!",
+      "nextId": "fairy_intro_5",
+      "phase": "intro"
+    },
+    {
+      "id": "fairy_intro_5",
+      "name": "냉장고 요정",
+      "text": "아, 추가로 설명을 하자면!",
+      "nextId": "player_intro_4",
+      "phase": "intro"
+    },
+    {
+      "id": "player_intro_4",
+      "name": "냉장고 요정",
+      "text": "시간 아래의 바가 보이지? 상단은 너의 회사 평판, 하단은 체력 바야.",
+      "nextId": "fairy_intro_6",
+      "phase": "intro"
+    },
+    {
+      "id": "fairy_intro_6",
+      "name": "냉장고 요정",
+      "text": "던전은 냉장고를 통해 진입할 수 있어. 일주일 내에 스테이지 2개를 깨주기 바라!",
+      "nextId": "player_intro_5",
+      "phase": "intro"
+    },
+    {
+      "id": "player_intro_5",
+      "name": "주인공",
+      "text": "(앞으로 중고 거래를 안해야겠어.) 그래. 그런데 평판이나 체력이 0이 되면 뭐가... 돼?",
+      "nextId": "fairy_intro_7",
+      "phase": "intro"
+    },
+    {
+      "id": "fairy_intro_7",
+      "name": "냉장고 요정",
+      "text": "평판이 0이 되면 굉장한 일이 벌어지지...",
+      "nextId": "player_intro_6",
+      "phase": "intro"
+    },
+    {
+      "id": "player_intro_6",
+      "name": "주인공",
+      "text": "설마 용사로 전직-",
+      "nextId": "fairy_intro_8",
+      "phase": "intro"
+    },
+    {
+      "id": "fairy_intro_8",
+      "name": "냉장고 요정",
+      "text": "너가 회사에서 짤려.",
+      "nextId": "player_intro_7",
+      "phase": "intro"
+    },
+    {
+      "id": "player_intro_7",
+      "name": "주인공",
+      "text": "...........?",
+      "nextId": "fairy_intro_9",
+      "phase": "intro"
+    },
+    {
+      "id": "fairy_intro_9",
+      "name": "냉장고 요정",
+      "text": "그리고 체력 0이 되면 지쳐서 기절할 거야.",
+      "nextId": "player_intro_8",
+      "phase": "intro"
+    },
+    {
+      "id": "player_intro_8",
+      "name": "주인공",
+      "text": "...........................",
+      "nextId": "fairy_intro_10",
+      "phase": "intro"
+    },
+    {
+      "id": "fairy_intro_10",
+      "name": "냉장고 요정",
+      "text": "관리를 잘 하는 게 좋겠지?",
+      "nextId": "player_intro_9",
+      "phase": "intro"
+    },
+    {
+      "id": "player_intro_9",
+      "name": "주인공",
+      "text": "이래서 감자 온도가 -99도, 아니 알려줘서 참으로 고맙다.",
+      "nextId": "fairy_intro_11",
+      "phase": "intro"
+    },
+    {
+      "id": "fairy_intro_11",
+      "name": "냉장고 요정",
+      "text": "별 말씀을!",
       "nextId": "",
       "phase": "intro"
     },
@@ -73,14 +164,14 @@
     {
       "id": "fairy_gameplay_3",
       "name": "냉장고 요정",
-      "text": "던전은 총 2스테이지까지 있으며 모두 클리어한다면...",
+      "text": "같은 스테이지를 3번이나 시도하면... 굉장한 일이 벌어지지.",
       "nextId": "player_gameplay_3",
       "phase": "gameplay"
     },
     {
       "id": "player_gameplay_3",
       "name": "주인공",
-      "text": "한다면... 뭐지?",
+      "text": "(안좋은 일이겠지)",
       "nextId": "",
       "phase": "gameplay"
     },
@@ -195,6 +286,69 @@
       "text": "그 날 서울시 어느 동네에서, 한 34세의 남성의 절규 소리가 울려퍼졌다.",
       "nextId": "",
       "phase": "zero"
+    },
+    {
+      "id": "fairy_fail_1",
+      "name": "냉장고 요정",
+      "text": "...이야. \n같은 스테이지를 몇 번이나 도전하는 거야?",
+      "nextId": "player_fail_1",
+      "phase": "fail"
+    },
+    {
+      "id": "player_fail_1",
+      "name": "주인공",
+      "text": "못 할 수도 있지...",
+      "nextId": "fairy_fail_2",
+      "phase": "fail"
+    },
+    {
+      "id": "fairy_fail_2",
+      "name": "냉장고 요정",
+      "text": "음, 축하해!",
+      "nextId": "player_fail_2",
+      "phase": "fail"
+    },
+    {
+      "id": "player_fail_2",
+      "name": "주인공",
+      "text": "(불안하다...)",
+      "nextId": "fairy_fail_3",
+      "phase": "fail"
+    },
+    {
+      "id": "fairy_fail_3",
+      "name": "냉장고 요정",
+      "text": "던전이 제대로 잠재워지지 않아서 곧 세상은 멸망할 거야!",
+      "nextId": "player_fail_4",
+      "phase": "fail"
+    },
+    {
+      "id": "player_fail_4",
+      "name": "주인공",
+      "text": "뭐?????",
+      "nextId": "fairy_fail_4",
+      "phase": "fail"
+    },
+    {
+      "id": "fairy_fail_4",
+      "name": "냉장고 요정",
+      "text": "출근하기 싫다고 했지? 이제 안해도 돼!",
+      "nextId": "player_fail_5",
+      "phase": "fail"
+    },
+    {
+      "id": "player_fail_5",
+      "name": "주인공",
+      "text": "안돼!!!!!!",
+      "nextId": "fairy_fail_5",
+      "phase": "fail"
+    },
+    {
+      "id": "fairy_fail_5",
+      "name": " ",
+      "text": "그렇게 세상은 멸망했다. 끝.",
+      "nextId": "",
+      "phase": "fail"
     }
   ]
 }
