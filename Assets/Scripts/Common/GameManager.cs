@@ -13,6 +13,9 @@ public partial class GameManager : Singleton<GameManager>
     
     private int stageLevel = 1; // 스테이지 정보
     public int StageLevel => stageLevel;
+
+    private int tryStageCount = 0;
+    public int TryStageCount => tryStageCount;
     
     // 날짜 변경 이벤트, 추후에 UI 상의 날짜를 변경할 때 사용
     public event Action<int> OnDayChanged;
@@ -79,6 +82,7 @@ public partial class GameManager : Singleton<GameManager>
     
     public void ChangeToGameScene()
     {
+        tryStageCount++; // 던전 시도 횟수 증가
         SceneManager.LoadScene("ReDungeon"); // 던전 Scene
         HandleSceneAudio("Dungeon");
     }
@@ -86,6 +90,12 @@ public partial class GameManager : Singleton<GameManager>
     public void ChangeToHomeScene()
     {
         SceneManager.LoadScene("ReHousing"); // Home Scene
+
+        if (tryStageCount >= 3) // 엔딩
+        {
+            FailEnd();
+        }
+        
         HandleSceneAudio("Housing");
     }
     

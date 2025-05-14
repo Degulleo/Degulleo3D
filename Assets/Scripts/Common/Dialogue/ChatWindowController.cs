@@ -35,8 +35,9 @@ public enum GamePhase // 단계별로 출력되는 대화가 달라짐
 {
     Intro, // 인트로 설명문
     Gameplay, // 게임 진행 팁? 등
-    End, // 엔딩 대화
-    ZeroEnd
+    End, // 회고 엔딩
+    ZeroEnd, // 평판 0 엔딩
+    FailEnd // 같은 스테이지 3회 실패 엔딩
 }
 
 public class ChatWindowController : MonoBehaviour, IPointerClickHandler

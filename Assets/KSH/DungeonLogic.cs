@@ -15,10 +15,6 @@ public class DungeonLogic : MonoBehaviour
     
     private PlayerController _player;
     private EnemyController _enemy;
-    
-    // 던전 결과 이벤트
-    public event Action OnDungeonSuccess;
-    public event Action OnDungeonFailure;
 
     private void Awake()
     {
