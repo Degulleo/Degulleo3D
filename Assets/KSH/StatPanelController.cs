@@ -54,8 +54,8 @@ public class StatPanelController : MonoBehaviour
 
     private void SetStat(float time, float reputation, float health)
     {
-        healthBarImage.fillAmount = health / _gameConstants.maxHealth;
-        healthText.text = $"{health}/{_gameConstants.maxHealth}";
+        healthBarImage.fillAmount = health / PlayerStats.Instance.MaxHealth;
+        healthText.text = $"{health}/{PlayerStats.Instance.MaxHealth}";
         
         reputationBarImage.fillAmount = reputation / _gameConstants.maxReputation;
         reputationText.text = $"{reputation}/{_gameConstants.maxReputation}";

@@ -33,8 +33,9 @@ public class InteractionAnimationPanelController : MonoBehaviour
     public void ShowAnimationPanel(ActionType actionType, string animationText)
     {
         PlayerStats.Instance.HideBubble();
-
-        if (actionType == ActionType.Sleep && !PlayerStats.Instance.HasWorkedToday) // 결근
+        if (actionType == ActionType.Sleep && !PlayerStats.Instance.HasWorkedToday
+            && PlayerStats.Instance.LastAction != ActionType.TeamDinner
+            && PlayerStats.Instance.LastAction != ActionType.OvertimeWork) // 결근
         {
             _isAbsenceToday = true;
         }
