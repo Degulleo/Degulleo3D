@@ -51,6 +51,7 @@ public class PlayerStats : MonoBehaviour,ISaveable
     private bool _isActiveBubble;
     private bool _hasShownBubbleToday; // 하루에 말풍선 하나만 표시하기
     private InteractionAnimationPanelController _interactionAnimation; // 상호작용 패널 Active 여부 확인
+    private HousingCanvasController _housingCanvasController; // 돌발 패널 Active 여부 확인 
 
     private int _mealCount;
     public int MealCount => _mealCount;
@@ -150,9 +151,15 @@ public class PlayerStats : MonoBehaviour,ISaveable
         _interactionAnimation = panelController;
     }
 
+    public void SetHousingCanvasController(HousingCanvasController canvasController)
+    {
+        _housingCanvasController = canvasController;
+    }
+
     public void ShowBubble()
     {
         if (_interactionAnimation != null && _interactionAnimation.IsPanelActive()) return;
+        if (_housingCanvasController != null && _housingCanvasController.IsSuddenPanelActive()) return;
         
         if(_isActiveBubble)
             _speechBubbleFollower.ShowMessage();

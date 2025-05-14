@@ -19,6 +19,7 @@ public class InteractionController : MonoBehaviour
         PlayerStats.Instance.OnWorked -= SuddenAfterWorkEventHappen;
         PlayerStats.Instance.OnWorked += SuddenAfterWorkEventHappen;
         PlayerStats.Instance.SetInteractionPanelController(interactionAnimationPanelController);
+        PlayerStats.Instance.SetHousingCanvasController(housingCanvasController);
     }
     
     // 상호작용 가능한 사물 범위에 들어올 때
