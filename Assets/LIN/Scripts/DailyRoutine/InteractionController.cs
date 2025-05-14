@@ -28,7 +28,7 @@ public class InteractionController : MonoBehaviour
         {
             housingCanvasController.ShowNpcInteractionButton(() =>
             {
-                GameManager.Instance.StartNPCDialogue(GamePhase.Gameplay);
+                GameManager.Instance.DirectStartDialogue();
             });
         }
         

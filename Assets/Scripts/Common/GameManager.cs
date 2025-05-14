@@ -57,6 +57,12 @@ public partial class GameManager : Singleton<GameManager>
         chatWindowController.SetGamePhase(phase);
     }
 
+    public void DirectStartDialogue()
+    {
+        if (chatWindowController == null) chatWindowController = FindObjectOfType<ChatWindowController>();
+        chatWindowController.SetGamePhase(GamePhase.Gameplay);
+    }
+
     #endregion
     
     //일시 정지
