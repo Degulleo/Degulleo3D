@@ -31,19 +31,6 @@ public class HousingCanvasController : MonoBehaviour
         interactionButton.SetActive(false);
         suddenPanel.SetActive(false);
     }
-        
-    /// <summary>
-    /// 씬전환 로딩 패널 테스트용 코드.던전에서도 씬전환 할 때 해당 코드 사용하시면 됩니다.
-    /// </summary>
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            var _switchingPanel = Instantiate(switchingPanel,this.transform);
-            switchingPanelController = _switchingPanel.GetComponent<SwitchingPanelController>();
-            switchingPanelController.FadeAndSceneLoad("ReDungeon");
-        }
-    }
 
     #region NPC 상호 작용
 
