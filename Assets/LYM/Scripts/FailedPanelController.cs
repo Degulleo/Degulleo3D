@@ -11,24 +11,9 @@ public class FailedPanelController : PanelController, IPointerClickHandler
     [SerializeField] private CanvasGroup failedPanel;
     [SerializeField] private Image failedPanelArmImage;
     [SerializeField] private Image failedTextImage;
-
-    private Image _failedPanelBGImage;
-    public Action onCompleted;
+    [SerializeField] private Image failedPanelBGImage;
     
-    private void Awake()
-    {
-        base.Awake();
-        _failedPanelBGImage = GetComponent<Image>();
-    }
-
-    private void Start()
-    {
-        //임시 코드
-        Show(() =>
-        {
-            Debug.Log("OnCompleted");
-        });
-    }
+    public Action onCompleted;
 
     public void Show(Action onCompleted)
     {
@@ -39,7 +24,7 @@ public class FailedPanelController : PanelController, IPointerClickHandler
     
     private void Init()
     {
-        _failedPanelBGImage.DOFade(0, 0);
+        failedPanelBGImage.DOFade(0, 0);
         failedTextImage.DOFade(0, 0);
         failedTextImage.rectTransform.DOScale(0, 0);
         failedPanel.DOFade(0, 0);
@@ -49,7 +34,7 @@ public class FailedPanelController : PanelController, IPointerClickHandler
     private void FailedAnimation()
     {
         Sequence seq = DOTween.Sequence();
-        seq.Append(_failedPanelBGImage.DOFade(0.98f, 0.5f))
+        seq.Append(failedPanelBGImage.DOFade(0.98f, 0.5f))
             .Append(failedPanel.DOFade(1, 0.5f))
             .Append(failedPanelArmImage.rectTransform.DORotate(new Vector3(0, 0, 15), 0.3f))
             .Append(failedPanelArmImage.rectTransform.DORotate(Vector3.zero, 0.3f))
