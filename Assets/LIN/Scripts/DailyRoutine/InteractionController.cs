@@ -16,6 +16,7 @@ public class InteractionController : MonoBehaviour
     
     private void Start()
     {
+        PlayerStats.Instance.OnWorked -= SuddenAfterWorkEventHappen;
         PlayerStats.Instance.OnWorked += SuddenAfterWorkEventHappen;
         PlayerStats.Instance.SetInteractionPanelController(interactionAnimationPanelController);
     }

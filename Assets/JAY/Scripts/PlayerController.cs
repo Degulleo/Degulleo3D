@@ -61,6 +61,9 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
     public CharacterController CharacterController => _characterController;
     public bool IsBattle => _isBattle;
     public Transform DashEffectAnchor => dashEffectAnchor;
+    
+    [Header("대시, 어택 터치 연출용")]
+    [SerializeField] private DungeonPanelController dungeonPanelController;
 
     private void Awake()
     {
@@ -114,6 +117,7 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         // 대시 우선 입력 처리
         if (Input.GetKeyDown(KeyCode.Space))
         {
+            dungeonPanelController.DashTouchMotion();
             StartDashAction();
             return;
         }
@@ -122,6 +126,7 @@ public class PlayerController : CharacterBase, IObserver<GameObject>
         if (Input.GetKeyDown(KeyCode.X) && (_currentAction == null || !_currentAction.IsActive)
             && (CurrentState != PlayerState.Win && CurrentState != PlayerState.Dead)) 
         {
+            dungeonPanelController.AttackTouchMotion();
             GameManager.Instance.PlayPlayerAttackSound();
             StartAttackAction();
         }
