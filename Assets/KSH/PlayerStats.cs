@@ -237,13 +237,6 @@ public class PlayerStats : MonoBehaviour,ISaveable
         {
             _mealCount++;
         }
-
-        // 다음 날로 넘기기 처리
-        bool shouldForceEndDay = actionType == ActionType.OvertimeWork || actionType == ActionType.TeamDinner;
-        if (shouldForceEndDay || TimeStat >= _gameConstants.maxTime)
-        {
-            EndDay(effect.timeChange, actionType);
-        }
     }
 
 
