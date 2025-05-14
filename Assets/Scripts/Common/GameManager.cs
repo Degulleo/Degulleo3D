@@ -31,10 +31,6 @@ public partial class GameManager : Singleton<GameManager>,ISaveable
         // 오디오 초기화
         InitializeAudio();
         
-        // 이벤트 할당
-        PlayerStats.Instance.OnDayEnded += AdvanceDay; // 날짜 변경
-        PlayerStats.Instance.ZeroReputation += ZeroReputationEnd; // 평판 0 엔딩
-        
         //패널 매니저 생성
         panelManager = Instantiate(Resources.Load<GameObject>("Prefabs/PanelManager")).GetComponent<PanelManager>();
     }
@@ -74,6 +70,13 @@ public partial class GameManager : Singleton<GameManager>,ISaveable
     public void ResumeGame()
     {
         Time.timeScale = 1;
+    }
+    
+    // 이벤트 할당(PlayerStats Start에서 호출)
+    public void SetEvents()
+    {
+        PlayerStats.Instance.OnDayEnded += AdvanceDay; // 날짜 변경
+        PlayerStats.Instance.ZeroReputation += ZeroReputationEnd; // 평판 0 엔딩
     }
 
     // 날짜 진행

@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/KSH/Main.unity
+    guid: fe5619f467b6e0f42b57ee216ffdd7c7
+  - enabled: 1
     path: Assets/KSH/ReHousing.unity
     guid: b748e35b920bde64cbd6ffe5fdb43e23
   - enabled: 1

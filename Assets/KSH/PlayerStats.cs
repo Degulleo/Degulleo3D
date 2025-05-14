@@ -82,6 +82,7 @@ public class PlayerStats : MonoBehaviour,ISaveable
         LoadMessagePanel();
         CheckBubble();
         
+        GameManager.Instance.SetEvents();
         SceneManager.sceneLoaded += OnSceneLoaded; // 씬 전환 이벤트
         _mealCount = 0; // 식사 횟수 0회
     }
