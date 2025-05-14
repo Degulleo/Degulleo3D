@@ -41,7 +41,7 @@ public class ValueByAction
             { ActionType.Dungeon, new ActionEffect(+3.0f, -3.0f, 0) },
             { ActionType.Housework, new ActionEffect(+1.0f, -1.0f, +0.2f) },
             { ActionType.OvertimeWork, new ActionEffect(_gameConstants.forcedValue, -5.0f, +1.0f) },
-            { ActionType.TeamDinner, new ActionEffect(_gameConstants.forcedValue, _gameConstants.forcedValue, 0) }, // 수면 강제(8시 기상) 후 최대 체력
+            { ActionType.TeamDinner, new ActionEffect(_gameConstants.forcedValue, +8.0f, 0) }, // 수면 강제(8시 기상) 후 최대 체력
             { ActionType.Absence, new ActionEffect(0, 0, -3.0f) }
         };
     }
