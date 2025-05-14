@@ -218,10 +218,7 @@ public class PlayerStats : MonoBehaviour,ISaveable
         // 순수 스탯 변경 적용
         ModifyTime(effect.timeChange, actionType);
         ModifyHealth(effect.healthChange);
-        if (Mathf.Abs(effect.reputationChange) > 0.01f)
-        {
-            ModifyReputation(effect.reputationChange);
-        }
+        ModifyReputation(effect.reputationChange);
 
         // UI 업데이트용
         OnStatsChanged?.Invoke(new StatsChangeData(TimeStat, HealthStat, ReputationStat));
