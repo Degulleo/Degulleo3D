@@ -38,13 +38,13 @@ public class TestScript : MonoBehaviour,ISaveable
         // attackSpeedLevel = intValue;
         // heartLevel = intValue;
         // moveSpeedLevel = intValue;
-        stageLevel = intValue;
+        //stageLevel = intValue;
 
             
-        time = floatValue;
-        currentDay = intValue;
-        health = floatValue;
-        reputation = floatValue;
+        // time = floatValue;
+        // currentDay = intValue;
+        // health = floatValue;
+        // reputation = floatValue;
         mealCount = intValue;
         houseworkCount = intValue;
         
@@ -64,17 +64,17 @@ public class TestScript : MonoBehaviour,ISaveable
              // heartLevel = save.dungeonSave.heartLevel;
              // moveSpeedLevel = save.dungeonSave.moveSpeedLevel;
              // dashCoolDownLevel = save.dungeonSave.dashCoolDownLevel;
-             stageLevel = save.dungeonSave.stageLevel;
+             //stageLevel = save.dungeonSave.stageLevel;
          }
          
          if (save?.homeSave != null)
          {
-             time = save.homeSave.time;
-             currentDay = save.homeSave.currentDay;
-             health = save.homeSave.health;
-             reputation = save.homeSave.reputation;
-             mealCount = save.homeSave.mealCount;
-             houseworkCount = save.homeSave.houseworkCount;
+             // time = save.homeSave.time;
+             // currentDay = save.homeSave.currentDay;
+             // health = save.homeSave.health;
+             // reputation = save.homeSave.reputation;
+             //mealCount = save.homeSave.mealCount;
+             //houseworkCount = save.homeSave.houseworkCount;
              
              Debug.Log("ApplySaveData : " + reputation);
          }
@@ -95,18 +95,18 @@ public class TestScript : MonoBehaviour,ISaveable
                  // heartLevel = this.heartLevel,
                  // moveSpeedLevel = this.moveSpeedLevel,
                  // dashCoolDownLevel = this.dashCoolDownLevel,
-                 stageLevel = this.stageLevel,
+                 //stageLevel = this.stageLevel,
                  
              },
              
              homeSave = new HomeSave
              {
-                 time = this.time,
-                 currentDay = this.currentDay,
-                 health = this.health,
-                 reputation = this.reputation,
-                 mealCount = this.mealCount,
-                 houseworkCount = this.houseworkCount
+                 // time = this.time,
+                 // currentDay = this.currentDay,
+                 // health = this.health,
+                 // reputation = this.reputation,
+                 //mealCount = this.mealCount,
+                 //houseworkCount = this.houseworkCount
              }
          };
      }

@@ -35,7 +35,7 @@ public class PlayerActionAttack : IPlayerAction {
             comboQueued = true;
         }
 
-        if (comboTimer >= comboDuration) {
+        if (comboTimer >= comboDuration-player.attackSpeedLevel) {
             ProceedComboOrEnd();
         }
     }

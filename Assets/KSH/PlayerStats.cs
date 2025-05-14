@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
-public class PlayerStats : MonoBehaviour
+public class PlayerStats : MonoBehaviour,ISaveable
 {
     public class StatsChangeData // 변경된 스탯 데이터
     {
@@ -385,4 +385,29 @@ public class PlayerStats : MonoBehaviour
     }
     
     #endregion
+
+    public void ApplySaveData(Save save)
+    {
+        if (save?.homeSave != null)
+        {
+            TimeStat = Mathf.Clamp(save.homeSave.time, 0, _gameConstants.maxTime);
+            HealthStat = Mathf.Clamp(save.homeSave.health, 0, _gameConstants.maxHealth);
+            ReputationStat = Mathf.Clamp(save.homeSave.reputation, 0, _gameConstants.maxReputation);
+            _mealCount = Mathf.Clamp(save.homeSave.mealCount, 0, 2);
+        }
+    }
+
+    public Save ExtractSaveData()
+    {
+        return new Save
+        {
+            homeSave = new HomeSave
+            {
+                time = Mathf.Clamp(this.TimeStat,0,_gameConstants.maxTime),
+                health = Mathf.Clamp(this.HealthStat,0,_gameConstants.maxHealth),
+                reputation = Mathf.Clamp(this.ReputationStat,0,_gameConstants.maxReputation),
+                mealCount = Mathf.Clamp(this._mealCount,0,2)
+            }
+        };
+    }
 }
