@@ -46,6 +46,5 @@ public class ClearPanelController : PanelController, IPointerClickHandler
     {
         onCompleted?.Invoke();
         Hide();
-        UpgradeManager.Instance.StartUpgrade();
     }
 }

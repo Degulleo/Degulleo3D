@@ -112,7 +112,7 @@ public class DungeonLogic : MonoBehaviour
             var clearPanel = GameManager.Instance.PanelManager.GetPanel("ClearPanelBG").GetComponent<ClearPanelController>();
             clearPanel.Show(() =>
             {
-                //Todo: 클리어 패널 이후 진행할 행동
+                UpgradeManager.Instance.StartUpgrade();
             });
         }
     }
