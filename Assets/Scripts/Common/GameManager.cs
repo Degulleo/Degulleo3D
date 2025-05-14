@@ -26,6 +26,8 @@ public partial class GameManager : Singleton<GameManager>,ISaveable
     private PanelManager panelManager;
     public PanelManager PanelManager => panelManager;
     
+    private TutorialManager tutorialManager;
+    
     private void Start()
     {
         // 오디오 초기화
@@ -91,6 +93,11 @@ public partial class GameManager : Singleton<GameManager>,ISaveable
             TriggerTimeEnding();
         }
     }
+
+    public void ChangeToMainScene()
+    {
+        SceneManager.LoadScene("Main");
+    }
     
     public void ChangeToGameScene()
     {
@@ -99,12 +106,26 @@ public partial class GameManager : Singleton<GameManager>,ISaveable
         HandleSceneAudio("Dungeon");
     }
     
-    public void ChangeToHomeScene()
+    public void ChangeToHomeScene(bool isNewStart = false)
     {
         SceneManager.LoadScene("ReHousing"); // Home Scene
         HandleSceneAudio("Housing");
         
+        if(isNewStart) // 아예 메인에서 시작 시 튜토리얼 출력
+            StartNPCDialogue(GamePhase.Intro); // StartCoroutine(StartTutorialCoroutine());
+        
         if (tryStageCount >= 3) FailEnd(); // 엔딩
+    }
+    
+    public IEnumerator StartTutorialCoroutine()
+    {
+        yield return new WaitForSeconds(0.5f);
+        
+        if(tutorialManager == null)
+            tutorialManager = FindObjectOfType<TutorialManager>();
+        
+        PlayerStats.Instance.HideBubble();
+        tutorialManager.StartTutorial(() => PlayerStats.Instance.ShowBubble());
     }
     
     // TODO: Open Setting Panel 등 Panel 처리

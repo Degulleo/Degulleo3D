@@ -54,6 +54,8 @@ public class ChatWindowController : MonoBehaviour, IPointerClickHandler
     
     public delegate void OnComplete();
     public OnComplete onComplete;
+    private bool isEnded;
+    private bool isTuto;
     
     private FairyDialogueManager _dialogueManager;
     
@@ -65,18 +67,33 @@ public class ChatWindowController : MonoBehaviour, IPointerClickHandler
     
     private void Start()
     {
+        isEnded = false;
+        isTuto = false;
+        
         _dialogueManager = new FairyDialogueManager(this);
         
-        /*onComplete = () => {
-            // 대화문 종료 call back
-            Debug.Log("대화가 완료되었습니다.");
-        };*/
+        onComplete = () => {
+            if (isTuto)
+            {
+                isTuto = false;
+                StartCoroutine(GameManager.Instance.StartTutorialCoroutine());
+            }
+            
+            if (isEnded)
+                GameManager.Instance.ChangeToMainScene();
+        };
     }
 
     // 외부 호출용 함수 (대화 시작)
     public void SetGamePhase(GamePhase phase)
     {
         _dialogueManager.SetGamePhase(phase);
+
+        if (phase == GamePhase.End || phase == GamePhase.FailEnd || phase == GamePhase.ZeroEnd)
+            isEnded = true;
+        
+        if (phase == GamePhase.Intro)
+            isTuto = true;
 
         // Gameplay 상태라면 랜덤 대화 출력
         if (phase == GamePhase.Gameplay) _dialogueManager.ShowRandomGameplayDialogue();
@@ -139,7 +156,6 @@ public class ChatWindowController : MonoBehaviour, IPointerClickHandler
         if (_inputQueue.Count == 0)
         {
             HideWindow();
-            onComplete?.Invoke();
             return;
         }
         
@@ -200,6 +216,9 @@ public class ChatWindowController : MonoBehaviour, IPointerClickHandler
     //대화창 클릭 시 호출 함수
     public void OnPointerClick(PointerEventData eventData)
     {
+        if (!chatWindowObject.activeSelf) // 실제론 대화창이 off 상태인데 호출되는 상황 방지
+            return;
+        
         if (_typingCoroutine != null)
         {
             StopCoroutine(_typingCoroutine);

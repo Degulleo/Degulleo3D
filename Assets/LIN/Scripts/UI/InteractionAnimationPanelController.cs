@@ -90,7 +90,7 @@ public class InteractionAnimationPanelController : MonoBehaviour
     /// 패널이 2초후 자동으로 닫히거나 터치시 닫히도록 합니다.
     /// </summary>
     /// <returns></returns>
-    private IEnumerator AutoHidePanel(ActionType actionType)
+    private IEnumerator AutoHidePanel(ActionType actionType, bool isTutorial = false)
     {
         float startTime = Time.time;
         while (Time.time - startTime < animationDuration)
@@ -106,11 +106,11 @@ public class InteractionAnimationPanelController : MonoBehaviour
 
         GameManager.Instance.StopInteractionSound(actionType);
         //패널 닫고 애니메이션 null처리
-        HidePanel();
+        HidePanel(isTutorial);
         _autoHideCoroutine = null;
     }
     
-    private void HidePanel()
+    private void HidePanel(bool isTutorial = false)
     {
         panel.SetActive(false);
 
@@ -125,16 +125,19 @@ public class InteractionAnimationPanelController : MonoBehaviour
             StopCoroutine(_autoHideCoroutine);
             _autoHideCoroutine = null;
         }
-
+        
         if (_isAbsenceToday) // 결근한 경우
         {
             PlayerStats.Instance.PerformAbsent();
             return;
         }
-        
-        // 패널 닫히고 결근 체크, 상호작용 패널과 결근 엔딩 채팅창이 겹치지 않기 위함
-        PlayerStats.Instance.CheckAbsent();
-        PlayerStats.Instance.ShowBubble();
+
+        if (!isTutorial) // 튜토리얼 시 결근과 말풍선 오류로 인해 조건문 추가
+        {
+            // 패널 닫히고 결근 체크, 상호작용 패널과 결근 엔딩 채팅창이 겹치지 않기 위함
+            PlayerStats.Instance.CheckAbsent();
+            PlayerStats.Instance.ShowBubble();
+        }
     }
 
     public void TutorialSleepAnimation()
@@ -142,7 +145,19 @@ public class InteractionAnimationPanelController : MonoBehaviour
         _parentCanvas = FindObjectOfType(typeof(Canvas)) as Canvas;
         
         HousingConstants.interactions.TryGetValue(ActionType.Sleep, out var interactionTexts);
-        ShowAnimationPanel(ActionType.Sleep, interactionTexts.AnimationText);
+        
+        // 1) 패널 활성화
+        panel.SetActive(true);
+        // 2) 기존 코루틴 정리
+        if (_textAnimCoroutine != null)    StopCoroutine(_textAnimCoroutine);
+        if (_autoHideCoroutine != null)    StopCoroutine(_autoHideCoroutine);
+
+        // 3) 텍스트 및 애니메이션 세팅
+        doingText.text = interactionTexts.AnimationText;
+        animator.Play("Sleep");
+        
+        _textAnimCoroutine = StartCoroutine(TextDotsAnimation());
+        _autoHideCoroutine = StartCoroutine(AutoHidePanel(ActionType.Sleep, true));
     }
 }
  

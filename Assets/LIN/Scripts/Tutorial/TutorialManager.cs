@@ -24,10 +24,6 @@ public class TutorialManager : MonoBehaviour
     private Canvas overlayCanvas;  // RectTransformUtility를 위한 Canvas
     private Action onTutorialComplete;
     
-    public void Start( )
-    {
-            StartTutorial(null);
-    }
     public void StartTutorial(Action onTutorialEnd, int panelIndex = 0)
     {        
         if(parentCanvas == null)
@@ -45,9 +41,9 @@ public class TutorialManager : MonoBehaviour
         if (_tutorialPanelController != null)
         {
             onTutorialComplete = onTutorialEnd;
-        overlay.alpha = 1f;
-        overlay.blocksRaycasts = true;
-        RunStep(firstStep);
+            overlay.alpha = 1f;
+            overlay.blocksRaycasts = true;
+            RunStep(firstStep);
         }
         else Debug.Log("패널 생성 실패, 튜토리얼 진행이 불가능합니다.");
     }
@@ -97,14 +93,9 @@ public class TutorialManager : MonoBehaviour
                     if (RectTransformUtility.RectangleContainsScreenPoint(
                             targetRt, screenPos, overlayCanvas.worldCamera))
                     {
-                        Debug.Log("타겟 터치");
                         targetRt = null;
                         _tutorialPanelController.HideTouchTarget(step.touchTargetIndex);
                         done = true;
-                    }
-                    else
-                    {
-                        Debug.Log("타겟이 아닌 곳 터치");
                     }
                 }
             }
