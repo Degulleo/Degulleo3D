@@ -210,13 +210,9 @@ public class PlayerStats : MonoBehaviour,ISaveable
         ActionEffect effect = _valueByAction.GetActionEffect(actionType);
         LastAction = actionType;
         // 선 처리: 특수 보상 먼저 (야근, 회식)
-        if (actionType == ActionType.OvertimeWork)
+        if (actionType == ActionType.TeamDinner)
         {
             additionalMaxHealth += 1f;
-        }
-        else if (actionType == ActionType.TeamDinner)
-        {
-            ModifyReputation(1f);
         }
 
         // 순수 스탯 변경 적용
