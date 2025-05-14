@@ -119,7 +119,7 @@ public class EnemyStateFlee :IEnemyState
 
     private void HandleDeadEnd()
     {
-        if (_stuckCount >= 4)
+        if (_stuckCount >= 2)
         {
             _enemyController.OnCannotFleeBehaviour(() => { _stuckCount = 0;});
             return;
