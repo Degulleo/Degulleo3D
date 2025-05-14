@@ -152,6 +152,12 @@ public class HousingCanvasController : MonoBehaviour
         
         _autoHideCoroutine = null;
     }
+
+    public bool IsSuddenPanelActive()
+    {
+        return suddenPanel.activeSelf;
+    }
+    
     #endregion
     
 }
