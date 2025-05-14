@@ -281,14 +281,14 @@ public class CasterDemonController : EnemyController
         transform.LookAt(aimPosition);
 
         // 장판 생성과 세팅
-        var fixedPos = new Vector3(aimPosition.x, aimPosition.y, aimPosition.z);
+        var fixedPos = new Vector3(aimPosition.x, transform.position.y, aimPosition.z);
         var warning = Instantiate(chariotWarning, fixedPos, Quaternion.identity).GetComponent<MagicAoEField>();
 
         warning.SetEffect(SlowFieldEffectData, () =>
         {
             SetAnimation(Cast);
             SFXPlayer(slowFieldSound);
-        }, null);
+        }, null, DebuffType.Slow.ToString());
 
         // 짧은 텀 후 끝내기
         yield return Wait.For(1f);
