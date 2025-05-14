@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.PlayerLoop;
 using UnityEngine.UI;
 
 public class ClearPanelController : PanelController, IPointerClickHandler
@@ -12,23 +11,9 @@ public class ClearPanelController : PanelController, IPointerClickHandler
     [SerializeField] private CanvasGroup clearPanel;
     [SerializeField] private Image clearPanelArmImage;
     [SerializeField] private Image clearTextImage;
-
-    private Image _clearPanelBGImage;
-    public Action onCompleted;
+    [SerializeField] private Image clearPanelBGImage;
     
-    private void Awake()
-    {
-        base.Awake();
-        _clearPanelBGImage = GetComponent<Image>();
-    }
-    private void Start()
-    {
-        //임시 코드
-        Show(() =>
-        {
-            Debug.Log("OnCompleted");
-        });
-    }
+    public Action onCompleted;
 
     public void Show(Action onCompleted)
     {
@@ -39,7 +24,7 @@ public class ClearPanelController : PanelController, IPointerClickHandler
 
     private void Init()
     {
-        _clearPanelBGImage.DOFade(0, 0);
+        clearPanelBGImage.DOFade(0, 0);
         clearTextImage.rectTransform.localScale = Vector3.zero;
         clearTextImage.DOFade(0, 0);
         clearPanel.DOFade(0, 0);
@@ -49,7 +34,7 @@ public class ClearPanelController : PanelController, IPointerClickHandler
     private void ClearAnimation()
     {
         Sequence seq = DOTween.Sequence();
-        seq.Append(_clearPanelBGImage.DOFade(0.98f, 0.5f))
+        seq.Append(clearPanelBGImage.DOFade(0.98f, 0.5f))
             .Append(clearPanel.DOFade(1, 0.5f))
             .Append(clearPanelArmImage.rectTransform.DORotate(new Vector3(0, 0, 15), 0.3f))
             .Append(clearPanelArmImage.rectTransform.DORotate(Vector3.zero, 0.3f))
@@ -61,6 +46,5 @@ public class ClearPanelController : PanelController, IPointerClickHandler
     {
         onCompleted?.Invoke();
         Hide();
-        UpgradeManager.Instance.StartUpgrade();
     }
 }
