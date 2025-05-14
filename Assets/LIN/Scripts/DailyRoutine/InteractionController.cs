@@ -16,6 +16,7 @@ public class InteractionController : MonoBehaviour
     
     private void Start()
     {
+        PlayerStats.Instance.OnWorked -= SuddenAfterWorkEventHappen;
         PlayerStats.Instance.OnWorked += SuddenAfterWorkEventHappen;
         PlayerStats.Instance.SetInteractionPanelController(interactionAnimationPanelController);
     }
@@ -116,6 +117,7 @@ public class InteractionController : MonoBehaviour
     // Interaction Controller와 같은 방식으로 작동됩니다.
     private void SuddenAfterWorkEventHappen()
     {
+        PlayerStats.Instance.OnWorked -= SuddenAfterWorkEventHappen;
         AfterWorkEventType afterWorkEventType = SuddenEventCalculator();
         if (afterWorkEventType == AfterWorkEventType.None) return;
 

@@ -11,6 +11,11 @@ public class DungeonPanelController : MonoBehaviour
     private int _countHealth = 0;
     private int visibleHeartCount = 3; // 강화 레벨로 설정됨
 
+    //PC 키보드 입력 시 버튼 색상 변경
+    [SerializeField] private GameObject dashPressedImage;
+    [SerializeField] private GameObject attackPressedImage;
+    private float pressedTime = .1f;
+    
     private void Start()
     {
         int level = UpgradeManager.Instance.upgradeStat.CurrentUpgradeLevel(StatType.Heart); // 1~3
@@ -50,4 +55,36 @@ public class DungeonPanelController : MonoBehaviour
     {
         yield return new WaitForSeconds(1.0f);
     }
+    
+    
+    #region PC입력 동안 버튼 색상 변경
+
+    public void DashTouchMotion()
+    {
+        StopCoroutine(DashButtonColorChange());
+        StartCoroutine(DashButtonColorChange());
+    }
+    
+    public void AttackTouchMotion()
+    {
+        StopCoroutine(AttackButtonColorChange());
+        StartCoroutine(AttackButtonColorChange());
+    }
+    
+    private IEnumerator DashButtonColorChange()
+    {
+        dashPressedImage.SetActive(true);
+        yield return new WaitForSeconds(pressedTime);
+        dashPressedImage.SetActive(false);
+    
+    }
+    private IEnumerator AttackButtonColorChange()
+    {
+        attackPressedImage.SetActive(true);
+        yield return new WaitForSeconds(pressedTime);
+        attackPressedImage.SetActive(false);
+    }
+    
+    
+    #endregion
 }
