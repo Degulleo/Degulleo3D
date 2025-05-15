@@ -83,6 +83,12 @@ public class InteractionController : MonoBehaviour
                 
                 if (interactionType == ActionType.Dungeon)
                 {
+                    if (GameManager.Instance.StageLevel > 2)
+                    {
+                        PlayerStats.Instance.ShowAndHideBubble("던전을 다깼어!");
+                        return;
+                    }
+                    
                     GameManager.Instance.ChangeToGameScene();
                 }
                 else

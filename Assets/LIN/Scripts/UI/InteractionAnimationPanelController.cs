@@ -140,6 +140,7 @@ public class InteractionAnimationPanelController : MonoBehaviour
         if (_isAbsenceToday) // 결근한 경우
         {
             PlayerStats.Instance.PerformAbsent();
+            _isAbsenceToday = false;
             return;
         }
 

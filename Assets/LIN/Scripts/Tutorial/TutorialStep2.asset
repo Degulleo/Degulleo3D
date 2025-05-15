@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b22d834cf5e26e647be215074940d40e, type: 3}
   m_Name: TutorialStep2
   m_EditorClassIdentifier: 
-  message: "\uCE68\uB300, \uB0C9\uC7A5\uACE0, \uD604\uAD00 \uADF8\uB9AC\uACE0 \uC8FC\uBC29\uC5D0
-    \uAC00\uAE4C\uC774 \uAC00\uBA74 \uADF8\uC5D0 \uC5B4\uC6B8\uB9AC\uB294 \uC0C1\uD638\uC791\uC6A9\uC744
+  message: "\uCE68\uB300, \uB0C9\uC7A5\uACE0, \uD604\uAD00 \uADF8\uB9AC\uACE0\n\uC8FC\uBC29\uC5D0
+    \uAC00\uAE4C\uC774 \uAC00\uBA74 \n\uADF8\uC5D0 \uC5B4\uC6B8\uB9AC\uB294 \uC0C1\uD638\uC791\uC6A9\uC744
     \uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4."
   timeout: 0
   onStepBegin:
