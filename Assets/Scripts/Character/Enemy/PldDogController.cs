@@ -87,7 +87,6 @@ public class PldDogController : EnemyController
 
             if (!_isPatternRunning && _patternTimer >= patternInterval)
             {
-                Debug.Log("## 폭탄 던질 조건 만족");
                 BombThrowPattern();
             }
         }
@@ -114,7 +113,6 @@ public class PldDogController : EnemyController
     // 순환 패턴과 별개로 동작하는 특수 패턴
     private void BombThrowPattern()
     {
-        Debug.Log("BombThrowPattern: 보스가 폭탄을 던집니다.");
         SetAnimation(BoomShot);
         SoundManager.Instance.PlaySFX(boomSound);
         _isPatternRunning = true;
@@ -144,7 +142,6 @@ public class PldDogController : EnemyController
 
     private void ChariotSlashPattern()
     {
-        Debug.Log("ChariotSlashPattern: 보스가 차지 슬래시를 사용합니다.");
         WindUpAnimation();
 
         var warning = Instantiate(chariotSlashWarning, transform.position, Quaternion.identity)
@@ -164,7 +161,6 @@ public class PldDogController : EnemyController
 
     private void VerticalSlashPattern()
     {
-        Debug.Log("VerticalSlashPattern: 보스가 수직 슬래시를 사용합니다.");
         WindUpAnimation();
 
         var warning = Instantiate(verticalWarning, transform.position, transform.rotation)
@@ -184,7 +180,6 @@ public class PldDogController : EnemyController
 
     private void HorizontalSlashPattern()
     {
-        Debug.Log("HorizontalSlashPattern: 보스가 횡적 슬래시를 사용합니다.");
         WindUpAnimation();
 
         var warning = Instantiate(horizontalWarning, transform.position, transform.rotation)

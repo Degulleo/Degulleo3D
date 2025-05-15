@@ -72,12 +72,9 @@ public class ChatWindowController : MonoBehaviour, IPointerClickHandler
         
         _dialogueManager = new FairyDialogueManager(this);
         
-        onComplete = () =>
-        {
-            GameManager.Instance.gotoBed = true;
-        };
-        
         onComplete = () => {
+            GameManager.Instance.gotoBed = true;
+            
             if (isTuto)
             {
                 isTuto = false;
