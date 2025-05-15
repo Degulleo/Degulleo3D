@@ -102,13 +102,15 @@ public partial class GameManager : Singleton<GameManager>,ISaveable
     public void ChangeToGameScene()
     {
         tryStageCount++; // 던전 시도 횟수 증가
-        SceneManager.LoadScene("ReDungeon"); // 던전 Scene
+        var switchingPanel = PanelManager.GetPanel("SwitchingPanel").GetComponent<SwitchingPanelController>();
+        switchingPanel.FadeAndSceneLoad("ReDungeon"); // 던전 Scene
         HandleSceneAudio("Dungeon");
     }
     
     public void ChangeToHomeScene(bool isNewStart = false)
     {
-        SceneManager.LoadScene("ReHousing"); // Home Scene
+        var switchingPanel = PanelManager.GetPanel("SwitchingPanel").GetComponent<SwitchingPanelController>();
+        switchingPanel.FadeAndSceneLoad("ReHousing"); // Home Scene
         HandleSceneAudio("Housing");
         
         if(isNewStart) // 아예 메인에서 시작 시 튜토리얼 출력
