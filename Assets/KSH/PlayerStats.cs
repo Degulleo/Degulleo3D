@@ -203,7 +203,7 @@ public class PlayerStats : MonoBehaviour,ISaveable
         }
     }
 
-    public void PerformAbsent() // 강제 결근 이벤트
+    public void PerformAbsent() // 강제 결근 이벤트, 오류 발생
     {
         _hasCheckedAbsenceToday = true; // 결근 체크 완료 표시
         OnAbsent?.Invoke();
@@ -349,7 +349,7 @@ public class PlayerStats : MonoBehaviour,ISaveable
             EndDay(time, actionType);
         }
 
-        if (TimeStat >= 8.0f && TimeStat < 9.0f)
+        if (TimeStat is >= 8.0f and < 9.0f)
         {
             _hasWorkedToday = false;
             _hasCheckedAbsenceToday = false;
@@ -384,6 +384,8 @@ public class PlayerStats : MonoBehaviour,ISaveable
 
     public void ModifyReputation(float reputation)
     {
+        if (reputation == 0f) return;
+        
         // float 연산 시 계산 오차가 발생할 수도 있기에 소수점 두 번째에서 반올림하도록 처리
         if(ReputationStat > 0)
         {

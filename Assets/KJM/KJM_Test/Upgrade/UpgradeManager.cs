@@ -52,6 +52,9 @@ public class UpgradeManager : Singleton<UpgradeManager>
 
         EnsureCardListSize(3);
         
+        //오디오 재생
+        GameManager.Instance.PlayLevelUpSound();
+        
         //카드 생성
         if (stats.Count == 0)
         {
@@ -102,6 +105,9 @@ public class UpgradeManager : Singleton<UpgradeManager>
         StartCoroutine(CoFade(backgroundRectTransform.gameObject, 0f,0.7f,0.2f));
 
         EnsureCardListSize(3);
+        
+        //오디오 재생
+        GameManager.Instance.PlayLevelUpSound();
         
         if(cards[0] == null)
             cards[0] = Instantiate(upgradeButton, backgroundRectTransform);
@@ -161,6 +167,8 @@ public class UpgradeManager : Singleton<UpgradeManager>
     /// </summary>
     public void DestroyUpgradeCard()
     {
+        GameManager.Instance.PlayButtonClickSound();
+        
         // 카드 비활성화
         if (stats.Count == 0|| isHome)
         {
@@ -280,5 +288,4 @@ public class UpgradeManager : Singleton<UpgradeManager>
         if(canvas == null)
             canvas = FindObjectOfType<Canvas>();
     }
-    
 }

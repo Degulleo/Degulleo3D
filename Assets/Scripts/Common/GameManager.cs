@@ -48,7 +48,7 @@ public partial class GameManager : Singleton<GameManager>,ISaveable
     {
         if (chatWindowController == null)
         {
-            yield return new WaitForSeconds(4f); // 씬 전환 대기
+            yield return new WaitForSeconds(4.0f); // 씬 전환 대기
             chatWindowController = FindObjectOfType<ChatWindowController>();
         }
     
@@ -118,7 +118,7 @@ public partial class GameManager : Singleton<GameManager>,ISaveable
         HandleSceneAudio("Housing");
         
         if(isNewStart) // 아예 메인에서 시작 시 튜토리얼 출력
-            StartNPCDialogue(GamePhase.Intro); // StartCoroutine(StartTutorialCoroutine());
+            StartNPCDialogue(GamePhase.Intro); 
         
         if (tryStageCount >= 3) FailEnd(); // 엔딩
     }
