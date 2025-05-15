@@ -8,7 +8,6 @@ public class EnemyStateIdle: IEnemyState
     public void Enter(EnemyController enemyController)
     {
         _enemyController = enemyController;
-        Debug.Log("## Idle 상태 진입");
         _enemyController.SetAnimation(EnemyController.Idle, true);
     }
 

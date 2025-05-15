@@ -35,7 +35,7 @@ public class ValueByAction
             // 기본 액션들, 효과(시간, 체력, 평판 순)
             { ActionType.Sleep, new ActionEffect(_gameConstants.forcedValue, 0, 0) }, // 8시 강제 기상
             { ActionType.OverSlept, new ActionEffect(_gameConstants.forcedValue, 0, 0) }, // 결근 (오후 3~6시 기상)
-            { ActionType.ForcedSleep, new ActionEffect(_gameConstants.forcedValue, 4, 0) }, // 탈진
+            { ActionType.ForcedSleep, new ActionEffect(_gameConstants.forcedValue, 4, -3.0f) }, // 탈진
             { ActionType.Eat, new ActionEffect(+1.0f, +1.0f, 0) },
             { ActionType.Work, new ActionEffect(+10.0f, -3.0f, +0.2f) }, // 8to6: 10시간
             { ActionType.Dungeon, new ActionEffect(+3.0f, -3.0f, 0) },

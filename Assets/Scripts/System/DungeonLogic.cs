@@ -56,8 +56,6 @@ public class DungeonLogic : MonoBehaviour
     {
         if (isFailed || isCompleted) return; // 어느 한 쪽 사망시 더이상 피격 X
         
-        // TODO: 플레이어 피격 효과음
-        
         var result = _dungeonPanelController.SetPlayerHealth();
         if (!result) // 하트 모두 소모
         {
@@ -70,9 +68,6 @@ public class DungeonLogic : MonoBehaviour
         Debug.Log("enemyGETHIT");
         
         if (isFailed || isCompleted) return;
-        
-        // TODO: 에너미 피격 효과음
-        
         _dungeonPanelController.SetBossHealthBar(enemy.currentHP);
     }
 
@@ -99,10 +94,8 @@ public class DungeonLogic : MonoBehaviour
     {
         if (!isCompleted && !isFailed)
         {
-            Debug.Log("던전 공략 성공~!");
             GameManager.Instance.ClearStage(); // 스테이지 수 증가
             isCompleted = true;
-            // OnDungeonSuccess?.Invoke();
 
             _dungeonPanelController.SetBossHealthBar(0.0f); // 보스 체력 0 재설정
             
@@ -122,9 +115,7 @@ public class DungeonLogic : MonoBehaviour
     {
         if (!isCompleted && !isFailed)
         {
-            Debug.Log("던전 공략 실패~!");
             isFailed = true;
-            // OnDungeonFailure?.Invoke();
             
             _player.SetState(PlayerState.Dead);
             

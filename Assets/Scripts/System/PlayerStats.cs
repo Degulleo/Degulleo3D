@@ -95,7 +95,7 @@ public class PlayerStats : MonoBehaviour,ISaveable
         var panel = FindObjectOfType<InteractionAnimationPanelController>();
         if (panel != null)
         {
-            PlayerStats.Instance.SetInteractionPanelController(panel);
+            SetInteractionPanelController(panel);
         }
     }
     
@@ -104,6 +104,7 @@ public class PlayerStats : MonoBehaviour,ISaveable
         if (HealthStat > 0) return;
         
         Exhaustion?.Invoke(); // 탈진 이벤트 발생
+        
     }
     
     public InteractionAnimationPanelController GetInteractionPanelController()
@@ -115,9 +116,12 @@ public class PlayerStats : MonoBehaviour,ISaveable
      
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // 새 씬에서 메시지 패널 다시 로드
-        LoadMessagePanel();
-        CheckBubble();
+        // 하우징 씬에서만 메시지 패널 다시 로드
+        if (scene.name == "ReHousing")
+        {
+            LoadMessagePanel();
+            CheckBubble();
+        }
     }
     
     // OnDestroy에서 이벤트 구독 해제
@@ -386,12 +390,8 @@ public class PlayerStats : MonoBehaviour,ISaveable
         if (HealthStat <= 0)
         {
             HealthStat = 0.0f;
-            // 현재는 0 되자마자 발생하도록 처리하였는데 다른 방식으로의 처리가 필요하다면 말씀해주십시오.
-            // 동작 이후에 스탯을 깎는다는 기준하에 작성하였습니다. (동작 전에는 CanPerformByHealth()를 통해 행동 가능 여부 판단)
-            
-            // 탈진 이벤트 발생
-            Debug.Log("탈진! 체력 0");
             GameManager.Instance.gotoBed = true;
+            
             // 씬 이동 중 아니면 0.5초로 줄이기 4초 너무 길음;;
             Invoke(nameof(TriggerExhaustion), 4f);
         }
@@ -415,11 +415,11 @@ public class PlayerStats : MonoBehaviour,ISaveable
         {
             ReputationStat = 0f;
         }
-
+        
         if (ReputationStat <= 0)
         {
             ZeroReputation?.Invoke();
-            ReputationStat = 0.0f;
+            ReputationStat = 0f;
         }
 
         if (ReputationStat > _gameConstants.maxReputation)
@@ -434,6 +434,9 @@ public class PlayerStats : MonoBehaviour,ISaveable
     {
         if (save?.homeSave != null)
         {
+            // 확인용 Debug
+            // Debug.Log($"TimeStat {TimeStat}, HealthStat {HealthStat}, ReputationStat {ReputationStat}");
+            
             TimeStat = Mathf.Clamp(save.homeSave.time, 0, _gameConstants.maxTime);
             HealthStat = Mathf.Clamp(save.homeSave.health, 0, _gameConstants.maxHealth);
             ReputationStat = Mathf.Clamp(save.homeSave.reputation, 0, _gameConstants.maxReputation);
@@ -441,7 +444,9 @@ public class PlayerStats : MonoBehaviour,ISaveable
             _hasCheckedAbsenceToday = save.homeSave.hasCheckedAbsenceToday;
             _hasShownBubbleToday = save.homeSave.hasShownBubbleToday;
             
-            //UI적용
+            // Debug.Log($"AfterSave TimeStat {TimeStat}, HealthStat {HealthStat}, ReputationStat {ReputationStat}");
+            
+            //UI적용 <- UI가 스탯 변경될 때 적용되는 거랑 아래의 거랑 같이 이벤트가 발동해서 수치가 이상해집니다
             OnStatsChanged?.Invoke(new StatsChangeData(TimeStat, HealthStat, ReputationStat));
         }
     }
@@ -452,16 +457,16 @@ public class PlayerStats : MonoBehaviour,ISaveable
         {
             homeSave = new HomeSave
             {
-                time = Mathf.Clamp(this.TimeStat,0,_gameConstants.maxTime),
-                health = Mathf.Clamp(this.HealthStat,0,_gameConstants.maxHealth),
-                reputation = Mathf.Clamp(this.ReputationStat,0,_gameConstants.maxReputation),
-                mealCount = Mathf.Clamp(this._mealCount,0,2),
+                time = Mathf.Clamp(TimeStat,0,_gameConstants.maxTime),
+                health = Mathf.Clamp(HealthStat,0,_gameConstants.maxHealth),
+                reputation = Mathf.Clamp(ReputationStat,0,_gameConstants.maxReputation),
+                mealCount = Mathf.Clamp(_mealCount,0,2),
                 
                 hasCheckedAbsenceTodaySet = true,
-                hasCheckedAbsenceToday = this._hasCheckedAbsenceToday,
+                hasCheckedAbsenceToday = _hasCheckedAbsenceToday,
                 
                 hasShownBubbleTodaySet = true,
-                hasShownBubbleToday = this._hasShownBubbleToday,
+                hasShownBubbleToday = _hasShownBubbleToday,
             }
         };
     }

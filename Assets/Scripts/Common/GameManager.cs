@@ -127,6 +127,7 @@ public partial class GameManager : Singleton<GameManager>,ISaveable
         
         if (gotoBed)
         {
+            Debug.Log("탈진 이벤트 출력");
             var panel = PlayerStats.Instance.GetInteractionPanelController();
         
             if (panel != null)

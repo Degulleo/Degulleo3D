@@ -16,13 +16,6 @@ public enum LoadingState
     Dungeon,
     Sleep
 }
-//집안일 목록
-public enum HouseworkState
-{
-    Laundry,
-    Cleaning,
-    
-}
 
 public class InteractionPanelController : MonoBehaviour
 {

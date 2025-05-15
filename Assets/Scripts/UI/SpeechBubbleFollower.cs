@@ -49,7 +49,8 @@ public class SpeechBubbleFollower : MonoBehaviour
     {
         if (playerTransform == null)
         {
-            playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
+            if(GameObject.FindGameObjectWithTag("Player") != null)
+                playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
         }
     }
     

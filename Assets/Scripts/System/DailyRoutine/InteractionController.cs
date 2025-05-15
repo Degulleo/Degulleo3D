@@ -144,6 +144,7 @@ public class InteractionController : MonoBehaviour
                 if (!PlayerStats.Instance.CanPerformByHealth(ActionType.OvertimeWork))
                 {
                     PlayerStats.Instance.ShowAndHideBubble("체력이 없어...");
+                    housingCanvasController.HideSuddenEventPanel(); // 판넬 종료
                     return;
                 }
                 PlayerStats.Instance.PerformAction(ActionType.OvertimeWork);
