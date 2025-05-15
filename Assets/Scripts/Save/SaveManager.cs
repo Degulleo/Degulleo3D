@@ -177,8 +177,5 @@ public class SaveManager : Singleton<SaveManager>
         backupSave = fresh.InitSave();
         SaveMain();
         SaveBackup();
-        saveDataController.ApplySaveData(mainSave);
     }
-
-    
 }

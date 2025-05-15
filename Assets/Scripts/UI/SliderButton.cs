@@ -29,13 +29,13 @@ public class SliderButton : MonoBehaviour
     {
         if (IsActive)
         {
-            handle.transform.DOLocalMoveX(_offXLocation, 0.2f);
-            backgroundImage.DOColor(_offColor, 0.2f);
+            handle.transform.DOLocalMoveX(_offXLocation, 0.2f).SetUpdate(true);
+            backgroundImage.DOColor(_offColor, 0.2f).SetUpdate(true);
         }
         else 
         {
-            handle.transform.DOLocalMoveX(_onXLocation, 0.2f);
-            backgroundImage.DOColor(_onColor, 0.2f);
+            handle.transform.DOLocalMoveX(_onXLocation, 0.2f).SetUpdate(true);
+            backgroundImage.DOColor(_onColor, 0.2f).SetUpdate(true);
         }
         IsActive = !IsActive;
     }
