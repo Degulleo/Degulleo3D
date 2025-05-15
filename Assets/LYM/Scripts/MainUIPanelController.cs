@@ -8,7 +8,8 @@ public class MainUIPanelController : MonoBehaviour
     
     public void OnClickStartButton()
     {
-        GameManager.Instance.ChangeToHomeScene(true);
+        var isNewStart = PlayerPrefsManager.GetIsNewStart();
+        GameManager.Instance.ChangeToHomeScene(isNewStart);
     }
 
     public void OnClickSettingsButton()

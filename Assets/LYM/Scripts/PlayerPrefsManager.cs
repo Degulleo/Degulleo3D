@@ -28,4 +28,15 @@ public static class PlayerPrefsManager
         var bgmIsActive = PlayerPrefs.GetInt("BGMIsActive", 1) == 1;
         return (sfxVolume, bgmVolume, sfxIsActive, bgmIsActive);
     }
+    
+    public static void SetIsNewStart(bool isNewStart)
+    {
+        PlayerPrefs.SetInt("IsNewStart", isNewStart ? 1 : 0);
+        PlayerPrefs.Save();
+    }
+    
+    public static bool GetIsNewStart()
+    {
+        return PlayerPrefs.GetInt("IsNewStart", 1) == 1;
+    }
 }
