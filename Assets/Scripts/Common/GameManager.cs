@@ -102,6 +102,10 @@ public partial class GameManager : Singleton<GameManager>,ISaveable
     public void ChangeToGameScene()
     {
         tryStageCount++; // 던전 시도 횟수 증가
+        
+        InteractionController interactionController = FindObjectOfType<InteractionController>();
+        interactionController.ReSetAfterWorkEvent();
+        
         var switchingPanel = PanelManager.GetPanel("SwitchingPanel").GetComponent<SwitchingPanelController>();
         switchingPanel.FadeAndSceneLoad("ReDungeon"); // 던전 Scene
         HandleSceneAudio("Dungeon");
