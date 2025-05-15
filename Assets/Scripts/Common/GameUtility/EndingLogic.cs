@@ -23,11 +23,17 @@ public partial class GameManager
     private void ZeroReputationEnd() // 평판 0 엔딩
     {
         StartNPCDialogue(GamePhase.ZeroEnd);
+        
+        //세이브 초기화
+        SaveManager.Instance.ResetSave();
     }
 
     private void FailEnd() // 같은 스테이지 3회 도전 실패 엔딩
     {
         StartNPCDialogue(GamePhase.FailEnd);
+        
+        //세이브 초기화
+        SaveManager.Instance.ResetSave();
     }
     
     // 회고 엔딩. 7일차에 실행
@@ -35,5 +41,8 @@ public partial class GameManager
     {
         // npc와의 마지막 대화 출력
         StartNPCDialogue(GamePhase.End);
+        
+        //세이브 초기화
+        SaveManager.Instance.ResetSave();
     }
 }

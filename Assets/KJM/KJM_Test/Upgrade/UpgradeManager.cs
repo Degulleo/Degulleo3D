@@ -30,6 +30,8 @@ public class UpgradeManager : Singleton<UpgradeManager>
     
     private RectTransform backgroundRectTransform;
     private List<Button> cards = new List<Button>();
+    
+    private bool isHome = false;
 
     public void Start()
     {
@@ -83,6 +85,36 @@ public class UpgradeManager : Singleton<UpgradeManager>
         }
     }
     
+    /// <summary>
+    /// 랜덤한 강화 카드 1장
+    /// </summary>
+    public void StartUpgradeInHome()
+    {
+        isHome = true;
+        
+        DrawStatNumber();
+        
+        //배경 패널 생성
+        if(backgroundRectTransform == null)
+            backgroundRectTransform = Instantiate(backgroundPanel,canvas.transform).GetComponent<RectTransform>(); 
+        //배경 패널 애니메이션 적용
+        backgroundRectTransform.gameObject.SetActive(true);
+        StartCoroutine(CoFade(backgroundRectTransform.gameObject, 0f,0.7f,0.2f));
+
+        EnsureCardListSize(3);
+        
+        if(cards[0] == null)
+            cards[0] = Instantiate(upgradeButton, backgroundRectTransform);
+            
+        cards[0].gameObject.SetActive(true);
+        cards[0].GetComponent<UpgradeCard>().Init((StatType)stats[0]);
+        StartCoroutine(CoFade(cards[0].gameObject, 0f,1f,0.4f, () =>
+        {
+            cards[0].GetComponent<CanvasGroup>().interactable = true;
+        }));
+        
+    }
+    
     
     /// <summary>
     /// 중복되지 않는 랜덤한 스탯 번호 뽑기
@@ -130,13 +162,15 @@ public class UpgradeManager : Singleton<UpgradeManager>
     public void DestroyUpgradeCard()
     {
         // 카드 비활성화
-        if (stats.Count == 0)
+        if (stats.Count == 0|| isHome)
         {
             StartCoroutine(CoFade(cards[0].gameObject, 1f,0f,0.4f,() =>
             {
                 cards[0].gameObject.SetActive(false);
                 backgroundRectTransform.gameObject.SetActive(false);
             }));
+            
+            isHome = false;
         }
         else
         {
@@ -189,7 +223,7 @@ public class UpgradeManager : Singleton<UpgradeManager>
 
         if (canvasGroup == null && image == null)
         {
-            Debug.LogError("CanvasGroup도 Image도 없습니다!");
+            Debug.LogError("CanvasGroup도 Image도 없습니다");
             yield break;
         }
 

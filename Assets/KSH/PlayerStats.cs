@@ -416,6 +416,11 @@ public class PlayerStats : MonoBehaviour,ISaveable
             HealthStat = Mathf.Clamp(save.homeSave.health, 0, _gameConstants.maxHealth);
             ReputationStat = Mathf.Clamp(save.homeSave.reputation, 0, _gameConstants.maxReputation);
             _mealCount = Mathf.Clamp(save.homeSave.mealCount, 0, 2);
+            _hasCheckedAbsenceToday = save.homeSave.hasCheckedAbsenceToday;
+            _hasShownBubbleToday = save.homeSave.hasShownBubbleToday;
+            
+            //UI적용
+            OnStatsChanged?.Invoke(new StatsChangeData(TimeStat, HealthStat, ReputationStat));
         }
     }
 
@@ -428,7 +433,13 @@ public class PlayerStats : MonoBehaviour,ISaveable
                 time = Mathf.Clamp(this.TimeStat,0,_gameConstants.maxTime),
                 health = Mathf.Clamp(this.HealthStat,0,_gameConstants.maxHealth),
                 reputation = Mathf.Clamp(this.ReputationStat,0,_gameConstants.maxReputation),
-                mealCount = Mathf.Clamp(this._mealCount,0,2)
+                mealCount = Mathf.Clamp(this._mealCount,0,2),
+                
+                hasCheckedAbsenceTodaySet = true,
+                hasCheckedAbsenceToday = this._hasCheckedAbsenceToday,
+                
+                hasShownBubbleTodaySet = true,
+                hasShownBubbleToday = this._hasShownBubbleToday,
             }
         };
     }

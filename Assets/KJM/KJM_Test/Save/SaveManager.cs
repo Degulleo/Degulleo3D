@@ -46,9 +46,6 @@ public class SaveManager : Singleton<SaveManager>
         backupSave = LoadBackup();
         
         saveDataController.ApplySaveData(mainSave);
-        
-        Debug.Log("메인 로드" + mainSave.homeSave.reputation);  //임시 코드
-        Debug.Log("백업 로드" + backupSave.homeSave.reputation);    //임시 코드
     }
 
     private void UpdateSaveInfo()
@@ -187,7 +184,7 @@ public class SaveManager : Singleton<SaveManager>
         backupSave = fresh.InitSave();
         SaveMain();
         SaveBackup();
-        saveDataController.ApplySaveData(fresh);
+        saveDataController.ApplySaveData(mainSave);
     }
 
     
