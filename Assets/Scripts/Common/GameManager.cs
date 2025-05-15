@@ -48,7 +48,7 @@ public partial class GameManager : Singleton<GameManager>,ISaveable
     {
         if (chatWindowController == null)
         {
-            yield return new WaitForSeconds(0.5f); // 씬 전환 대기
+            yield return new WaitForSeconds(4f); // 씬 전환 대기
             chatWindowController = FindObjectOfType<ChatWindowController>();
         }
     

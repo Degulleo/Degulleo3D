@@ -139,5 +139,7 @@ public class TutorialManager : MonoBehaviour
             return;
         Destroy(_tutorialPanelObject);
         _tutorialPanelController = null;
+        
+        PlayerPrefsManager.SetIsNewStart(false);
     }
 }
