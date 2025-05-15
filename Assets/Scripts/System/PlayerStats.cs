@@ -348,15 +348,19 @@ public class PlayerStats : MonoBehaviour,ISaveable
     public float CalculateTimeToWakeUp(float timeStat)
     {
         float wakeUpTime = _gameConstants.wakeUpTime;
+        float remainTime;
+        
         if (timeStat < wakeUpTime) // 현재 시간이 0~7시 사이인 경우
         {
             // 당일 오전 8시까지 남은 시간
-            return wakeUpTime - timeStat;
+            remainTime = wakeUpTime - timeStat;
         }
         else
         {
-            return ( wakeUpTime + 24f ) - timeStat; // 다음 날 오전 8시까지 남은 시간
+            remainTime = ( wakeUpTime + 24f ) - timeStat; // 다음 날 오전 8시까지 남은 시간
         }
+        
+        return Mathf.Min(remainTime, 8f); // 최대 8로 제한
     }
 
     #region Modify Stats
