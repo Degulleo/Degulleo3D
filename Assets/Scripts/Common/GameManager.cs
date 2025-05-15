@@ -127,12 +127,13 @@ public partial class GameManager : Singleton<GameManager>,ISaveable
         
         if (gotoBed)
         {
+            Debug.Log("탈진 이벤트 출력");
             var panel = PlayerStats.Instance.GetInteractionPanelController();
         
             if (panel != null)
             {
                 panel.ShowAnimationPanel(ActionType.Sleep, "탈진했습니다");
-                GameManager.Instance.StartCoroutine(DelayedForcedSleep(2.0f)); // 애니메이션 끝나고 강제 수면 처리
+                StartCoroutine(DelayedForcedSleep(2.0f)); // 애니메이션 끝나고 강제 수면 처리
             }
             else
             {
@@ -149,7 +150,8 @@ public partial class GameManager : Singleton<GameManager>,ISaveable
 
     public void ChangeToMainScene()
     {
-        SceneManager.LoadScene("Main");
+        var switchingPanel = PanelManager.GetPanel("SwitchingPanel").GetComponent<SwitchingPanelController>();
+        switchingPanel.FadeAndSceneLoad("Main");
         StartCoroutine(CheckDungeonScene());
     }
     

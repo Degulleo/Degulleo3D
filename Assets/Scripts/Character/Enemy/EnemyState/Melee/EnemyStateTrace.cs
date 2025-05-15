@@ -11,7 +11,6 @@ public class EnemyStateTrace : IEnemyState
     public void Enter(EnemyController enemyController)
     {
         _enemyController = enemyController;
-        Debug.Log("## Trace 상태 진입");
         _detectPlayerTransform = _enemyController.TraceTargetTransform;
         if (!_detectPlayerTransform)
         {

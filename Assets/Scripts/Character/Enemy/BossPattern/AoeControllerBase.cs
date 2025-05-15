@@ -96,9 +96,6 @@ public abstract class AoeControllerBase : MonoBehaviour
         {
             if (hit.CompareTag("Player"))
             {
-                Debug.Log($"{hit.name}에게 {_data.damage} 데미지 적용");
-                // TODO: 실제 데미지 처리 로직 호출
-                // 임시 데이미 처리 로직
                 PlayerController playerController = hit.transform.GetComponent<PlayerController>();
                 if (playerController != null)
                 {
