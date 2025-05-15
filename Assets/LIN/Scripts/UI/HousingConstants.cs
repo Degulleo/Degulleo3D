@@ -13,7 +13,7 @@ public enum AfterWorkEventType
 public static class HousingConstants
 {
     //돌발 이벤트 확률 계산
-    public static int AFTER_WORK_DENOMINATOR = 2;
+    public static int AFTER_WORK_DENOMINATOR = 4;
     //돌발 이벤트 보여줄 시간
     public static float SUDDENEVENT_IAMGE_SHOW_TIME = 4.0f;
     //전환효과(Switching) 패널 애니메이션 시간

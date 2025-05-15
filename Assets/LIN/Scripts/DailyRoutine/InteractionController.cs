@@ -22,6 +22,14 @@ public class InteractionController : MonoBehaviour
         PlayerStats.Instance.SetHousingCanvasController(housingCanvasController);
     }
     
+    /// <summary>
+    /// 출근 후 돌발 이벤트 발생을 위한 구독 취소
+    /// </summary>
+    public void ReSetAfterWorkEvent()
+    {
+        PlayerStats.Instance.OnWorked -= SuddenAfterWorkEventHappen;
+    }
+    
     // 상호작용 가능한 사물 범위에 들어올 때
     private void OnTriggerEnter(Collider other)
     {
