@@ -12,8 +12,6 @@ public enum EndingType
 
 public partial class GameManager 
 {
-    private float happyEndReputation = 3.0f;
-    
     public void ClearStage()
     {
         tryStageCount = 0; // 시도 횟수 초기화
