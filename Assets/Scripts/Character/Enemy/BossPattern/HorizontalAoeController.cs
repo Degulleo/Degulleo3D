@@ -17,10 +17,6 @@ public class HorizontalAoeController : AoeControllerBase
 
             if (angleToForward <= slashAngle * 0.5f)
             {
-                Debug.Log($"{hit.name}이(가) 횡적 슬래시 데미지 범위에 있습니다.");
-                Debug.Log($"{hit.name}에게 {_data.damage} 데미지 적용");
-                // TODO: 실제 데미지 처리 로직 호출
-                // 임시 데이미 처리 로직
                 PlayerController playerController = hit.transform.GetComponent<PlayerController>();
                 if (playerController != null)
                 {

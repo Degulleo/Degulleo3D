@@ -304,7 +304,6 @@ public class PlayerStats : MonoBehaviour,ISaveable
             // 회복량이 8 이하면 늦잠 이벤트 발동
             if (remainTime < _gameConstants.limitRecover)
             {
-                Debug.Log($"수면이 8시간 미만입니다. 수면 시간: {remainTime}");
                 Overslept?.Invoke(); // 늦잠 이벤트
             }
         }
