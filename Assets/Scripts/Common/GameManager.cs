@@ -28,6 +28,9 @@ public partial class GameManager : Singleton<GameManager>,ISaveable
     
     private TutorialManager tutorialManager;
     
+    [HideInInspector]
+    public bool gotoBed = false;
+    
     private void Start()
     {
         // 오디오 초기화
@@ -36,6 +39,13 @@ public partial class GameManager : Singleton<GameManager>,ISaveable
         //패널 매니저 생성
         panelManager = Instantiate(Resources.Load<GameObject>("Prefabs/PanelManager")).GetComponent<PanelManager>();
     }
+    
+    private IEnumerator DelayedForcedSleep(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        PlayerStats.Instance.PerformAction(ActionType.ForcedSleep);
+    }
+    
 
     #region 대화 관련
     
@@ -46,6 +56,8 @@ public partial class GameManager : Singleton<GameManager>,ISaveable
     
     private IEnumerator StartNPCDialogueCoroutine(GamePhase phase)
     {
+        gotoBed = false;
+        
         if (chatWindowController == null)
         {
             yield return new WaitForSeconds(4.0f); // 씬 전환 대기
@@ -78,7 +90,8 @@ public partial class GameManager : Singleton<GameManager>,ISaveable
     public void SetEvents()
     {
         PlayerStats.Instance.OnDayEnded += AdvanceDay; // 날짜 변경
-        PlayerStats.Instance.ZeroReputation += ZeroReputationEnd; // 평판 0 엔딩
+        PlayerStats.Instance.ZeroReputation += ZeroReputationEnd;
+        PlayerStats.Instance.Exhaustion += ExhaustionToSleep;
     }
 
     // 날짜 진행
@@ -93,10 +106,61 @@ public partial class GameManager : Singleton<GameManager>,ISaveable
             TriggerTimeEnding();
         }
     }
+    
+    // 탈진
+    private void ExhaustionToSleep()
+    {
+        StartCoroutine(WaitOtherEvents());
+    }
+
+    private IEnumerator WaitOtherEvents()
+    {
+        yield return new WaitForSeconds(Time.deltaTime);
+        
+        // 로딩 중이거나 던전/메인 씬이면 탈진 실행 보류
+        string currentScene = SceneManager.GetActiveScene().name;
+        if (currentScene != "ReHousing")
+        {
+            StartCoroutine(WaitOtherEvents()); // 다시 기다림
+            yield break;
+        }
+        
+        if (gotoBed)
+        {
+            var panel = PlayerStats.Instance.GetInteractionPanelController();
+        
+            if (panel != null)
+            {
+                panel.ShowAnimationPanel(ActionType.Sleep, "탈진했습니다");
+                GameManager.Instance.StartCoroutine(DelayedForcedSleep(2.0f)); // 애니메이션 끝나고 강제 수면 처리
+            }
+            else
+            {
+                PlayerStats.Instance.PerformAction(ActionType.ForcedSleep);
+            }
+
+            gotoBed = false;
+        }
+        else
+        {
+            StartCoroutine(WaitOtherEvents());
+        }
+    }
 
     public void ChangeToMainScene()
     {
         SceneManager.LoadScene("Main");
+        StartCoroutine(CheckDungeonScene());
+    }
+    
+    private IEnumerator CheckDungeonScene()
+    {
+        yield return new WaitForSeconds(Time.deltaTime);
+        
+        if (SceneManager.GetActiveScene().name == "ReDungeon")
+            gotoBed = false;
+        else
+            StartCoroutine(CheckHomeScene());
     }
     
     public void ChangeToGameScene()
@@ -120,7 +184,18 @@ public partial class GameManager : Singleton<GameManager>,ISaveable
         if(isNewStart) // 아예 메인에서 시작 시 튜토리얼 출력
             StartNPCDialogue(GamePhase.Intro); 
         
+        StartCoroutine(CheckHomeScene());
         if (tryStageCount >= 3) FailEnd(); // 엔딩
+    }
+    
+    private IEnumerator CheckHomeScene()
+    {
+        yield return new WaitForSeconds(Time.deltaTime);
+        
+        if (SceneManager.GetActiveScene().name == "ReHousing")
+            gotoBed = true;
+        else
+            StartCoroutine(CheckHomeScene());
     }
     
     public IEnumerator StartTutorialCoroutine()

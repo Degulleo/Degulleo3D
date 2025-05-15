@@ -91,6 +91,24 @@ public class PlayerStats : MonoBehaviour,ISaveable
         GameManager.Instance.SetEvents();
         SceneManager.sceneLoaded += OnSceneLoaded; // 씬 전환 이벤트
         _mealCount = 0; // 식사 횟수 0회
+        
+        var panel = FindObjectOfType<InteractionAnimationPanelController>();
+        if (panel != null)
+        {
+            PlayerStats.Instance.SetInteractionPanelController(panel);
+        }
+    }
+    
+    private void TriggerExhaustion()
+    {
+        if (HealthStat > 0) return;
+        
+        Exhaustion?.Invoke(); // 탈진 이벤트 발생
+    }
+    
+    public InteractionAnimationPanelController GetInteractionPanelController()
+    {
+        return _interactionAnimation;
     }
     
     #region 말풍선(Bubble) 관련
@@ -373,7 +391,8 @@ public class PlayerStats : MonoBehaviour,ISaveable
             
             // 탈진 이벤트 발생
             Debug.Log("탈진! 체력 0");
-            Exhaustion?.Invoke();
+            GameManager.Instance.gotoBed = true;
+            Invoke(nameof(TriggerExhaustion), 4f);
         }
 
         if (HealthStat > MaxHealth)
